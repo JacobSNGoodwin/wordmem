@@ -13,8 +13,8 @@ type User struct {
 // UserRepository defines the interface that must be met
 // by any database implementation of a UserRepository
 type UserRepository interface {
-	User(id uuid.UUID) (User, error)
-	Users() ([]User, error)
+	// User(id uuid.UUID) (User, error)
+	// Users() ([]User, error)
 	CreateUser(u *User) error
-	UpdateUser(u *User) error
+	// UpdateUser(u *User) error
 }

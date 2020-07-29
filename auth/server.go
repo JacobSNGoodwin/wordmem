@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -9,19 +10,33 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/jacobsngoodwin/wordmem/auth/repository"
+
+	"github.com/jacobsngoodwin/wordmem/auth/handlers"
+
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	r := gin.Default()
 
-	// used to add routes in separate file, routes.go
-	routes(r)
+	r.POST("/signup", handlers.Signup)
 
 	srv := &http.Server{
 		Addr:    ":8080",
 		Handler: r,
 	}
+
+	log.Println("Setting up data repository")
+	repo, err := repository.Create("host=localhost port=5432 user=postgres password=password dbname=postgres sslmode=disable")
+
+	if err != nil {
+		log.Fatal("Could not establish connection to postgres")
+	}
+
+	fmt.Printf("Repo: %v", repo)
+
+	log.Println("Starting server and listening on port 8080")
 
 	// Graceful shutdown reference from gin's example:
 	// https://github.com/gin-gonic/examples/blob/master/graceful-shutdown/graceful-shutdown/server.go
@@ -31,8 +46,6 @@ func main() {
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("Failed to initialize server: %s\n", err)
 		}
-
-		log.Println("Info: Server listening")
 	}()
 
 	// Wait for kill signal of channel

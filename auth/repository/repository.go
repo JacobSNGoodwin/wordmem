@@ -12,6 +12,7 @@ import (
 // with concrete implementations having db instance injected
 func Create(dataSourceName string) (*Repository, error) {
 	db, err := sqlx.Open("postgres", dataSourceName)
+
 	if err != nil {
 		return nil, fmt.Errorf("error opening db: %w", err)
 	}

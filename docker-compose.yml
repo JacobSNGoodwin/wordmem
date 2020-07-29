@@ -1,12 +1,9 @@
-version: "3"
+version: "3.1"
 services:
   postgres-auth:
     image: "postgres:alpine"
-
     environment:
-      - POSTGRES_USER=user
       - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=gql_demo
     ports:
       - "5432:5432"
     #   Set a volume for data and initial sql script

@@ -1,15 +1,15 @@
-package handlers
+package handler
 
 import (
 	"log"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"github.com/jacobsngoodwin/wordmem/auth/models"
+	"github.com/jacobsngoodwin/wordmem/auth/model"
 )
 
 // Signup does what it says!
-func Signup(c *gin.Context) {
+func (e *Env) Signup(c *gin.Context) {
 	uid, err := uuid.NewRandom()
 
 	if err != nil {
@@ -19,7 +19,7 @@ func Signup(c *gin.Context) {
 		})
 	}
 
-	user := &models.User{
+	user := &model.User{
 		UID:   uid,
 		Email: "bob@bob.com",
 		// Name:     "Jacob Goodwin III",

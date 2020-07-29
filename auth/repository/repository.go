@@ -3,7 +3,7 @@ package repository
 import (
 	"fmt"
 
-	"github.com/jacobsngoodwin/wordmem/auth/models"
+	"github.com/jacobsngoodwin/wordmem/auth/model"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq" // used for sqlx access to postgresql
 )
@@ -30,5 +30,5 @@ func Create(dataSourceName string) (*Repository, error) {
 
 // Repository defines required interfaces to construct valid repository
 type Repository struct {
-	models.UserRepository
+	model.UserRepository
 }

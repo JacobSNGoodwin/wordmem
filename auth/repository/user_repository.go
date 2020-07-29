@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"github.com/jacobsngoodwin/wordmem/auth/models"
+	"github.com/jacobsngoodwin/wordmem/auth/model"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -19,6 +19,6 @@ type UserRepository struct {
 }
 
 // CreateUser adds a user to table associated with UserRepository
-func (r *UserRepository) CreateUser(u *models.User) error {
+func (r *UserRepository) CreateUser(u *model.User) error {
 	panic("not implemented") // TODO: Implement
 }

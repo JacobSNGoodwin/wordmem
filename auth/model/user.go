@@ -9,12 +9,3 @@ type User struct {
 	Email    string    `db:"email" json:"email"`
 	Password string    `db:"password" json:"password,omitempty"`
 }
-
-// UserRepository defines the interface that must be met
-// by any database implementation of a UserRepository
-type UserRepository interface {
-	// User(id uuid.UUID) (User, error)
-	// Users() ([]User, error)
-	CreateUser(u *User) error
-	// UpdateUser(u *User) error
-}

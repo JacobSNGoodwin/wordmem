@@ -8,24 +8,13 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
-
-	"github.com/gin-gonic/gin"
-	"github.com/jacobsngoodwin/wordmem/auth/handler"
-	"github.com/jacobsngoodwin/wordmem/auth/repository"
 )
 
 func main() {
-	r := gin.Default()
+	log.Println("Connecting to PostgreSQL and Redis")
 
-	log.Println("Setting up data repository with postgres")
-	repo, err := repository.Create("host=localhost port=5432 user=postgres password=password dbname=postgres sslmode=disable")
-
-	if err != nil {
-		log.Fatal("Could not establish connection to postgres")
-	}
-
-	e := &handler.Env{repository: repo}
-	// r.POST("/signup", handler.Signup)
+	// setup router, handlers, and dep injection
+	r := initRouter()
 
 	log.Println("Starting server and listening on port 8080")
 
@@ -33,6 +22,7 @@ func main() {
 		Addr:    ":8080",
 		Handler: r,
 	}
+
 	// Graceful shutdown reference from gin's example:
 	// https://github.com/gin-gonic/examples/blob/master/graceful-shutdown/graceful-shutdown/server.go
 	// Initilize server in goroutine so we can gracefully shut down all connections

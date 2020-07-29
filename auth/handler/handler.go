@@ -1,8 +1,15 @@
 package handler
 
-import "github.com/jacobsngoodwin/wordmem/auth/repository"
+import "github.com/jacobsngoodwin/wordmem/auth/model"
 
 // Env is a struct used for injected the repository into the various route handler
 type Env struct {
-	repository *repository.Repository
+	UserService IUserService
+}
+
+// IUserService defines methods the handler expects to
+// interact with to perform CRUD operations on users
+// These methods will be called from route handlers
+type IUserService interface {
+	SignUp(user *model.User) error
 }

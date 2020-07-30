@@ -1,36 +1,32 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/jacobsngoodwin/wordmem/auth/service"
 
-	"github.com/go-redis/redis/v8"
 	"github.com/jacobsngoodwin/wordmem/auth/handler"
 	"github.com/jacobsngoodwin/wordmem/auth/repository"
 )
 
 // InjectionContainer used for injecting data sources
-type InjectionContainer struct{}
+type InjectionContainer struct {
+	handlerEnv *handler.Env
+}
 
 // Init uses the data sources create concrete implmentation of the repository and service layers
-func (ic *InjectionContainer) Init() *handler.Env {
+func (ic *InjectionContainer) Init(d *DataSources) error {
 	// TODO - Get params from config/env
-	log.Println("Injecting databases")
+	log.Println("Injecting data source")
 
-	repoOptions := &repository.Options{
-		SQLDataSourceName: "host=localhost port=5432 user=postgres password=password dbname=postgres sslmode=disable",
-		RedisOptions: &redis.Options{
-			Addr:     "localhost:6379",
-			Password: "",
-			DB:       0,
-		},
-	}
-
-	repo, err := repository.Create(repoOptions)
+	repo, err := repository.Create(&repository.Options{
+		DB:          d.DB,
+		RedisClient: d.RedisClient,
+	})
 
 	if err != nil {
-		log.Fatal("Could not initialize data sources (PostgreSQL and Redis)")
+		return fmt.Errorf("could not initialize data sources (PostgreSQL and Redis): %w", err)
 	}
 
 	// Create userService from concrete impl of repository
@@ -38,5 +34,7 @@ func (ic *InjectionContainer) Init() *handler.Env {
 		UserRepository: repo.UserRepository,
 	}
 
-	return &handler.Env{UserService: userService}
+	ic.handlerEnv = &handler.Env{UserService: userService}
+
+	return nil
 }

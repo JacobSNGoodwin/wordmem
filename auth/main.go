@@ -13,14 +13,27 @@ import (
 func main() {
 	log.Println("Connecting to PostgreSQL and Redis")
 
+	// setup datasources
+	ds := &DataSources{}
+	if err := ds.Init(); err != nil {
+		log.Fatalf("Unable to initialize data stores: %v\n", err)
+	}
+
+	// inject Data sources down through repository and service
+	ic := &InjectionContainer{}
+	if err := ic.Init(ds); err != nil {
+		log.Fatalf("Unable to initialize services via dependency injection: %v\n", err)
+	}
+
 	// setup router, handlers, and dep injection
-	r := initRouter()
+	r := Router{}
+	r.Init(ic)
 
 	log.Println("Starting server and listening on port 8080")
 
 	srv := &http.Server{
 		Addr:    ":8080",
-		Handler: r,
+		Handler: r.r,
 	}
 
 	// Graceful shutdown reference from gin's example:
@@ -29,7 +42,7 @@ func main() {
 
 	go func() {
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("Failed to initialize server: %s\n", err)
+			log.Fatalf("Failed to initialize server: %v\n", err)
 		}
 	}()
 
@@ -47,7 +60,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := srv.Shutdown(ctx); err != nil {
-		log.Fatal("Server forced to shutdown:", err)
+		log.Fatalf("Server forced to shutdown: %v\n", err)
 	}
 
 	log.Println("Server exiting")

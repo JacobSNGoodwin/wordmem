@@ -2,14 +2,20 @@ package main
 
 import "github.com/gin-gonic/gin"
 
-func initRouter() *gin.Engine {
-	// Injection of database to create concrete Service and Repository impls
+// Router holds a reference to a router with access to services
+// container in handler.Env
+type Router struct {
+	r *gin.Engine
+}
 
-	ic := InjectionContainer{}
-	handler := ic.Init()
+// Init sets up route controllers by providing them access to application services
+func (router *Router) Init(ic *InjectionContainer) {
+	// Injection of database to create concrete Service and Repository impls
+	handler := ic.handlerEnv
 
 	r := gin.Default()
+
 	r.POST("/signup", handler.Signup)
 
-	return r
+	router.r = r
 }

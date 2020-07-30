@@ -49,3 +49,15 @@ func (d *DataSources) Init() error {
 
 	return nil
 }
+
+// Close is a utility method to be used in graceful servcer shutdown
+func (d *DataSources) Close() error {
+	if err := d.DB.Close(); err != nil {
+		return fmt.Errorf("error closing Postgresql: %w", err)
+	}
+
+	if err := d.RedisClient.Close(); err != nil {
+		return fmt.Errorf("error closing Postgresql: %w", err)
+	}
+	return nil
+}

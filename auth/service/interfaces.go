@@ -8,5 +8,5 @@ import "github.com/jacobsngoodwin/wordmem/auth/model"
 // but I could not come up with a good verb name (best I could do was)
 // UserRepositoryInteractor
 type IUserRepository interface {
-	Create(u *model.User) error
+	Create(u *model.User) (*model.User, error)
 }

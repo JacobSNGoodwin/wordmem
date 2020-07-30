@@ -22,6 +22,13 @@ type UserRepository struct {
 }
 
 // Create reacher out to database SQLX api
-func (r *UserRepository) Create(u *model.User) error {
-	return nil
+func (r *UserRepository) Create(u *model.User) (*model.User, error) {
+	queryString := "INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING uid, name, email"
+
+	n := &model.User{}
+
+	if err := r.DB.Get(n, queryString, u.Name, u.Email, u.Password); err != nil {
+		return n, err
+	}
+	return n, nil
 }

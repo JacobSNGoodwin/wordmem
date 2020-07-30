@@ -1,8 +1,6 @@
 package service
 
 import (
-	"log"
-
 	"github.com/jacobsngoodwin/wordmem/auth/model"
 )
 
@@ -13,10 +11,6 @@ type UserService struct {
 }
 
 // SignUp creates a new user based on data in model.User
-func (s *UserService) SignUp(u *model.User) error {
-	if err := s.UserRepository.Create(u); err != nil {
-		log.Printf("Failed to create user: %v\n", u.UID)
-		return err
-	}
-	return nil
+func (s *UserService) SignUp(u *model.User) (*model.User, error) {
+	return s.UserRepository.Create(u)
 }

@@ -11,5 +11,5 @@ type Env struct {
 // interact with to perform CRUD operations on users
 // These methods will be called from route handlers
 type IUserService interface {
-	SignUp(user *model.User) error
+	SignUp(user *model.User) (*model.User, error)
 }

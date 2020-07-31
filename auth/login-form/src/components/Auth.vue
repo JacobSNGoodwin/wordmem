@@ -7,12 +7,12 @@
             <li @click="setIsLogin(true)" :class="{ 'is-active': isLogin }">
               <a>Login</a>
             </li>
-            <li @click="setIsLogin(false)" :class="{ 'is-active': !isLogin}">
+            <li @click="setIsLogin(false)" :class="{ 'is-active': !isLogin }">
               <a>Sign Up</a>
             </li>
           </ul>
         </div>
-        <h1 class="has-text-centered title is-2">Generic Auth Card</h1>
+        <h1 class="has-text-centered title is-2 mb-6">Not Too Evil, Inc.</h1>
         <Login :isLogin="isLogin" class="mt-4 mb-4" />
       </div>
     </div>

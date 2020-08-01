@@ -1,6 +1,8 @@
 package main
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+)
 
 // Router holds a reference to a router with access to services
 // container in handler.Env
@@ -14,6 +16,8 @@ func (router *Router) Init(ic *InjectionContainer) {
 	handler := ic.handlerEnv
 
 	r := gin.Default()
+
+	r.Static("/auth", "./login-form/dist/")
 
 	r.POST("/signup", handler.Signup)
 

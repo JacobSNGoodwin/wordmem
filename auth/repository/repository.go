@@ -1,33 +1,30 @@
 package repository
 
 import (
-	"fmt"
+	"github.com/go-redis/redis/v8"
 
-	"github.com/jacobsngoodwin/wordmem/auth/models"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq" // used for sqlx access to postgresql
 )
 
-// Create initializes and combines the various data resourses
-// with concrete implementations having db instance injected
-func Create(dataSourceName string) (*Repository, error) {
-	db, err := sqlx.Open("postgres", dataSourceName)
-	if err != nil {
-		return nil, fmt.Errorf("error opening db: %w", err)
-	}
-
-	// Verify database connection is working
-	if err := db.Ping(); err != nil {
-		return nil, fmt.Errorf("error connecting to db: %w", err)
-	}
-
-	return &Repository{
-		UserRepository: UserRepositoryInit(db),
-	}, nil
-
+// Repository combines the various repository entities
+// In this application we only have a UserRepository
+type Repository struct {
+	UserRepository *UserRepository
 }
 
-// Repository defines required interfaces to construct valid repository
-type Repository struct {
-	models.UserRepository
+// Create is a utility function for initializing a dababase
+// conenction. This is used for injecting an SQL (postgres)
+// connection into the application.
+func Create(options *Options) (*Repository, error) {
+	return &Repository{
+		UserRepository: UserRepositoryInit(options.DB, options.RedisClient),
+	}, nil
+}
+
+// Options a utility type for defining necessary parameters
+// to inject databases
+type Options struct {
+	DB          *sqlx.DB
+	RedisClient *redis.Client
 }

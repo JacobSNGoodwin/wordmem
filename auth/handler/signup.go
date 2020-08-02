@@ -30,8 +30,9 @@ func (e *Env) Signup(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Unknown Error"})
 		}
 
+		// vErr is serializable because it has struct tags!
 		vErr := error.NewFromValidationErrors(err.(validator.ValidationErrors))
-		c.JSON(http.StatusBadRequest, gin.H{"error": vErr.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": vErr})
 
 		return
 	}

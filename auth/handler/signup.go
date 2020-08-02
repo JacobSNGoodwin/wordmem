@@ -5,6 +5,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
+	"github.com/jacobsngoodwin/wordmem/auth/error"
 	"github.com/jacobsngoodwin/wordmem/auth/model"
 )
 
@@ -20,7 +22,17 @@ func (e *Env) Signup(c *gin.Context) {
 
 	// Bind incoming json to struct - Need to create custom validation error
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+
+		// this type check appears to be extra cautious as I could not
+		// find a case where this error was anything other than InvalidValidationError
+		// see https://godoc.org/github.com/go-playground/validator#InvalidValidationError
+		if _, ok := err.(*validator.InvalidValidationError); ok {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Unknown Error"})
+		}
+
+		vErr := error.NewFromValidationErrors(err.(validator.ValidationErrors))
+		c.JSON(http.StatusBadRequest, gin.H{"error": vErr.Error()})
+
 		return
 	}
 
@@ -28,6 +40,8 @@ func (e *Env) Signup(c *gin.Context) {
 		Email:    req.Email,
 		Password: req.Password,
 	})
+
+	// TODO - token magic
 
 	if err != nil {
 		log.Printf("Failed to sign up user: %v\n", err.Error())

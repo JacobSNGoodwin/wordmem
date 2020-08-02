@@ -2,23 +2,32 @@ package handler
 
 import (
 	"log"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jacobsngoodwin/wordmem/auth/model"
 )
 
+// signupReq is not exported
+type signupReq struct {
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required,gte=6,lte=30"`
+}
+
 // Signup does what it says!
 func (e *Env) Signup(c *gin.Context) {
-	// TODO - get email, password, and name from context (request body)
-	// Perform validation here before creating a user model (uuid handled by postgres)
+	var req signupReq
 
-	user := &model.User{
-		Email:    "bob@bob.com",
-		Name:     "Jacob Goodwin III",
-		Password: "blablabla",
+	// Bind incoming json to struct - Need to create custom validation error
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 
-	u, err := e.UserService.SignUp(user)
+	resp, err := e.UserService.SignUp(&model.User{
+		Email:    req.Email,
+		Password: req.Password,
+	})
 
 	if err != nil {
 		log.Printf("Failed to sign up user: %v\n", err.Error())
@@ -28,5 +37,5 @@ func (e *Env) Signup(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, u)
+	c.JSON(200, resp)
 }

@@ -6,6 +6,7 @@ import (
 
 	"github.com/jacobsngoodwin/wordmem/auth/errors"
 	"github.com/jacobsngoodwin/wordmem/auth/model"
+	"github.com/jacobsngoodwin/wordmem/auth/util"
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
 )
@@ -29,7 +30,14 @@ func (r *UserRepository) Create(u *model.User) (*model.User, error) {
 
 	n := &model.User{}
 
-	if err := r.DB.Get(n, queryString, u.Name, u.Email, u.Password); err != nil {
+	pw, err := util.HashPassword(u.Password)
+
+	if err != nil {
+		log.Printf("Unable to create password has for user: %v\n", u.Email)
+		return n, errors.NewUnknown(http.StatusInternalServerError)
+	}
+
+	if err := r.DB.Get(n, queryString, u.Name, u.Email, pw); err != nil {
 		// check unique constraint
 		if err, ok := err.(*pq.Error); ok && err.Code.Name() == "unique_violation" {
 			log.Printf("Could not create a user with email: %v. Reason: %v\n", u.Email, err.Code.Name())

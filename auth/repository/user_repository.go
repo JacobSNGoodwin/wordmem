@@ -4,7 +4,6 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/go-redis/redis/v8"
 	"github.com/jacobsngoodwin/wordmem/auth/errors"
 	"github.com/jacobsngoodwin/wordmem/auth/model"
 	"github.com/jmoiron/sqlx"
@@ -12,18 +11,16 @@ import (
 )
 
 // UserRepositoryInit intializes a UserRepository by injecting in a db ref
-func UserRepositoryInit(db *sqlx.DB, inmem *redis.Client) *UserRepository {
+func UserRepositoryInit(db *sqlx.DB) *UserRepository {
 	return &UserRepository{
-		DB:    db,
-		InMem: inmem,
+		DB: db,
 	}
 }
 
 // UserRepository is data/repository implementation
 // of service layer IUserRepository
 type UserRepository struct {
-	DB    *sqlx.DB
-	InMem *redis.Client
+	DB *sqlx.DB
 }
 
 // Create reacher out to database SQLX api

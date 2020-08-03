@@ -20,6 +20,8 @@ func (ic *InjectionContainer) Init(d *DataSources) error {
 	// TODO - Get params from config/env
 	log.Println("Injecting data source")
 
+	// This repository is a container for initiating the individual repositories
+	// It kinda service the purpose of making dep injection easier
 	repo, err := repository.Create(&repository.Options{
 		DB:          d.DB,
 		RedisClient: d.RedisClient,
@@ -29,12 +31,20 @@ func (ic *InjectionContainer) Init(d *DataSources) error {
 		return fmt.Errorf("could not initialize data sources (PostgreSQL and Redis): %w", err)
 	}
 
-	// Create userService from concrete impl of repository
+	// Create UserService from concrete impl of UserRepository
 	userService := &service.UserService{
 		UserRepository: repo.UserRepository,
 	}
 
-	ic.handlerEnv = &handler.Env{UserService: userService}
+	// Create a TokenService from concrete impl of TokenRepository
+	tokenService := &service.TokenService{
+		TokenRepository: repo.TokenRepository,
+	}
+
+	ic.handlerEnv = &handler.Env{
+		UserService:  userService,
+		TokenService: tokenService,
+	}
 
 	return nil
 }

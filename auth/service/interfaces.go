@@ -10,3 +10,9 @@ import "github.com/jacobsngoodwin/wordmem/auth/model"
 type IUserRepository interface {
 	Create(u *model.User) (*model.User, error)
 }
+
+// ITokenRepository defines methods it expects a repository
+// it interacts with to implement
+type ITokenRepository interface {
+	Create(u *model.User) error
+}

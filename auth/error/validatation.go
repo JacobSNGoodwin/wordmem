@@ -1,6 +1,8 @@
 package error
 
 import (
+	"fmt"
+
 	"github.com/go-playground/validator/v10"
 )
 
@@ -18,7 +20,7 @@ type invalidArgument struct {
 
 // Error required for error interface
 func (e *ValidationError) Error() string {
-	return "ValidationError"
+	return fmt.Sprintf("ValidationError. The following arguments and values are invalid: %+v\n", e.InvalidArgs)
 }
 
 // NewFromValidationErrors constructs a ValidationError by formatting

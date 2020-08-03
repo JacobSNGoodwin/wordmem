@@ -8,7 +8,7 @@ type TokenService struct {
 	TokenRepository ITokenRepository
 }
 
-// Create for creating new token set for a user
-func (s *TokenService) Create(user *model.User) error {
+// NewSetFromUser creates fresh id and refresh tokens for the current user
+func (s *TokenService) NewSetFromUser(user *model.User) error {
 	panic("not implemented") // TODO: Implement
 }

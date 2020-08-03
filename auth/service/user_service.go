@@ -13,4 +13,6 @@ type UserService struct {
 // SignUp creates a new user based on data in model.User
 func (s *UserService) SignUp(u *model.User) (*model.User, error) {
 	return s.UserRepository.Create(u)
+
+	// handle token creation here?
 }

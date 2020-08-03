@@ -1,7 +1,8 @@
-package error
+package errors
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -11,11 +12,7 @@ import (
 type ValidationError struct {
 	Type        string            `json:"type"`
 	InvalidArgs []invalidArgument `json:"invalidArgs"`
-}
-
-type invalidArgument struct {
-	Name  string `json:"name"`
-	Value string `json:"value"`
+	Status      int               `json:"status"`
 }
 
 // Error required for error interface
@@ -25,7 +22,7 @@ func (e *ValidationError) Error() string {
 
 // NewFromValidationErrors constructs a ValidationError by formatting
 // the properties of InvalidValidationError from the validator package
-func NewFromValidationErrors(vs validator.ValidationErrors) ValidationError {
+func NewFromValidationErrors(vs validator.ValidationErrors) *ValidationError {
 	var invalidArgs []invalidArgument
 
 	for _, err := range vs {
@@ -35,8 +32,9 @@ func NewFromValidationErrors(vs validator.ValidationErrors) ValidationError {
 		})
 	}
 
-	return ValidationError{
+	return &ValidationError{
 		Type:        "ValidationError",
 		InvalidArgs: invalidArgs,
+		Status:      http.StatusBadRequest,
 	}
 }

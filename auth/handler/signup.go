@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
-	"github.com/jacobsngoodwin/wordmem/auth/error"
+	"github.com/jacobsngoodwin/wordmem/auth/errors"
 	"github.com/jacobsngoodwin/wordmem/auth/model"
 )
 
@@ -20,7 +20,7 @@ type signupReq struct {
 func (e *Env) Signup(c *gin.Context) {
 	var req signupReq
 
-	// Bind incoming json to struct - Need to create custom validation error
+	// Bind incoming json to struct and check for validation errors
 	if err := c.ShouldBindJSON(&req); err != nil {
 
 		// this type check appears to be extra cautious as I could not
@@ -31,8 +31,8 @@ func (e *Env) Signup(c *gin.Context) {
 		}
 
 		// vErr is serializable because it has struct tags!
-		vErr := error.NewFromValidationErrors(err.(validator.ValidationErrors))
-		c.JSON(http.StatusBadRequest, gin.H{"error": vErr})
+		vErr := errors.NewFromValidationErrors(err.(validator.ValidationErrors))
+		c.JSON(vErr.Status, gin.H{"error": vErr})
 
 		return
 	}
@@ -42,15 +42,14 @@ func (e *Env) Signup(c *gin.Context) {
 		Password: req.Password,
 	})
 
-	// TODO - token magic
-
 	if err != nil {
+		//
 		log.Printf("Failed to sign up user: %v\n", err.Error())
-		c.JSON(409, gin.H{
-			"message": "Failed to sign up a new user",
+		c.JSON(http.StatusConflict, gin.H{
+			"error": err,
 		})
 		return
 	}
 
-	c.JSON(200, resp)
+	c.JSON(http.StatusCreated, resp)
 }

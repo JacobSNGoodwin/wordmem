@@ -1,9 +1,13 @@
 package repository
 
 import (
+	"log"
+
 	"github.com/go-redis/redis/v8"
+	"github.com/jacobsngoodwin/wordmem/auth/errors"
 	"github.com/jacobsngoodwin/wordmem/auth/model"
 	"github.com/jmoiron/sqlx"
+	"github.com/lib/pq"
 )
 
 // UserRepositoryInit intializes a UserRepository by injecting in a db ref
@@ -28,6 +32,13 @@ func (r *UserRepository) Create(u *model.User) (*model.User, error) {
 	n := &model.User{}
 
 	if err := r.DB.Get(n, queryString, u.Name, u.Email, u.Password); err != nil {
+		// check unique constraint
+		if err, ok := err.(*pq.Error); ok && err.Code.Name() == "unique_violation" {
+			log.Printf("Could not create a user with email: %v. Reason: %v\n", u.Email, err.Code.Name())
+			return n, errors.NewAlreadyExists("email", u.Email)
+		}
+
+		log.Printf("Could not create a user with email: %v. Reason: %v\n", u.Email, err)
 		return n, err
 	}
 	return n, nil

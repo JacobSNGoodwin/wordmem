@@ -2,6 +2,7 @@ package repository
 
 import (
 	"log"
+	"net/http"
 
 	"github.com/go-redis/redis/v8"
 	"github.com/jacobsngoodwin/wordmem/auth/errors"
@@ -39,7 +40,7 @@ func (r *UserRepository) Create(u *model.User) (*model.User, error) {
 		}
 
 		log.Printf("Could not create a user with email: %v. Reason: %v\n", u.Email, err)
-		return n, err
+		return n, errors.NewUnknown(http.StatusInternalServerError)
 	}
 	return n, nil
 }

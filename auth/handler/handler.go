@@ -18,6 +18,6 @@ type IUserService interface {
 // ITokenService defines methods handler expects to interact
 // with for storing and retrieving tokens
 type ITokenService interface {
-	NewSetFromUser(user *model.User) error
-	NewSetFromToken(refreshToken string) error
+	NewSetFromUser(user *model.User) (*model.TokenPair, error)
+	NewSetFromRefreshToken(refreshToken string) (*model.TokenPair, error)
 }

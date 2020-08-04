@@ -37,7 +37,7 @@ func (e *Env) Signup(c *gin.Context) {
 		return
 	}
 
-	resp, err := e.UserService.SignUp(&model.User{
+	u, err := e.UserService.SignUp(&model.User{
 		Email:    req.Email,
 		Password: req.Password,
 	})
@@ -51,5 +51,19 @@ func (e *Env) Signup(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, resp)
+	tokens, err := e.TokenService.NewSetFromUser(u)
+
+	if err != nil {
+		//
+		log.Printf("Failed to create tokens for user: %v\n", err.Error())
+		c.JSON(http.StatusConflict, gin.H{
+			"error": err,
+		})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{
+		"user":   u,
+		"tokens": tokens,
+	})
 }

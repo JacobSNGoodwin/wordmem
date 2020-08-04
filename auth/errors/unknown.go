@@ -18,7 +18,7 @@ func (e *UnknownError) Error() string {
 // NewUnknown creates an error with status code 409 and indicates the value that already exists
 func NewUnknown(status int) *UnknownError {
 	return &UnknownError{
-		Type:   "Unkown",
+		Type:   "Unknown",
 		Status: status,
 	}
 }

@@ -24,7 +24,7 @@ type UserRepository struct {
 	DB *sqlx.DB
 }
 
-// Create reacher out to database SQLX api
+// Create reaches out to database SQLX api
 func (r *UserRepository) Create(u *model.User) (*model.User, error) {
 	queryString := "INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING uid, name, email"
 

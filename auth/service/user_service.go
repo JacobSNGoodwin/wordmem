@@ -12,7 +12,7 @@ type UserService struct {
 
 // SignUp creates a new user based on data in model.User
 func (s *UserService) SignUp(u *model.User) (*model.User, error) {
+	// In this case, we have a one-to-one correspondence between service method "SignUp" and repository method "Create"
+	// This is not always the case, though I can understand why this looks redundant
 	return s.UserRepository.Create(u)
-
-	// handle token creation here?
 }

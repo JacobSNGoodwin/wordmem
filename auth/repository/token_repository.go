@@ -19,7 +19,8 @@ type TokenRepository struct {
 	Redis *redis.Client
 }
 
-// Create creates a token for users
-func (r *TokenRepository) Create(u *model.User) error {
+// GenerateRefreshToken stores a refresh tokeen in the data source (redis)
+// for the given user and returns the token
+func (r *TokenRepository) GenerateRefreshToken(u *model.User) (string, error) {
 	panic("not implemented") // TODO: Implement
 }

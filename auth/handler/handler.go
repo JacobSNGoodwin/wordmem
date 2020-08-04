@@ -19,4 +19,5 @@ type IUserService interface {
 // with for storing and retrieving tokens
 type ITokenService interface {
 	NewSetFromUser(user *model.User) error
+	NewSetFromToken(refreshToken string) error
 }

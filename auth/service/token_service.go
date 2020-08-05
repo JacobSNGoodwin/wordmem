@@ -2,39 +2,26 @@ package service
 
 import (
 	"crypto/rsa"
-	"io/ioutil"
 	"log"
 	"net/http"
-	"time"
 
-	"github.com/jacobsngoodwin/wordmem/auth/repository"
-
-	"github.com/dgrijalva/jwt-go"
-	"github.com/google/uuid"
 	"github.com/jacobsngoodwin/wordmem/auth/errors"
 	"github.com/jacobsngoodwin/wordmem/auth/model"
+	"github.com/jacobsngoodwin/wordmem/auth/util"
 )
 
 // TokenService used for injecting an implementation of ITokenRepository
 // for use in service methods
 type TokenService struct {
 	TokenRepository ITokenRepository
-	privKey         *rsa.PrivateKey
-	pubKey          *rsa.PublicKey
-}
-
-// TokenServiceConfig used for holding resources needed
-// for TokenService... duh!
-type TokenServiceConfig struct {
-	r       *repository.TokenRepository
-	privKey *rsa.PrivateKey
-	pubKey  *rsa.PublicKey
+	PrivKey         *rsa.PrivateKey
+	PubKey          *rsa.PublicKey
 }
 
 // NewSetFromUser creates fresh id and refresh tokens for the current user
 func (s *TokenService) NewSetFromUser(u *model.User) (*model.TokenPair, error) {
 	// No need to use a repository for idToken as it is unrelated to any data source
-	idToken, err := generateIDToken(u)
+	idToken, err := util.GenerateIDToken(u, s.PrivKey)
 
 	if err != nil {
 		log.Printf("Error generating idToken for uid: %v. Error: %v\n", u.UID, err.Error())
@@ -53,55 +40,4 @@ func (s *TokenService) NewSetFromUser(u *model.User) (*model.TokenPair, error) {
 // token so that it is rotated
 func (s *TokenService) NewSetFromRefreshToken(refreshToken string) (*model.TokenPair, error) {
 	panic("not implemented") // TODO: Implement
-}
-
-// myCustomClaims holds structure of jwt claims
-type myCustomClaims struct {
-	UID   uuid.UUID `json:"uid"`
-	Email string    `json:"email"`
-	Name  string    `json:"name"`
-	jwt.StandardClaims
-}
-
-func generateIDToken(u *model.User) (string, error) {
-	unixTime := time.Now().UnixNano() / 1000000 // time in ms
-	tokenExp := unixTime + 60*1000*15           // 15 minutes from current time
-	claims := myCustomClaims{
-		UID:   u.UID,
-		Name:  u.Name,
-		Email: u.Email,
-		StandardClaims: jwt.StandardClaims{
-			IssuedAt:  unixTime,
-			ExpiresAt: tokenExp,
-		},
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
-
-	// sign with private rs256 pem
-	// for info on generating keys
-	// go to https://cloud.google.com/iot/docs/how-tos/credentials/keys
-	// TODO: Store in env variable?
-	priv, err := ioutil.ReadFile("./rsa_private.pem")
-
-	if err != nil {
-		log.Println("Failed to read private key")
-		return "", err
-	}
-
-	rsaKey, err := jwt.ParseRSAPrivateKeyFromPEM(priv)
-
-	if err != nil {
-		log.Println("Failed to parse RSA key from file")
-		return "", err
-	}
-
-	ss, err := token.SignedString(rsaKey)
-
-	if err != nil {
-		log.Println("Failed to sign token string")
-		return "", err
-	}
-
-	return ss, nil
 }

@@ -54,6 +54,7 @@ type RefreshToken struct {
 
 type refreshTokenCustomClaims struct {
 	UID uuid.UUID `json:"uid"`
+	jwt.StandardClaims
 }
 
 // GenerateRefreshToken creates a refresh token
@@ -68,7 +69,7 @@ func GenerateRefreshToken(uid uuid.UUID, key string) (*RefreshToken, error) {
 		return nil, err
 	}
 
-	claims := idTokenCustomClaims{
+	claims := refreshTokenCustomClaims{
 		UID: uid,
 		StandardClaims: jwt.StandardClaims{
 			IssuedAt:  currentTime.Unix(),

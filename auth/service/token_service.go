@@ -16,6 +16,7 @@ type TokenService struct {
 	TokenRepository ITokenRepository
 	PrivKey         *rsa.PrivateKey
 	PubKey          *rsa.PublicKey
+	RefreshKey      string
 }
 
 // NewSetFromUser creates fresh id and refresh tokens for the current user

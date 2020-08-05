@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/jacobsngoodwin/wordmem/auth/service"
@@ -71,6 +72,7 @@ func (ic *InjectionContainer) Init(d *DataSources) error {
 		TokenRepository: repo.TokenRepository,
 		PrivKey:         privKey,
 		PubKey:          pubKey,
+		RefreshKey:      os.Getenv("REFRESH_SECRET"),
 	}
 
 	ic.handlerEnv = &handler.Env{

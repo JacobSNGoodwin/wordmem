@@ -8,9 +8,17 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	log.Println("Loading environment variables...")
+	err := godotenv.Load(".env.dev")
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	log.Println("Connecting to PostgreSQL and Redis")
 
 	// setup datasources

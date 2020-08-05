@@ -19,5 +19,4 @@ type IUserService interface {
 // with for storing and retrieving tokens
 type ITokenService interface {
 	NewSetFromUser(user *model.User) (*model.TokenPair, error)
-	NewSetFromRefreshToken(refreshToken string) (*model.TokenPair, error)
 }

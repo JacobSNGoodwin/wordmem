@@ -29,7 +29,6 @@ func (s *TokenService) NewSetFromUser(u *model.User) (*model.TokenPair, error) {
 		return nil, errors.NewUnknown(http.StatusInternalServerError)
 	}
 
-	// TODO: Generate refresh token
 	refreshToken, err := util.GenerateRefreshToken(u.UID, s.RefreshSecret)
 
 	if err != nil {
@@ -37,16 +36,13 @@ func (s *TokenService) NewSetFromUser(u *model.User) (*model.TokenPair, error) {
 		return nil, errors.NewUnknown(http.StatusInternalServerError)
 	}
 
-	// TODO: Store refresh token
+	if err := s.TokenRepository.SetRefreshToken(refreshToken.ID, refreshToken.ExpiresIn); err != nil {
+		log.Printf("Error storing tokenID for uid: %v. Error: %v\n", u.UID, err.Error())
+		return nil, errors.NewUnknown(http.StatusInternalServerError)
+	}
 
 	return &model.TokenPair{
 		IDToken:      idToken,
 		RefreshToken: refreshToken.SS,
 	}, nil
-}
-
-// NewSetFromRefreshToken returns a new id token and replaces the existing refresh
-// token so that it is rotated
-func (s *TokenService) NewSetFromRefreshToken(refreshToken string) (*model.TokenPair, error) {
-	panic("not implemented") // TODO: Implement
 }

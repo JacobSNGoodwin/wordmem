@@ -1,8 +1,11 @@
 package repository
 
 import (
+	"context"
+	"fmt"
+	"time"
+
 	"github.com/go-redis/redis/v8"
-	"github.com/jacobsngoodwin/wordmem/auth/model"
 )
 
 // TokenRepository is data/repository implementation
@@ -11,14 +14,11 @@ type TokenRepository struct {
 	Redis *redis.Client
 }
 
-// SetRefreshToken stores a refresh tokeen in the data source (redis)
-// for the given user and returns the token
-func (r *TokenRepository) SetRefreshToken(u *model.User) (string, error) {
-	panic("not implemented") // TODO: Implement
-}
-
-// GetRefreshToken stores a refresh tokeen in the data source (redis)
-// for the given user and returns the token
-func (r *TokenRepository) GetRefreshToken(tokenID string) (string, error) {
-	panic("not implemented") // TODO: Implement
+// SetRefreshToken stores a refresh token with an expiry time
+func (r *TokenRepository) SetRefreshToken(tokenID string, expiresIn time.Duration) error {
+	// Should we create a context and add timeout?
+	if err := r.Redis.Set(context.Background(), tokenID, 0, expiresIn).Err(); err != nil {
+		return fmt.Errorf("Could not add refresh token to redis %w", err)
+	}
+	return nil
 }

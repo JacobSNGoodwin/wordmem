@@ -20,7 +20,6 @@ type InjectionContainer struct {
 
 // Init uses the data sources create concrete implmentation of the repository and service layers
 func (ic *InjectionContainer) Init(d *DataSources) error {
-	// TODO - Get params from config/env
 	log.Println("Injecting data source")
 
 	// This repository is a container for initiating the individual repositories

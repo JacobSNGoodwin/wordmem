@@ -47,8 +47,9 @@ func GenerateIDToken(u *model.User, key *rsa.PrivateKey) (string, error) {
 // RefreshToken holds the actual signed jwt string along with the ID
 // We return the id so it can be used without reparsing the JWT from signed string
 type RefreshToken struct {
-	SS string
-	ID string
+	SS        string
+	ID        string
+	ExpiresIn time.Duration
 }
 
 type refreshTokenCustomClaims struct {
@@ -58,9 +59,9 @@ type refreshTokenCustomClaims struct {
 // GenerateRefreshToken creates a refresh token
 // The refresh token stores only the user's ID, a string
 func GenerateRefreshToken(uid uuid.UUID, key string) (*RefreshToken, error) {
-	unixTime := time.Now().Unix()
-	tokenExp := unixTime + 3600*24*3 // 3 days
-	tokenID, err := uuid.NewRandom() // v4 uuid in the googlyton uuid lib
+	currentTime := time.Now()
+	tokenExp := currentTime.AddDate(0, 0, 3) // 3 days
+	tokenID, err := uuid.NewRandom()         // v4 uuid in the googlyton uuid lib
 
 	if err != nil {
 		log.Println("Failed to generate refresh token ID")
@@ -70,8 +71,8 @@ func GenerateRefreshToken(uid uuid.UUID, key string) (*RefreshToken, error) {
 	claims := idTokenCustomClaims{
 		UID: uid,
 		StandardClaims: jwt.StandardClaims{
-			IssuedAt:  unixTime,
-			ExpiresAt: tokenExp,
+			IssuedAt:  currentTime.Unix(),
+			ExpiresAt: tokenExp.Unix(),
 			Id:        tokenID.String(),
 		},
 	}
@@ -85,9 +86,8 @@ func GenerateRefreshToken(uid uuid.UUID, key string) (*RefreshToken, error) {
 	}
 
 	return &RefreshToken{
-		SS: ss,
-		ID: tokenID.String(),
+		SS:        ss,
+		ID:        tokenID.String(),
+		ExpiresIn: tokenExp.Sub(currentTime),
 	}, nil
 }
-
-// TODO: verify tokens maybe?

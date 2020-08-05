@@ -19,8 +19,12 @@ type Repository struct {
 // connection into the application.
 func Create(options *Options) (*Repository, error) {
 	return &Repository{
-		UserRepository:  UserRepositoryInit(options.DB),
-		TokenRepository: TokenRepositoryInit(options.RedisClient),
+		UserRepository: &UserRepository{
+			DB: options.DB,
+		},
+		TokenRepository: &TokenRepository{
+			Redis: options.RedisClient,
+		},
 	}, nil
 }
 

@@ -1,10 +1,13 @@
 package service
 
 import (
+	"crypto/rsa"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/jacobsngoodwin/wordmem/auth/repository"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/google/uuid"
@@ -16,6 +19,16 @@ import (
 // for use in service methods
 type TokenService struct {
 	TokenRepository ITokenRepository
+	privKey         *rsa.PrivateKey
+	pubKey          *rsa.PublicKey
+}
+
+// TokenServiceConfig used for holding resources needed
+// for TokenService... duh!
+type TokenServiceConfig struct {
+	r       *repository.TokenRepository
+	privKey *rsa.PrivateKey
+	pubKey  *rsa.PublicKey
 }
 
 // NewSetFromUser creates fresh id and refresh tokens for the current user

@@ -5,14 +5,6 @@ import (
 	"github.com/jacobsngoodwin/wordmem/auth/model"
 )
 
-// TokenRepositoryInit creates a concrete implemetation
-// of TokenRepository by inject the required redis data source
-func TokenRepositoryInit(r *redis.Client) *TokenRepository {
-	return &TokenRepository{
-		Redis: r,
-	}
-}
-
 // TokenRepository is data/repository implementation
 // of service layer ITokenRepository
 type TokenRepository struct {

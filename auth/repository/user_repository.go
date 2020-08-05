@@ -11,13 +11,6 @@ import (
 	"github.com/lib/pq"
 )
 
-// UserRepositoryInit intializes a UserRepository by injecting in a db ref
-func UserRepositoryInit(db *sqlx.DB) *UserRepository {
-	return &UserRepository{
-		DB: db,
-	}
-}
-
 // UserRepository is data/repository implementation
 // of service layer IUserRepository
 type UserRepository struct {

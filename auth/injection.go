@@ -37,6 +37,7 @@ func (ic *InjectionContainer) Init(d *DataSources) error {
 	}
 
 	// Create a TokenService from concrete impl of TokenRepository
+	// This requires reading public and private RS256 keys at startup (ie, here)
 	tokenService := &service.TokenService{
 		TokenRepository: repo.TokenRepository,
 	}

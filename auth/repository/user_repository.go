@@ -19,26 +19,36 @@ type UserRepository struct {
 
 // Create reaches out to database SQLX api
 func (r *UserRepository) Create(u *model.User) (*model.User, error) {
-	queryString := "INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING uid, name, email"
+	query := "INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING uid, name, email"
 
-	n := &model.User{}
+	newU := &model.User{}
 
 	pw, err := util.HashPassword(u.Password)
 
 	if err != nil {
 		log.Printf("Unable to create password has for user: %v\n", u.Email)
-		return n, errors.NewUnknown(http.StatusInternalServerError)
+		return newU, errors.NewUnknown(http.StatusInternalServerError)
 	}
 
-	if err := r.DB.Get(n, queryString, u.Name, u.Email, pw); err != nil {
+	if err := r.DB.Get(newU, query, u.Name, u.Email, pw); err != nil {
 		// check unique constraint
 		if err, ok := err.(*pq.Error); ok && err.Code.Name() == "unique_violation" {
 			log.Printf("Could not create a user with email: %v. Reason: %v\n", u.Email, err.Code.Name())
-			return n, errors.NewAlreadyExists("email", u.Email)
+			return newU, errors.NewAlreadyExists("email", u.Email)
 		}
 
 		log.Printf("Could not create a user with email: %v. Reason: %v\n", u.Email, err)
-		return n, errors.NewUnknown(http.StatusInternalServerError)
+		return newU, errors.NewUnknown(http.StatusInternalServerError)
 	}
-	return n, nil
+	return newU, nil
+}
+
+// Delete removes a user based on their uid
+func (r *UserRepository) Delete(u *model.User) error {
+	query := "DELETE FROM users WHERE uid=$1"
+	_, err := r.DB.Exec(query, u.UID)
+	if err != nil {
+		return err
+	}
+	return nil
 }

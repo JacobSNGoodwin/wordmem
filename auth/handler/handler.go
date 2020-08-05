@@ -13,6 +13,7 @@ type Env struct {
 // These methods will be called from route handlers
 type IUserService interface {
 	SignUp(user *model.User) (*model.User, error)
+	Remove(user *model.User) error
 }
 
 // ITokenService defines methods handler expects to interact

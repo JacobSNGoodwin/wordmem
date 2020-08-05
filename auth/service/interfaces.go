@@ -13,6 +13,7 @@ import (
 // UserRepositoryInteractor
 type IUserRepository interface {
 	Create(u *model.User) (*model.User, error)
+	Delete(u *model.User) error
 }
 
 // ITokenRepository defines methods it expects a repository

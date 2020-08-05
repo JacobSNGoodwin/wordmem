@@ -11,8 +11,14 @@ type TokenRepository struct {
 	Redis *redis.Client
 }
 
-// GenerateRefreshToken stores a refresh tokeen in the data source (redis)
+// SetRefreshToken stores a refresh tokeen in the data source (redis)
 // for the given user and returns the token
-func (r *TokenRepository) GenerateRefreshToken(u *model.User) (string, error) {
+func (r *TokenRepository) SetRefreshToken(u *model.User) (string, error) {
+	panic("not implemented") // TODO: Implement
+}
+
+// GetRefreshToken stores a refresh tokeen in the data source (redis)
+// for the given user and returns the token
+func (r *TokenRepository) GetRefreshToken(tokenID string) (string, error) {
 	panic("not implemented") // TODO: Implement
 }

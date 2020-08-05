@@ -14,5 +14,6 @@ type IUserRepository interface {
 // ITokenRepository defines methods it expects a repository
 // it interacts with to implement
 type ITokenRepository interface {
-	GenerateRefreshToken(u *model.User) (string, error)
+	SetRefreshToken(u *model.User) (string, error)
+	GetRefreshToken(tokenID string) (string, error)
 }

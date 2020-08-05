@@ -72,7 +72,7 @@ func (ic *InjectionContainer) Init(d *DataSources) error {
 		TokenRepository: repo.TokenRepository,
 		PrivKey:         privKey,
 		PubKey:          pubKey,
-		RefreshKey:      os.Getenv("REFRESH_SECRET"),
+		RefreshSecret:   os.Getenv("REFRESH_SECRET"),
 	}
 
 	ic.handlerEnv = &handler.Env{

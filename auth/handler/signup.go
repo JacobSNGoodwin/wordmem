@@ -54,7 +54,8 @@ func (e *Env) Signup(c *gin.Context) {
 	tokens, err := e.TokenService.NewSetFromUser(u)
 
 	if err != nil {
-		//
+		// TODO: Delete user from db if fail
+		// Note: we could also create tokens first, and generate uuid client side
 		log.Printf("Failed to create tokens for user: %v\n", err.Error())
 		c.JSON(http.StatusConflict, gin.H{
 			"error": err,

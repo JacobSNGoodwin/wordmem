@@ -16,7 +16,7 @@ type TokenService struct {
 	TokenRepository ITokenRepository
 	PrivKey         *rsa.PrivateKey
 	PubKey          *rsa.PublicKey
-	RefreshKey      string
+	RefreshSecret   string
 }
 
 // NewSetFromUser creates fresh id and refresh tokens for the current user
@@ -30,10 +30,18 @@ func (s *TokenService) NewSetFromUser(u *model.User) (*model.TokenPair, error) {
 	}
 
 	// TODO: Generate refresh token
+	refreshToken, err := util.GenerateRefreshToken(u.UID, s.RefreshSecret)
+
+	if err != nil {
+		log.Printf("Error generating refreshToken for uid: %v. Error: %v\n", u.UID, err.Error())
+		return nil, errors.NewUnknown(http.StatusInternalServerError)
+	}
+
+	// TODO: Store refresh token
 
 	return &model.TokenPair{
 		IDToken:      idToken,
-		RefreshToken: "Dummy",
+		RefreshToken: refreshToken.SS,
 	}, nil
 }
 

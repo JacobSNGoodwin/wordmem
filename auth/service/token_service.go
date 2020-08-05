@@ -36,7 +36,7 @@ func (s *TokenService) NewSetFromUser(u *model.User) (*model.TokenPair, error) {
 		return nil, errors.NewUnknown(http.StatusInternalServerError)
 	}
 
-	if err := s.TokenRepository.SetRefreshToken(refreshToken.ID, refreshToken.ExpiresIn); err != nil {
+	if err := s.TokenRepository.SetRefreshToken(u.UID.String(), refreshToken.ID, refreshToken.ExpiresIn); err != nil {
 		log.Printf("Error storing tokenID for uid: %v. Error: %v\n", u.UID, err.Error())
 		return nil, errors.NewUnknown(http.StatusInternalServerError)
 	}

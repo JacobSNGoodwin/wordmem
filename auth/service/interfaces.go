@@ -19,5 +19,5 @@ type IUserRepository interface {
 // ITokenRepository defines methods it expects a repository
 // it interacts with to implement
 type ITokenRepository interface {
-	SetRefreshToken(tokenID string, expiresIn time.Duration) error
+	SetRefreshToken(userID, tokenID string, expiresIn time.Duration) error
 }

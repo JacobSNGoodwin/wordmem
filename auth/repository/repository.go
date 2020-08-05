@@ -10,7 +10,8 @@ import (
 // Repository combines the various repository entities
 // In this application we only have a UserRepository
 type Repository struct {
-	UserRepository *UserRepository
+	UserRepository  *UserRepository
+	TokenRepository *TokenRepository
 }
 
 // Create is a utility function for initializing a dababase
@@ -18,7 +19,12 @@ type Repository struct {
 // connection into the application.
 func Create(options *Options) (*Repository, error) {
 	return &Repository{
-		UserRepository: UserRepositoryInit(options.DB, options.RedisClient),
+		UserRepository: &UserRepository{
+			DB: options.DB,
+		},
+		TokenRepository: &TokenRepository{
+			Redis: options.RedisClient,
+		},
 	}, nil
 }
 

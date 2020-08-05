@@ -1,2 +1,5 @@
 redis-data
 postgres-data
+auth/rsa_private.pem
+auth/rsa_public.pem
+auth/.env.dev

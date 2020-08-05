@@ -10,3 +10,6 @@ migrate-up:
 
 migrate-down:
 	migrate -source file://migration -database postgres://postgres:password@localhost/postgres?sslmode=disable down
+
+migrate-force:
+	migrate -source file://migration -database postgres://postgres:password@localhost/postgres?sslmode=disable force $(VERSION)

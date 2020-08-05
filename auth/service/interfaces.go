@@ -1,6 +1,10 @@
 package service
 
-import "github.com/jacobsngoodwin/wordmem/auth/model"
+import (
+	"time"
+
+	"github.com/jacobsngoodwin/wordmem/auth/model"
+)
 
 // IUserRepository defines methods the service expects
 // any repository it interacts with to implement
@@ -9,4 +13,11 @@ import "github.com/jacobsngoodwin/wordmem/auth/model"
 // UserRepositoryInteractor
 type IUserRepository interface {
 	Create(u *model.User) (*model.User, error)
+	Delete(u *model.User) error
+}
+
+// ITokenRepository defines methods it expects a repository
+// it interacts with to implement
+type ITokenRepository interface {
+	SetRefreshToken(tokenID string, expiresIn time.Duration) error
 }

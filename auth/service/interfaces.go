@@ -3,6 +3,7 @@ package service
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/jacobsngoodwin/wordmem/auth/model"
 )
 
@@ -13,7 +14,9 @@ import (
 // UserRepositoryInteractor
 type IUserRepository interface {
 	Create(u *model.User) (*model.User, error)
-	Delete(u *model.User) error
+	Delete(uid uuid.UUID) error
+	FindByID(uid uuid.UUID) (*model.User, error)
+	FindByEmail(email string) (*model.User, error)
 }
 
 // ITokenRepository defines methods it expects a repository

@@ -19,8 +19,8 @@ type TokenService struct {
 	RefreshSecret   string
 }
 
-// NewSetFromUser creates fresh id and refresh tokens for the current user
-func (s *TokenService) NewSetFromUser(u *model.User) (*model.TokenPair, error) {
+// NewPairFromUser creates fresh id and refresh tokens for the current user
+func (s *TokenService) NewPairFromUser(u *model.User) (*model.TokenPair, error) {
 	// No need to use a repository for idToken as it is unrelated to any data source
 	idToken, err := util.GenerateIDToken(u, s.PrivKey)
 

@@ -9,15 +9,15 @@ import (
 	"github.com/jacobsngoodwin/wordmem/auth/errors"
 )
 
-// signupReq is not exported
-type signupReq struct {
+// signinReq is not exported
+type signinReq struct {
 	Email    string `json:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required,gte=6,lte=30"`
 }
 
-// Signup does what it says!
-func (e *Env) Signup(c *gin.Context) {
-	var req signupReq
+// Signin used to authenticate extant user
+func (e *Env) Signin(c *gin.Context) {
+	var req signinReq
 
 	// Bind incoming json to struct and check for validation errors
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -36,11 +36,11 @@ func (e *Env) Signup(c *gin.Context) {
 		return
 	}
 
-	u, err := e.UserService.SignUp(req.Email, req.Password)
+	u, err := e.UserService.SignIn(req.Email, req.Password)
 
 	if err != nil {
 		//
-		log.Printf("Failed to sign up user: %v\n", err.Error())
+		log.Printf("Failed to sign in user: %v\n", err.Error())
 		c.JSON(http.StatusConflict, gin.H{
 			"error": err,
 		})

@@ -7,7 +7,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"github.com/jacobsngoodwin/wordmem/auth/errors"
-	"github.com/jacobsngoodwin/wordmem/auth/model"
 )
 
 // signupReq is not exported
@@ -37,10 +36,7 @@ func (e *Env) Signup(c *gin.Context) {
 		return
 	}
 
-	u, err := e.UserService.SignUp(&model.User{
-		Email:    req.Email,
-		Password: req.Password,
-	})
+	u, err := e.UserService.SignUp(req.Email, req.Password)
 
 	if err != nil {
 		//
@@ -51,7 +47,7 @@ func (e *Env) Signup(c *gin.Context) {
 		return
 	}
 
-	tokens, err := e.TokenService.NewSetFromUser(u)
+	tokens, err := e.TokenService.NewPairFromUser(u)
 
 	if err != nil {
 		log.Printf("Failed to create tokens for user: %v\n", err.Error())

@@ -1,6 +1,9 @@
 package handler
 
-import "github.com/jacobsngoodwin/wordmem/auth/model"
+import (
+	"github.com/google/uuid"
+	"github.com/jacobsngoodwin/wordmem/auth/model"
+)
 
 // Env is a struct used for injected the repository into the various route handler
 type Env struct {
@@ -12,12 +15,13 @@ type Env struct {
 // interact with to perform CRUD operations on users
 // These methods will be called from route handlers
 type IUserService interface {
-	SignUp(user *model.User) (*model.User, error)
-	Remove(user *model.User) error
+	SignUp(email string, password string) (*model.User, error)
+	SignIn(email string, password string) (*model.User, error)
+	Remove(uid uuid.UUID) error
 }
 
 // ITokenService defines methods handler expects to interact
 // with for storing and retrieving tokens
 type ITokenService interface {
-	NewSetFromUser(user *model.User) (*model.TokenPair, error)
+	NewPairFromUser(user *model.User) (*model.TokenPair, error)
 }

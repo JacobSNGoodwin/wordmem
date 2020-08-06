@@ -1,11 +1,13 @@
 package service
 
 import (
-	"log"
+	"net/http"
 
 	"github.com/google/uuid"
 
+	"github.com/jacobsngoodwin/wordmem/auth/errors"
 	"github.com/jacobsngoodwin/wordmem/auth/model"
+	"github.com/jacobsngoodwin/wordmem/auth/util"
 )
 
 // UserService acts as a struct for injecting an implementation of UserRepository
@@ -34,7 +36,16 @@ func (s *UserService) SignIn(email string, password string) (*model.User, error)
 	}
 
 	// verify password
-	log.Printf("user retrieved: %v\n", u)
+	match, err := util.ComparePasswords(u.Password, password)
+
+	if err != nil {
+		return nil, errors.NewUnknown(http.StatusInternalServerError)
+	}
+
+	if !match {
+		return nil, errors.NewUnauthorized("Invalid email and password combination")
+	}
+
 	return u, nil
 }
 

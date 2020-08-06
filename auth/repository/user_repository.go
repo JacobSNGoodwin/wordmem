@@ -58,7 +58,7 @@ func (r *UserRepository) Delete(uid uuid.UUID) error {
 func (r *UserRepository) FindByID(uid uuid.UUID) (*model.User, error) {
 	user := &model.User{}
 
-	query := "SELEECT * FROM user WHERE uid=$1"
+	query := "SELECT * FROM users WHERE uid=$1"
 
 	if err := r.DB.Get(user, query, uid); err != nil {
 		return user, errors.NewNotFound("uid", uid.String())
@@ -71,7 +71,7 @@ func (r *UserRepository) FindByID(uid uuid.UUID) (*model.User, error) {
 func (r *UserRepository) FindByEmail(email string) (*model.User, error) {
 	user := &model.User{}
 
-	query := "SELEECT * FROM user WHERE email=$1"
+	query := "SELECT * FROM users WHERE email=$1"
 
 	if err := r.DB.Get(user, query, email); err != nil {
 		return user, errors.NewNotFound("email", email)

@@ -20,6 +20,7 @@ func (router *Router) Init(ic *InjectionContainer) {
 	r.Static("/auth", "./login-form/dist/")
 
 	r.POST("/signup", handler.Signup)
+	r.POST("/signin", handler.Signin)
 
 	router.r = r
 }

@@ -32,8 +32,8 @@ func (e *Env) Tokens(c *gin.Context) {
 		return
 	}
 
-	// verify token and get userID
-	uid, err := e.TokenService.UserIDFromRefreshToken(req.RefreshToken)
+	// verify token - get token claims if valid
+	refreshClaims, err := e.TokenService.ValidateRefreshToken(req.RefreshToken)
 
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
@@ -42,7 +42,7 @@ func (e *Env) Tokens(c *gin.Context) {
 	}
 
 	// get user from UID
-	u, err := e.UserService.Get(uid)
+	u, err := e.UserService.Get(refreshClaims.UID)
 
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{

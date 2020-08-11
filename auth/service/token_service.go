@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/google/uuid"
 	"github.com/jacobsngoodwin/wordmem/auth/errors"
 	"github.com/jacobsngoodwin/wordmem/auth/model"
 	"github.com/jacobsngoodwin/wordmem/auth/util"
@@ -21,6 +20,8 @@ type TokenService struct {
 }
 
 // NewPairFromUser creates fresh id and refresh tokens for the current user
+// If a previous token is included, the previous token is removed from
+// the tokens repository
 func (s *TokenService) NewPairFromUser(u *model.User) (*model.TokenPair, error) {
 	// No need to use a repository for idToken as it is unrelated to any data source
 	idToken, err := util.GenerateIDToken(u, s.PrivKey)
@@ -48,18 +49,17 @@ func (s *TokenService) NewPairFromUser(u *model.User) (*model.TokenPair, error) 
 	}, nil
 }
 
-// UserIDFromRefreshToken validates the incoming token
-// returning the user ID from the claims so that that
-// the user can be fetched
-func (s *TokenService) UserIDFromRefreshToken(refreshTokenString string) (uuid.UUID, error) {
+// ValidateRefreshToken validates the refresh token jwt string
+// It returns the claims on the token if is valid
+func (s *TokenService) ValidateRefreshToken(refreshTokenString string) (*util.RefreshTokenCustomClaims, error) {
 	// Validate the refresh toksn
 	token, err := util.ValidateRefreshToken(refreshTokenString, s.RefreshSecret)
 
 	// We'll just return unauthorized error in all instances of failing to verify user
 	if err != nil {
 		log.Printf("Unable to validate or parse refreshToken for token string: %s\n%v\n", refreshTokenString, err)
-		return uuid.Nil, errors.NewUnauthorized("Unable to verify user from refresh token")
+		return nil, errors.NewUnauthorized("Unable to verify user from refresh token")
 	}
 
-	return token.UID, nil
+	return token, nil
 }

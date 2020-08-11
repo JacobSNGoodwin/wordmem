@@ -3,6 +3,7 @@ package handler
 import (
 	"github.com/google/uuid"
 	"github.com/jacobsngoodwin/wordmem/auth/model"
+	"github.com/jacobsngoodwin/wordmem/auth/util"
 )
 
 // Env is a struct used for injected the repository into the various route handler
@@ -24,5 +25,5 @@ type IUserService interface {
 // with for storing and retrieving tokens
 type ITokenService interface {
 	NewPairFromUser(user *model.User) (*model.TokenPair, error)
-	UserIDFromRefreshToken(tokenString string) (uuid.UUID, error)
+	ValidateRefreshToken(tokenString string) (*util.RefreshTokenCustomClaims, error)
 }

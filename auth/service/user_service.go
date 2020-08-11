@@ -46,6 +46,7 @@ func (s *UserService) SignIn(email string, password string) (*model.User, error)
 		return nil, errors.NewUnauthorized("Invalid email and password combination")
 	}
 
+	u.Password = "" // clear password
 	return u, nil
 }
 

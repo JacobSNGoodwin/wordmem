@@ -22,7 +22,7 @@ type TokenService struct {
 // NewPairFromUser creates fresh id and refresh tokens for the current user
 // If a previous token is included, the previous token is removed from
 // the tokens repository
-func (s *TokenService) NewPairFromUser(u *model.User) (*model.TokenPair, error) {
+func (s *TokenService) NewPairFromUser(u *model.User, prevTokenID string) (*model.TokenPair, error) {
 	// No need to use a repository for idToken as it is unrelated to any data source
 	idToken, err := util.GenerateIDToken(u, s.PrivKey)
 
@@ -38,9 +38,17 @@ func (s *TokenService) NewPairFromUser(u *model.User) (*model.TokenPair, error) 
 		return nil, errors.NewUnknown(http.StatusInternalServerError)
 	}
 
+	// set freshly minted refresh token to valid list
 	if err := s.TokenRepository.SetRefreshToken(u.UID.String(), refreshToken.ID, refreshToken.ExpiresIn); err != nil {
 		log.Printf("Error storing tokenID for uid: %v. Error: %v\n", u.UID, err.Error())
 		return nil, errors.NewUnknown(http.StatusInternalServerError)
+	}
+
+	// delete old refresh token
+	if prevTokenID != "" {
+		if err := s.TokenRepository.DeleteRefreshToken(u.UID.String(), prevTokenID); err != nil {
+			log.Printf("Could not delete previous refreshToken for uid: %v, tokenID: %v\n", u.UID.String(), prevTokenID)
+		}
 	}
 
 	return &model.TokenPair{

@@ -47,11 +47,10 @@ func (e *Env) Signin(c *gin.Context) {
 		return
 	}
 
-	tokens, err := e.TokenService.NewPairFromUser(u)
+	tokens, err := e.TokenService.NewPairFromUser(u, "")
 
 	if err != nil {
 		log.Printf("Failed to create tokens for user: %v\n", err.Error())
-		log.Printf("Rolling back user creation for user: %v\n", u)
 
 		c.JSON(http.StatusConflict, gin.H{
 			"error": err,

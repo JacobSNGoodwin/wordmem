@@ -51,9 +51,18 @@ func (e *Env) Tokens(c *gin.Context) {
 	}
 
 	// create new tokens
+	tokens, err := e.TokenService.NewPairFromUser(u, refreshClaims.Id)
 
-	// get a newTokenPair
+	if err != nil {
+		log.Printf("Failed to create tokens for user: %v\n", err.Error())
+
+		c.JSON(http.StatusConflict, gin.H{
+			"error": err,
+		})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
-		"user": u,
+		"tokens": tokens,
 	})
 }

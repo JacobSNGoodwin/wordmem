@@ -27,25 +27,20 @@ func (r *TokenRepository) SetRefreshToken(userID string, tokenID string, expires
 	// for deleting multiple keys
 	key := fmt.Sprintf("%s:%s", userID, tokenID)
 	if err := r.Redis.Set(context.Background(), key, 0, expiresIn).Err(); err != nil {
-		log.Printf("Could not SET refresh token to redis for userID/tokenID: %s/%s: %v", userID, tokenID, err)
+		log.Printf("Could not SET refresh token to redis for userID/tokenID: %s/%s: %v\n", userID, tokenID, err)
 		return errors.NewUnknown(http.StatusInternalServerError)
 	}
 	return nil
 }
 
-// ReplaceRefreshToken generarates a new refresh token
-// after validating the previous token
-// Note that there could be some debate about whether taking a step to
-// delete an old redis key with a TTL is useful. I will do this to
-// prevent old Refresh tokens from floating around
-func (r *TokenRepository) ReplaceRefreshToken(userID string, prevTokenID string, newTokenID string) (string, error) {
-	key := fmt.Sprintf("%s:%s", userID, prevTokenID)
-	refreshToken, err := r.Redis.Get(context.Background(), key).Result()
-
-	if err != nil {
-		log.Printf("Could not GET refresh token to redis for userID/tokenID: %s/%s: %v", userID, prevTokenID, err)
-		return "", errors.NewUnknown(http.StatusInternalServerError)
+// DeleteRefreshToken used to delete old  refresh tokens
+// Services my access this to revolve tokens
+func (r *TokenRepository) DeleteRefreshToken(userID string, tokenID string) error {
+	key := fmt.Sprintf("%s:%s", userID, tokenID)
+	if err := r.Redis.Del(context.Background(), key).Err(); err != nil {
+		log.Printf("Could not delete refresh token to redis for userID/tokenID: %s/%s: %v\n", userID, tokenID, err)
+		return errors.NewUnknown(http.StatusInternalServerError)
 	}
 
-	return refreshToken, nil
+	return nil
 }

@@ -75,6 +75,7 @@ func (r *UserRepository) FindByEmail(email string) (*model.User, error) {
 	query := "SELECT * FROM users WHERE email=$1"
 
 	if err := r.DB.Get(user, query, email); err != nil {
+		log.Printf("Unable to get user with email address: %v. Err: %v\n", email, err)
 		return user, errors.NewNotFound("email", email)
 	}
 

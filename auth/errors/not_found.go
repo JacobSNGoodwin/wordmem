@@ -15,7 +15,7 @@ type NotFoundError struct {
 
 // Error required for error interface
 func (e *NotFoundError) Error() string {
-	return fmt.Sprintf("NotFound. The following resource-value could not be found: %v-%v\n", e.InvalidArgument.Name, e.InvalidArgument.Value)
+	return fmt.Sprintf("NotFound. The following resource:value could not be found: %v:%v\n", e.InvalidArgument.Name, e.InvalidArgument.Value)
 }
 
 // NewNotFound creates an error with status code 409 and indicates the value that already exists

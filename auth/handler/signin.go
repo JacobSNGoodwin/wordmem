@@ -59,7 +59,7 @@ func (e *Env) Signin(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"user":   u,
 		"tokens": tokens,
 	})

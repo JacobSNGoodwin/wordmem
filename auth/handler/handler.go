@@ -17,7 +17,7 @@ type Env struct {
 type IUserService interface {
 	SignUp(email string, password string) (*model.User, error)
 	SignIn(email string, password string) (*model.User, error)
-	Remove(uid uuid.UUID) error
+	Get(uid uuid.UUID) (*model.User, error)
 }
 
 // ITokenService defines methods handler expects to interact

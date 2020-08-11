@@ -60,6 +60,7 @@ func (r *UserRepository) FindByID(uid uuid.UUID) (*model.User, error) {
 
 	query := "SELECT * FROM users WHERE uid=$1"
 
+	// we need to actually check errors as it could be something other than not found
 	if err := r.DB.Get(user, query, uid); err != nil {
 		return user, errors.NewNotFound("uid", uid.String())
 	}

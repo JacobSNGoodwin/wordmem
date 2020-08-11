@@ -38,3 +38,17 @@ func NewFromValidationErrors(vs validator.ValidationErrors) *ValidationError {
 		Status:      http.StatusBadRequest,
 	}
 }
+
+// NewValidation creates a validation error for a single argument
+func NewValidation(invalidName string, invalidValue string) *ValidationError {
+	return &ValidationError{
+		Type: "ValidationError",
+		InvalidArgs: []invalidArgument{
+			invalidArgument{
+				Name:  invalidName,
+				Value: invalidValue,
+			},
+		},
+		Status: http.StatusBadRequest,
+	}
+}

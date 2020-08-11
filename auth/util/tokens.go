@@ -52,7 +52,10 @@ type RefreshToken struct {
 	ExpiresIn time.Duration
 }
 
-type refreshTokenCustomClaims struct {
+// RefreshTokenCustomClaims holds the payload of a refresh token
+// This can be used to extract user id for subsequent
+// applicatin operations (IE, fetch user in Redis)
+type RefreshTokenCustomClaims struct {
 	UID uuid.UUID `json:"uid"`
 	jwt.StandardClaims
 }
@@ -69,7 +72,7 @@ func GenerateRefreshToken(uid uuid.UUID, key string) (*RefreshToken, error) {
 		return nil, err
 	}
 
-	claims := refreshTokenCustomClaims{
+	claims := RefreshTokenCustomClaims{
 		UID: uid,
 		StandardClaims: jwt.StandardClaims{
 			IssuedAt:  currentTime.Unix(),
@@ -91,4 +94,29 @@ func GenerateRefreshToken(uid uuid.UUID, key string) (*RefreshToken, error) {
 		ID:        tokenID.String(),
 		ExpiresIn: tokenExp.Sub(currentTime),
 	}, nil
+}
+
+// ValidateRefreshToken uses the secret key to validate a refresh token
+func ValidateRefreshToken(tokenString string, key string) (*RefreshTokenCustomClaims, error) {
+	claims := &RefreshTokenCustomClaims{}
+	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+		return []byte(key), nil
+	})
+
+	// For now we'll just return the error and handle logging in service level
+	if err != nil {
+		return nil, err
+	}
+
+	if !token.Valid {
+		return nil, err
+	}
+
+	claims, ok := token.Claims.(*RefreshTokenCustomClaims)
+
+	if !ok {
+		return nil, err
+	}
+
+	return claims, nil
 }

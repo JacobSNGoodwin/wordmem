@@ -21,6 +21,7 @@ func (router *Router) Init(ic *InjectionContainer) {
 
 	r.POST("/signup", handler.Signup)
 	r.POST("/signin", handler.Signin)
+	r.POST("/tokens", handler.Tokens)
 
 	router.r = r
 }

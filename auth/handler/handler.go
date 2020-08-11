@@ -24,4 +24,5 @@ type IUserService interface {
 // with for storing and retrieving tokens
 type ITokenService interface {
 	NewPairFromUser(user *model.User) (*model.TokenPair, error)
+	UserIDFromRefreshToken(tokenString string) (uuid.UUID, error)
 }

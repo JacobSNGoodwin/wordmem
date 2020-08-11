@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/jacobsngoodwin/wordmem/auth/errors"
 	"github.com/jacobsngoodwin/wordmem/auth/model"
 	"github.com/jacobsngoodwin/wordmem/auth/util"
@@ -45,4 +46,20 @@ func (s *TokenService) NewPairFromUser(u *model.User) (*model.TokenPair, error) 
 		IDToken:      idToken,
 		RefreshToken: refreshToken.SS,
 	}, nil
+}
+
+// UserIDFromRefreshToken validates the incoming token
+// returning the user ID from the claims so that that
+// the user can be fetched
+func (s *TokenService) UserIDFromRefreshToken(refreshTokenString string) (uuid.UUID, error) {
+	// Validate the refresh toksn
+	token, err := util.ValidateRefreshToken(refreshTokenString, s.RefreshSecret)
+
+	// We'll just return unauthorized error in all instances of failing to verify user
+	if err != nil {
+		log.Printf("Unable to validate or parse refreshToken for token string: %s\n%v\n", refreshTokenString, err)
+		return uuid.Nil, errors.NewUnauthorized("Unable to verify user from refresh token")
+	}
+
+	return token.UID, nil
 }

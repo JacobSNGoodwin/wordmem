@@ -20,7 +20,7 @@ type UserRepository struct {
 
 // Create reaches out to database SQLX api
 func (r *UserRepository) Create(u *model.User) (*model.User, error) {
-	query := "INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING uid, name, email"
+	query := "INSERT INTO users (email, password) VALUES ($1, $2) RETURNING uid, email"
 
 	newU := &model.User{}
 
@@ -31,7 +31,7 @@ func (r *UserRepository) Create(u *model.User) (*model.User, error) {
 		return newU, errors.NewUnknown(http.StatusInternalServerError)
 	}
 
-	if err := r.DB.Get(newU, query, u.Name, u.Email, pw); err != nil {
+	if err := r.DB.Get(newU, query, u.Email, pw); err != nil {
 		// check unique constraint
 		if err, ok := err.(*pq.Error); ok && err.Code.Name() == "unique_violation" {
 			log.Printf("Could not create a user with email: %v. Reason: %v\n", u.Email, err.Code.Name())

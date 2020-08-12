@@ -23,9 +23,10 @@ type idTokenCustomClaims struct {
 func GenerateIDToken(u *model.User, key *rsa.PrivateKey) (string, error) {
 	unixTime := time.Now().Unix()
 	tokenExp := unixTime + 60*15 // 15 minutes from current time
+
 	claims := idTokenCustomClaims{
 		UID:   u.UID,
-		Name:  u.Name,
+		Name:  u.Name.String,
 		Email: u.Email,
 		StandardClaims: jwt.StandardClaims{
 			IssuedAt:  unixTime,

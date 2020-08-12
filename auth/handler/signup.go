@@ -39,7 +39,6 @@ func (e *Env) Signup(c *gin.Context) {
 	u, err := e.UserService.SignUp(req.Email, req.Password)
 
 	if err != nil {
-		//
 		log.Printf("Failed to sign up user: %v\n", err.Error())
 		c.JSON(http.StatusConflict, gin.H{
 			"error": err,

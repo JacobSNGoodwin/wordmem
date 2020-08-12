@@ -30,8 +30,9 @@ func (s *UserService) SignUp(email string, password string) (*model.User, error)
 func (s *UserService) SignIn(email string, password string) (*model.User, error) {
 	u, err := s.UserRepository.FindByEmail(email)
 
+	// Will return NotAuthorized to user doesn't know if no user was found
 	if err != nil {
-		return nil, err
+		return nil, errors.NewUnauthorized("Invalid email/password combination")
 	}
 
 	// verify password

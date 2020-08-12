@@ -20,7 +20,6 @@ func (s NullString) MarshalJSON() ([]byte, error) {
 	}
 
 	return json.Marshal(nil)
-
 }
 
 // UnmarshalJSON handles possible null sql.NullString

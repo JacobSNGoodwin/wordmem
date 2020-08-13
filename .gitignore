@@ -3,3 +3,5 @@ postgres-data
 auth/rsa_private.pem
 auth/rsa_public.pem
 auth/.env.dev
+auth/wordmem-serviceAccount.json
+auth/wordmem-serviceAccount.json:Zone.Identifier

@@ -10,11 +10,12 @@ import (
 	"github.com/jacobsngoodwin/wordmem/auth/model"
 )
 
-// idTokenCustomClaims holds structure of jwt claims of idToken
-type idTokenCustomClaims struct {
-	UID   uuid.UUID `json:"uid"`
-	Email string    `json:"email"`
-	Name  string    `json:"name"`
+// IDTokenCustomClaims holds structure of jwt claims of idToken
+type IDTokenCustomClaims struct {
+	UID      uuid.UUID `json:"uid"`
+	Email    string    `json:"email"`
+	Name     string    `json:"name"`
+	ImageURL string    `json:"imageUrl"`
 	jwt.StandardClaims
 }
 
@@ -24,10 +25,11 @@ func GenerateIDToken(u *model.User, key *rsa.PrivateKey) (string, error) {
 	unixTime := time.Now().Unix()
 	tokenExp := unixTime + 60*15 // 15 minutes from current time
 
-	claims := idTokenCustomClaims{
-		UID:   u.UID,
-		Name:  u.Name.String,
-		Email: u.Email,
+	claims := IDTokenCustomClaims{
+		UID:      u.UID,
+		Name:     u.Name.String,
+		Email:    u.Email,
+		ImageURL: u.ImageURL.String,
 		StandardClaims: jwt.StandardClaims{
 			IssuedAt:  unixTime,
 			ExpiresAt: tokenExp,
@@ -114,6 +116,32 @@ func ValidateRefreshToken(tokenString string, key string) (*RefreshTokenCustomCl
 	}
 
 	claims, ok := token.Claims.(*RefreshTokenCustomClaims)
+
+	if !ok {
+		return nil, err
+	}
+
+	return claims, nil
+}
+
+// ValidateIDToken returns the token's claims if the token is valid
+func ValidateIDToken(tokenString string, key *rsa.PublicKey) (*IDTokenCustomClaims, error) {
+	claims := &IDTokenCustomClaims{}
+
+	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+		return key, nil
+	})
+
+	// For now we'll just return the error and handle logging in service level
+	if err != nil {
+		return nil, err
+	}
+
+	if !token.Valid {
+		return nil, err
+	}
+
+	claims, ok := token.Claims.(*IDTokenCustomClaims)
 
 	if !ok {
 		return nil, err

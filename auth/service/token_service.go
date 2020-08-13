@@ -61,7 +61,7 @@ func (s *TokenService) NewPairFromUser(u *model.User, prevTokenID string) (*mode
 // It returns the claims on the token if is valid
 func (s *TokenService) ValidateRefreshToken(refreshTokenString string) (*util.RefreshTokenCustomClaims, error) {
 	// Validate the refresh toksn
-	token, err := util.ValidateRefreshToken(refreshTokenString, s.RefreshSecret)
+	claims, err := util.ValidateRefreshToken(refreshTokenString, s.RefreshSecret)
 
 	// We'll just return unauthorized error in all instances of failing to verify user
 	if err != nil {
@@ -69,5 +69,19 @@ func (s *TokenService) ValidateRefreshToken(refreshTokenString string) (*util.Re
 		return nil, errors.NewUnauthorized("Unable to verify user from refresh token")
 	}
 
-	return token, nil
+	return claims, nil
+}
+
+// ValidateIDToken validates the id token jwt string
+// It returns the claims on the token if is valid
+func (s *TokenService) ValidateIDToken(tokenString string) (*util.IDTokenCustomClaims, error) {
+	claims, err := util.ValidateIDToken(tokenString, s.PubKey) // uses public RSA key
+
+	// We'll just return unauthorized error in all instances of failing to verify user
+	if err != nil {
+		log.Printf("Unable to validate or parse refreshToken for token string: %s\n%v\n", tokenString, err)
+		return nil, errors.NewUnauthorized("Unable to verify user from idToken")
+	}
+
+	return claims, nil
 }

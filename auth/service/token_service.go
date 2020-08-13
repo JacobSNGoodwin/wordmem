@@ -79,7 +79,7 @@ func (s *TokenService) ValidateIDToken(tokenString string) (*util.IDTokenCustomC
 
 	// We'll just return unauthorized error in all instances of failing to verify user
 	if err != nil {
-		log.Printf("Unable to validate or parse refreshToken for token string: %s\n%v\n", tokenString, err)
+		log.Printf("Unable to validate or parse it token for token string: %s\n%v\n", tokenString, err)
 		return nil, errors.NewUnauthorized("Unable to verify user from idToken")
 	}
 

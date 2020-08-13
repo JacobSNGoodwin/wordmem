@@ -31,17 +31,25 @@ func (e *Env) AuthUser() gin.HandlerFunc {
 			// vErr is serializable because it has struct tags!
 			vErr := errors.NewFromValidationErrors(err.(validator.ValidationErrors))
 			c.JSON(vErr.Status, gin.H{"error": vErr})
-
+			c.Abort()
 			return
 		}
 
-		idToken := strings.Split(h.IDToken, "Bearer ")[1]
+		idTokenHeader := strings.Split(h.IDToken, "Bearer ")
 
-		claims, err := e.TokenService.ValidateIDToken(idToken)
+		if len(idTokenHeader) < 2 {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"error": errors.NewUnauthorized("Must provide Authorization header with format Bearer token"),
+			})
+			c.Abort()
+			return
+		}
+
+		claims, err := e.TokenService.ValidateIDToken(idTokenHeader[1])
 
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{
-				"error": errors.NewUnauthorized("Must provide Authorization header"),
+				"error": errors.NewUnauthorized("Provided token is invalid"),
 			})
 			c.Abort()
 			return

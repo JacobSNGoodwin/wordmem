@@ -25,7 +25,7 @@ type IUserService interface {
 // with for storing and retrieving tokens
 type ITokenService interface {
 	NewPairFromUser(user *model.User, prevTokenID string) (*model.TokenPair, error)
-	SignOut() error
+	SignOut(uid string) error
 	ValidateIDToken(tokenString string) (*util.IDTokenCustomClaims, error)
 	ValidateRefreshToken(tokenString string) (*util.RefreshTokenCustomClaims, error)
 }

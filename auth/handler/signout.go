@@ -12,7 +12,7 @@ import (
 // Signout signs user out be invalidating all
 // of a users refresh tokens
 func (e *Env) Signout(c *gin.Context) {
-	userClaims, exists := c.Get("user")
+	claims, exists := c.Get("user")
 
 	if !exists {
 		log.Printf("Unable to extract user from request context for unknown reason: %v\n", c)
@@ -23,7 +23,15 @@ func (e *Env) Signout(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"user": userClaims.(*util.IDTokenCustomClaims),
-	})
+	userClaims := claims.(*util.IDTokenCustomClaims)
+	uid := userClaims.UID.String()
+
+	if err := e.TokenService.SignOut(uid); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{})
 }

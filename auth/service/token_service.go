@@ -59,8 +59,8 @@ func (s *TokenService) NewPairFromUser(u *model.User, prevTokenID string) (*mode
 
 // SignOut reaches out to the token repository to
 // remove all refresh tokens for a given user
-func (s *TokenService) SignOut() error {
-	return nil
+func (s *TokenService) SignOut(uid string) error {
+	return s.TokenRepository.DeleteUserRefreshTokens(uid)
 }
 
 // ValidateRefreshToken validates the refresh token jwt string

@@ -47,6 +47,22 @@ func (r *TokenRepository) DeleteRefreshToken(userID string, tokenID string) erro
 
 // DeleteUserRefreshTokens scans all keys in repository matching the
 // current userID and deletes them in a safe way
-func (r *TokenRepository) DeleteUserRefreshTokens(userID string) error {
+func (r *TokenRepository) DeleteUserRefreshTokens(uid string) error {
+	log.Printf("Deleting refresh tokens for UID: %s\n", uid)
+	ctx := context.Background()
+	pattern := fmt.Sprintf("%s*", uid)
+
+	iter := r.Redis.Scan(ctx, 0, pattern, 0).Iterator()
+
+	for iter.Next(ctx) {
+		if err := r.Redis.Del(ctx, iter.Val()).Err(); err != nil {
+			log.Printf("Failed to delete refresh token: %s\n", iter.Val())
+		}
+	}
+
+	if err := iter.Err(); err != nil {
+		log.Printf("Failed to delete refresh token: %s\n", iter.Val())
+	}
+
 	return nil
 }

@@ -46,14 +46,12 @@ func (s *UserService) SignIn(email string, password string) (*model.User, error)
 		return nil, errors.NewUnauthorized("Invalid email and password combination")
 	}
 
-	u.Password = ""
 	return u, nil
 }
 
 // Get retreives a user based on their uuid
 func (s *UserService) Get(uid uuid.UUID) (*model.User, error) {
 	u, err := s.UserRepository.FindByID(uid)
-	u.Password = ""
 
 	return u, err
 }

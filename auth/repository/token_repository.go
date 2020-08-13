@@ -44,3 +44,9 @@ func (r *TokenRepository) DeleteRefreshToken(userID string, tokenID string) erro
 
 	return nil
 }
+
+// DeleteUserRefreshTokens scans all keys in repository matching the
+// current userID and deletes them in a safe way
+func (r *TokenRepository) DeleteUserRefreshTokens(userID string) error {
+	return nil
+}

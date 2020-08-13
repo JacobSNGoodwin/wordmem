@@ -16,15 +16,16 @@ type Env struct {
 // interact with to perform CRUD operations on users
 // These methods will be called from route handlers
 type IUserService interface {
+	Get(uid uuid.UUID) (*model.User, error)
 	SignUp(email string, password string) (*model.User, error)
 	SignIn(email string, password string) (*model.User, error)
-	Get(uid uuid.UUID) (*model.User, error)
 }
 
 // ITokenService defines methods handler expects to interact
 // with for storing and retrieving tokens
 type ITokenService interface {
 	NewPairFromUser(user *model.User, prevTokenID string) (*model.TokenPair, error)
+	SignOut() error
 	ValidateIDToken(tokenString string) (*util.IDTokenCustomClaims, error)
 	ValidateRefreshToken(tokenString string) (*util.RefreshTokenCustomClaims, error)
 }

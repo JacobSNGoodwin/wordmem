@@ -1,12 +1,15 @@
 package handler
 
 import (
+	"log"
 	"mime/multipart"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"github.com/jacobsngoodwin/wordmem/auth/errors"
+	"github.com/jacobsngoodwin/wordmem/auth/service"
+	"github.com/jacobsngoodwin/wordmem/auth/util"
 )
 
 // omitempty must be required in binding (not just omitting required)
@@ -23,16 +26,16 @@ type updateReq struct {
 
 // Update handler updates account information for a user
 func (e *Env) Update(c *gin.Context) {
-	// _, exists := c.Get("user")
+	claims, exists := c.Get("user")
 
-	// if !exists {
-	// 	log.Printf("Unable to extract user from request context for unknown reason: %v\n", c)
-	// 	c.JSON(http.StatusUnauthorized, gin.H{
-	// 		"error": errors.NewUnknown(http.StatusInternalServerError),
-	// 	})
+	if !exists {
+		log.Printf("Unable to extract user from request context for unknown reason: %v\n", c)
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": errors.NewUnknown(http.StatusInternalServerError),
+		})
 
-	// 	return
-	// }
+		return
+	}
 
 	var req updateReq
 
@@ -52,8 +55,22 @@ func (e *Env) Update(c *gin.Context) {
 		return
 	}
 
+	userClaims := claims.(*util.IDTokenCustomClaims)
+
+	updateOptions := service.UpdateOptions(req)
+
+	u, err := e.UserService.Update(userClaims.UID, &updateOptions)
+
+	if err != nil {
+		log.Printf("Failed to update user: %v\n", err.Error())
+
+		c.JSON(http.StatusConflict, gin.H{
+			"error": err,
+		})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
-		"name":     req.Name,
-		"fileName": req.ImageFile.Filename,
+		"user": u,
 	})
 }

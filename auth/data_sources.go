@@ -3,7 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 
+	"cloud.google.com/go/storage"
 	"github.com/go-redis/redis/v8"
 	"github.com/jmoiron/sqlx"
 )
@@ -12,12 +14,14 @@ import (
 // This is created so that clients connections can be closed
 // gracefully and also be injected into the application
 type DataSources struct {
-	DB          *sqlx.DB
-	RedisClient *redis.Client
+	DB            *sqlx.DB
+	RedisClient   *redis.Client
+	StorageClient *storage.Client
 }
 
 // Init create data sources defined in DataSources struct
 func (d *DataSources) Init() error {
+	log.Printf("Connecting to Postgresql\n")
 	db, err := sqlx.Open("postgres", "host=localhost port=5432 user=postgres password=password dbname=postgres sslmode=disable")
 
 	if err != nil {
@@ -30,6 +34,7 @@ func (d *DataSources) Init() error {
 	}
 
 	// Initialize redis connection
+	log.Printf("Connecting to Redis\n")
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "",
@@ -44,8 +49,18 @@ func (d *DataSources) Init() error {
 		return fmt.Errorf("error connecting to redis: %w", err)
 	}
 
+	// Initialize google storage client
+	log.Printf("Connecting to Cloud Storage\n")
+	ctx := context.Background()
+	storage, err := storage.NewClient(ctx)
+
+	if err != nil {
+		return fmt.Errorf("error creating cloud storage client: %w", err)
+	}
+
 	d.DB = db
 	d.RedisClient = rdb
+	d.StorageClient = storage
 
 	return nil
 }
@@ -57,7 +72,12 @@ func (d *DataSources) Close() error {
 	}
 
 	if err := d.RedisClient.Close(); err != nil {
-		return fmt.Errorf("error closing Postgresql: %w", err)
+		return fmt.Errorf("error closing Redis Client: %w", err)
 	}
+
+	if err := d.StorageClient.Close(); err != nil {
+		return fmt.Errorf("error closing Cloud Storage client: %w", err)
+	}
+
 	return nil
 }

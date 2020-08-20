@@ -3,6 +3,7 @@ package handler
 import (
 	"github.com/google/uuid"
 	"github.com/jacobsngoodwin/wordmem/auth/model"
+	"github.com/jacobsngoodwin/wordmem/auth/service"
 	"github.com/jacobsngoodwin/wordmem/auth/util"
 )
 
@@ -19,7 +20,7 @@ type IUserService interface {
 	Get(uid uuid.UUID) (*model.User, error)
 	SignUp(email string, password string) (*model.User, error)
 	SignIn(email string, password string) (*model.User, error)
-	Update(user *model.User) (*model.User, error)
+	Update(uid uuid.UUID, options *service.UpdateOptions) (*model.User, error)
 }
 
 // ITokenService defines methods handler expects to interact

@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 
+	"cloud.google.com/go/storage"
 	"github.com/google/uuid"
 	"github.com/jacobsngoodwin/wordmem/auth/errors"
 	"github.com/jacobsngoodwin/wordmem/auth/model"
@@ -15,7 +16,8 @@ import (
 // UserRepository is data/repository implementation
 // of service layer IUserRepository
 type UserRepository struct {
-	DB *sqlx.DB
+	DB      *sqlx.DB
+	Storage *storage.Client
 }
 
 // Create reaches out to database SQLX api

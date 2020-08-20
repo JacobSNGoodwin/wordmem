@@ -1,6 +1,8 @@
 package service
 
 import (
+	"log"
+	"mime/multipart"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -12,7 +14,8 @@ import (
 // UserService acts as a struct for injecting an implementation of UserRepository
 // for use in service methods
 type UserService struct {
-	UserRepository IUserRepository
+	UserRepository  IUserRepository
+	ImageRepositroy IImageRepositroy
 }
 
 // SignUp creates a new user based on data in model.User
@@ -56,7 +59,28 @@ func (s *UserService) Get(uid uuid.UUID) (*model.User, error) {
 	return u, err
 }
 
+// UpdateOptions contains payload of updateable user account values
+type UpdateOptions struct {
+	Name      string
+	Email     string
+	Password  string
+	ImageFile *multipart.FileHeader
+	Website   string
+}
+
 // Update updates a user
-func (s *UserService) Update(user *model.User) (*model.User, error) {
-	panic("Not implemented")
+func (s *UserService) Update(uid uuid.UUID, options *UpdateOptions) (*model.User, error) {
+	// Open user file
+	imageFile, err := options.ImageFile.Open()
+
+	if err != nil {
+		log.Printf("Failed to open image file: %v\n", err)
+		return nil, errors.NewUnknown(500)
+	}
+
+	// Upload user's image to ImageRepository
+	s.ImageRepositroy.UploadUserImage(uid.String(), &imageFile)
+
+	return &model.User{}, nil
+	// Update user in UserRepository
 }

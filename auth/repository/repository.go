@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"cloud.google.com/go/storage"
 	"github.com/go-redis/redis/v8"
 
 	"github.com/jmoiron/sqlx"
@@ -20,7 +21,8 @@ type Repository struct {
 func Create(options *Options) (*Repository, error) {
 	return &Repository{
 		UserRepository: &UserRepository{
-			DB: options.DB,
+			DB:      options.DB,
+			Storage: options.StorageClient,
 		},
 		TokenRepository: &TokenRepository{
 			Redis: options.RedisClient,
@@ -31,6 +33,7 @@ func Create(options *Options) (*Repository, error) {
 // Options a utility type for defining necessary parameters
 // to inject databases
 type Options struct {
-	DB          *sqlx.DB
-	RedisClient *redis.Client
+	DB            *sqlx.DB
+	RedisClient   *redis.Client
+	StorageClient *storage.Client
 }

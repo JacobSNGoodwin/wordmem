@@ -1,6 +1,7 @@
 package service
 
 import (
+	"mime/multipart"
 	"time"
 
 	"github.com/google/uuid"
@@ -26,4 +27,10 @@ type ITokenRepository interface {
 	SetRefreshToken(userID string, tokenID string, expiresIn time.Duration) error
 	DeleteRefreshToken(userID string, prevTokenID string) error
 	DeleteUserRefreshTokens(userID string) error
+}
+
+// IImageRepositroy defines methods it expects
+// any image repostiroy the application interacts with to implement
+type IImageRepositroy interface {
+	UploadUserImage(uid string, imageFile *multipart.File) error
 }

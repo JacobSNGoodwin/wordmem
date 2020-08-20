@@ -4,6 +4,7 @@ go 1.14
 
 require (
 	cloud.google.com/go v0.63.0 // indirect
+	cloud.google.com/go/storage v1.10.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-contrib/static v0.0.0-20191128031702-f81c604d8ac2
 	github.com/gin-gonic/gin v1.6.3

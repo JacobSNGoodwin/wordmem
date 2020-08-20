@@ -20,13 +20,14 @@ type InjectionContainer struct {
 
 // Init uses the data sources create concrete implmentation of the repository and service layers
 func (ic *InjectionContainer) Init(d *DataSources) error {
-	log.Println("Injecting data source")
+	log.Println("Injecting data sources")
 
 	// This repository is a container for initiating the individual repositories
 	// It kinda service the purpose of making dep injection easier
 	repo, err := repository.Create(&repository.Options{
-		DB:          d.DB,
-		RedisClient: d.RedisClient,
+		DB:            d.DB,
+		RedisClient:   d.RedisClient,
+		StorageClient: d.StorageClient,
 	})
 
 	if err != nil {

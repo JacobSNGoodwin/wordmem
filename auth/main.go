@@ -19,8 +19,6 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
-	log.Println("Connecting to PostgreSQL and Redis")
-
 	// setup datasources
 	ds := &DataSources{}
 	if err := ds.Init(); err != nil {

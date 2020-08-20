@@ -32,5 +32,5 @@ type ITokenRepository interface {
 // IImageRepositroy defines methods it expects
 // any image repostiroy the application interacts with to implement
 type IImageRepositroy interface {
-	UploadUserImage(uid string, imageFile *multipart.File) (string, error)
+	UploadUserImage(uid string, imageFile multipart.File) error
 }

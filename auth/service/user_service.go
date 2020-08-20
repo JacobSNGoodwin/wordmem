@@ -79,7 +79,9 @@ func (s *UserService) Update(uid uuid.UUID, options *UpdateOptions) (*model.User
 	}
 
 	// Upload user's image to ImageRepository
-	s.ImageRepositroy.UploadUserImage(uid.String(), &imageFile)
+	if err := s.ImageRepositroy.UploadUserImage(uid.String(), imageFile); err != nil {
+		return nil, err
+	}
 
 	return &model.User{}, nil
 	// Update user in UserRepository

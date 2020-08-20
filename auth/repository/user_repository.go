@@ -81,3 +81,8 @@ func (r *UserRepository) FindByEmail(email string) (*model.User, error) {
 
 	return user, nil
 }
+
+// Update updates a user's properties
+func (r *UserRepository) Update(u *model.User) (*model.User, error) {
+	panic("Not implemented")
+}

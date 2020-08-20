@@ -18,6 +18,7 @@ func (router *Router) Init(ic *InjectionContainer) {
 	r := gin.Default()
 
 	r.GET("/me", handler.AuthUser(), handler.Me)
+	r.POST("/update", handler.AuthUser(), handler.Update)
 	r.POST("/signup", handler.Signup)
 	r.POST("/signin", handler.Signin)
 	r.POST("/tokens", handler.Tokens)

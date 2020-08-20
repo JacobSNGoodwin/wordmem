@@ -19,6 +19,7 @@ type IUserService interface {
 	Get(uid uuid.UUID) (*model.User, error)
 	SignUp(email string, password string) (*model.User, error)
 	SignIn(email string, password string) (*model.User, error)
+	Update(user *model.User) (*model.User, error)
 }
 
 // ITokenService defines methods handler expects to interact

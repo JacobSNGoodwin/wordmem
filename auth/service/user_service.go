@@ -55,3 +55,8 @@ func (s *UserService) Get(uid uuid.UUID) (*model.User, error) {
 
 	return u, err
 }
+
+// Update updates a user
+func (s *UserService) Update(user *model.User) (*model.User, error) {
+	panic("Not implemented")
+}

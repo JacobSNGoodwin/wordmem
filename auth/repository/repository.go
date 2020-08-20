@@ -13,6 +13,7 @@ import (
 type Repository struct {
 	UserRepository  *UserRepository
 	TokenRepository *TokenRepository
+	ImageRepository *ImageRepository
 }
 
 // Create is a utility function for initializing a dababase
@@ -21,11 +22,13 @@ type Repository struct {
 func Create(options *Options) (*Repository, error) {
 	return &Repository{
 		UserRepository: &UserRepository{
-			DB:      options.DB,
-			Storage: options.StorageClient,
+			DB: options.DB,
 		},
 		TokenRepository: &TokenRepository{
 			Redis: options.RedisClient,
+		},
+		ImageRepository: &ImageRepository{
+			Storage: options.StorageClient,
 		},
 	}, nil
 }

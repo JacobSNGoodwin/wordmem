@@ -34,9 +34,10 @@ func (ic *InjectionContainer) Init(d *DataSources) error {
 		return fmt.Errorf("could not initialize data sources (PostgreSQL and Redis): %w", err)
 	}
 
-	// Create UserService from concrete impl of UserRepository
+	// Create UserService from concrete impl of UserRepository and ImageRepository
 	userService := &service.UserService{
-		UserRepository: repo.UserRepository,
+		UserRepository:  repo.UserRepository,
+		ImageRepositroy: repo.ImageRepository,
 	}
 
 	// Create a TokenService from concrete impl of TokenRepository

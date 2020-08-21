@@ -20,7 +20,7 @@ func (e *Env) Signup(c *gin.Context) {
 	var req signupReq
 
 	// Bind incoming json to struct and check for validation errors
-	if err := c.ShouldBindJSON(&req); err != nil {
+	if err := c.ShouldBind(&req); err != nil {
 
 		// this type check appears to be extra cautious as I could not
 		// find a case where this error was anything other than InvalidValidationError

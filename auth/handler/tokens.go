@@ -19,7 +19,7 @@ func (e *Env) Tokens(c *gin.Context) {
 	var req tokensReq
 
 	// Bind incoming json to struct and check for validation errors
-	if err := c.ShouldBindJSON(&req); err != nil {
+	if err := c.ShouldBind(&req); err != nil {
 		if _, ok := err.(*validator.InvalidValidationError); ok {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Unknown Error"})
 		}

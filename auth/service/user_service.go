@@ -71,18 +71,20 @@ type UpdateOptions struct {
 // Update updates a user
 func (s *UserService) Update(uid uuid.UUID, options *UpdateOptions) (*model.User, error) {
 	// Open user file
-	imageFile, err := options.ImageFile.Open()
+	if options.ImageFile != nil {
+		imageFile, err := options.ImageFile.Open()
+		if err != nil {
+			log.Printf("Failed to open image file: %v\n", err)
+			return nil, errors.NewUnknown(500)
+		}
 
-	if err != nil {
-		log.Printf("Failed to open image file: %v\n", err)
-		return nil, errors.NewUnknown(500)
+		// Upload user's image to ImageRepository
+		if err := s.ImageRepositroy.UploadUserImage(uid.String(), imageFile); err != nil {
+			return nil, err
+		}
 	}
 
-	// Upload user's image to ImageRepository
-	if err := s.ImageRepositroy.UploadUserImage(uid.String(), imageFile); err != nil {
-		return nil, err
-	}
+	// Update user in UserRepository
 
 	return &model.User{}, nil
-	// Update user in UserRepository
 }

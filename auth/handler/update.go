@@ -38,7 +38,9 @@ func (e *Env) Update(c *gin.Context) {
 
 	var req updateReq
 
-	bindData(c, &req)
+	if ok := bindData(c, &req); !ok {
+		return
+	}
 
 	userClaims := claims.(*util.IDTokenCustomClaims)
 

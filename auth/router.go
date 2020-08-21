@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/jacobsngoodwin/wordmem/auth/handler"
 )
 
 // Router holds a reference to a router with access to services
@@ -13,19 +14,19 @@ type Router struct {
 // Init sets up route controllers by providing them access to application services
 func (router *Router) Init(ic *InjectionContainer) {
 	// Injection of database to create concrete Service and Repository impls
-	handler := ic.handlerEnv
+	h := ic.handlerEnv
 
 	r := gin.Default()
 
 	// set MaxBodySize to 4 MB
-	r.Use(handler.MaxBodySize(4))
+	r.Use(h.LimitBodySize(handler.MaxBodySize))
 
-	r.GET("/me", handler.AuthUser(), handler.Me)
-	r.POST("/update", handler.AuthUser(), handler.Update)
-	r.POST("/signup", handler.Signup)
-	r.POST("/signin", handler.Signin)
-	r.POST("/tokens", handler.Tokens)
-	r.POST("/signout", handler.AuthUser(), handler.Signout)
+	r.GET("/me", h.AuthUser(), h.Me)
+	r.POST("/update", h.AuthUser(), h.Update)
+	r.POST("/signup", h.Signup)
+	r.POST("/signin", h.Signin)
+	r.POST("/tokens", h.Tokens)
+	r.POST("/signout", h.AuthUser(), h.Signout)
 
 	router.r = r
 }

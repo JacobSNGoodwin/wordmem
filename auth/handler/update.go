@@ -40,7 +40,6 @@ func (e *Env) Update(c *gin.Context) {
 	var req updateReq
 
 	if err := c.ShouldBind(&req); err != nil {
-
 		// this type check appears to be extra cautious as I could not
 		// find a case where this error was anything other than InvalidValidationError
 		// see https://godoc.org/github.com/go-playground/validator#InvalidValidationError

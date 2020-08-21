@@ -17,6 +17,9 @@ func (router *Router) Init(ic *InjectionContainer) {
 
 	r := gin.Default()
 
+	// set MaxBodySize to 4 MB
+	r.Use(handler.MaxBodySize(4))
+
 	r.GET("/me", handler.AuthUser(), handler.Me)
 	r.POST("/update", handler.AuthUser(), handler.Update)
 	r.POST("/signup", handler.Signup)

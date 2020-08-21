@@ -32,14 +32,14 @@ func main() {
 	}
 
 	// setup router, handlers, and dep injection
-	r := Router{}
-	r.Init(ic)
+	router := Router{}
+	router.Init(ic)
 
-	log.Println("Starting server and listening on port 8080")
+	log.Println("Starting server")
 
 	srv := &http.Server{
 		Addr:    ":8080",
-		Handler: r.r,
+		Handler: router.r,
 	}
 
 	// Graceful shutdown reference from gin's example:
@@ -51,6 +51,8 @@ func main() {
 			log.Fatalf("Failed to initialize server: %v\n", err)
 		}
 	}()
+
+	log.Printf("Listening on port %v\n", srv.Addr)
 
 	// Wait for kill signal of channel
 	quit := make(chan os.Signal)

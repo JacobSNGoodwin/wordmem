@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"github.com/jacobsngoodwin/wordmem/auth/errors"
 	"github.com/jacobsngoodwin/wordmem/auth/service"
 	"github.com/jacobsngoodwin/wordmem/auth/util"
@@ -39,20 +38,7 @@ func (e *Env) Update(c *gin.Context) {
 
 	var req updateReq
 
-	if err := c.ShouldBind(&req); err != nil {
-		// this type check appears to be extra cautious as I could not
-		// find a case where this error was anything other than InvalidValidationError
-		// see https://godoc.org/github.com/go-playground/validator#InvalidValidationError
-		if _, ok := err.(*validator.InvalidValidationError); ok {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Unknown Error"})
-		}
-
-		// vErr is serializable because it has struct tags!
-		vErr := errors.NewFromValidationErrors(err.(validator.ValidationErrors))
-		c.JSON(vErr.Status, gin.H{"error": vErr})
-
-		return
-	}
+	bindData(c, &req)
 
 	userClaims := claims.(*util.IDTokenCustomClaims)
 

@@ -5,8 +5,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
-	"github.com/jacobsngoodwin/wordmem/auth/errors"
 )
 
 type tokensReq struct {
@@ -18,19 +16,7 @@ type tokensReq struct {
 func (e *Env) Tokens(c *gin.Context) {
 	var req tokensReq
 
-	// Bind incoming json to struct and check for validation errors
-	if err := c.ShouldBind(&req); err != nil {
-		if _, ok := err.(*validator.InvalidValidationError); ok {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Unknown Error"})
-		}
-
-		// vErr is serializable because it has struct tags!
-		vErr := errors.NewFromValidationErrors(err.(validator.ValidationErrors))
-		log.Printf("%v", vErr)
-		c.JSON(vErr.Status, gin.H{"error": vErr})
-
-		return
-	}
+	bindData(c, &req)
 
 	// verify token - get token claims if valid
 	refreshClaims, err := e.TokenService.ValidateRefreshToken(req.RefreshToken)

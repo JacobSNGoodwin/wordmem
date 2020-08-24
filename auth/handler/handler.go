@@ -3,7 +3,6 @@ package handler
 import (
 	"github.com/google/uuid"
 	"github.com/jacobsngoodwin/wordmem/auth/model"
-	"github.com/jacobsngoodwin/wordmem/auth/service"
 	"github.com/jacobsngoodwin/wordmem/auth/util"
 )
 
@@ -16,6 +15,13 @@ type Env struct {
 	TokenService ITokenService
 }
 
+// UserDetails is a container struct for imputs to UpdateDetails method
+type UserDetails struct {
+	Name    string
+	Email   string
+	Website string
+}
+
 // IUserService defines methods the handler expects to
 // interact with to perform CRUD operations on users
 // These methods will be called from route handlers
@@ -23,7 +29,7 @@ type IUserService interface {
 	Get(uid uuid.UUID) (*model.User, error)
 	SignUp(email string, password string) (*model.User, error)
 	SignIn(email string, password string) (*model.User, error)
-	Update(uid uuid.UUID, options *service.UpdateOptions) (*model.User, error)
+	UpdateDetails(uid uuid.UUID, details *UserDetails) (*model.User, error)
 }
 
 // ITokenService defines methods handler expects to interact

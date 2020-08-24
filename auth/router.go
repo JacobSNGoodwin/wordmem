@@ -22,7 +22,7 @@ func (router *Router) Init(ic *InjectionContainer) {
 	r.Use(h.LimitBodySize(handler.MaxBodySize))
 
 	r.GET("/me", h.AuthUser(), h.Me)
-	r.POST("/update", h.AuthUser(), h.Update)
+	r.PUT("/details", h.AuthUser(), h.Details)
 	r.POST("/signup", h.Signup)
 	r.POST("/signin", h.Signin)
 	r.POST("/tokens", h.Tokens)

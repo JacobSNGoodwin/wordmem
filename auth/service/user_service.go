@@ -1,9 +1,9 @@
 package service
 
 import (
-	"log"
-	"mime/multipart"
 	"net/http"
+
+	"github.com/jacobsngoodwin/wordmem/auth/handler"
 
 	"github.com/google/uuid"
 	"github.com/jacobsngoodwin/wordmem/auth/errors"
@@ -59,30 +59,29 @@ func (s *UserService) Get(uid uuid.UUID) (*model.User, error) {
 	return u, err
 }
 
-// UpdateOptions contains payload of updateable user account values
-type UpdateOptions struct {
-	Name      string
-	Email     string
-	Password  string
-	ImageFile *multipart.FileHeader
-	Website   string
+// DetailsOptions contains payload of updateable user account details
+type DetailsOptions struct {
+	Name    string
+	Email   string
+	Website string
 }
 
-// Update updates a user
-func (s *UserService) Update(uid uuid.UUID, options *UpdateOptions) (*model.User, error) {
-	// Open user file
-	if options.ImageFile != nil {
-		imageFile, err := options.ImageFile.Open()
-		if err != nil {
-			log.Printf("Failed to open image file: %v\n", err)
-			return nil, errors.NewUnknown(500)
-		}
+// UpdateDetails updates a user's details
+// Or everything save photo and password
+func (s *UserService) UpdateDetails(uid uuid.UUID, details *handler.UserDetails) (*model.User, error) {
+	// // Open user file
+	// if options.ImageFile != nil {
+	// 	imageFile, err := options.ImageFile.Open()
+	// 	if err != nil {
+	// 		log.Printf("Failed to open image file: %v\n", err)
+	// 		return nil, errors.NewUnknown(500)
+	// 	}
 
-		// Upload user's image to ImageRepository
-		if err := s.ImageRepositroy.UploadUserImage(uid.String(), imageFile); err != nil {
-			return nil, err
-		}
-	}
+	// 	// Upload user's image to ImageRepository
+	// 	if err := s.ImageRepositroy.UploadUserImage(uid.String(), imageFile); err != nil {
+	// 		return nil, err
+	// 	}
+	// }
 
 	// Update user in UserRepository
 

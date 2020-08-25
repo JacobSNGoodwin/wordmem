@@ -3,8 +3,6 @@ package service
 import (
 	"net/http"
 
-	"github.com/jacobsngoodwin/wordmem/auth/handler"
-
 	"github.com/google/uuid"
 	"github.com/jacobsngoodwin/wordmem/auth/errors"
 	"github.com/jacobsngoodwin/wordmem/auth/model"
@@ -59,8 +57,8 @@ func (s *UserService) Get(uid uuid.UUID) (*model.User, error) {
 	return u, err
 }
 
-// DetailsOptions contains payload of updateable user account details
-type DetailsOptions struct {
+// UserDetails contains payload of updateable user account details
+type UserDetails struct {
 	Name    string
 	Email   string
 	Website string
@@ -68,7 +66,7 @@ type DetailsOptions struct {
 
 // UpdateDetails updates a user's details
 // Or everything save photo and password
-func (s *UserService) UpdateDetails(uid uuid.UUID, details *handler.UserDetails) (*model.User, error) {
+func (s *UserService) UpdateDetails(u *model.User) error {
 	// // Open user file
 	// if options.ImageFile != nil {
 	// 	imageFile, err := options.ImageFile.Open()
@@ -84,6 +82,7 @@ func (s *UserService) UpdateDetails(uid uuid.UUID, details *handler.UserDetails)
 	// }
 
 	// Update user in UserRepository
+	err := s.UserRepository.Update(u)
 
-	return &model.User{}, nil
+	return err
 }

@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jacobsngoodwin/wordmem/auth/errors"
+	"github.com/jacobsngoodwin/wordmem/auth/model"
 	"github.com/jacobsngoodwin/wordmem/auth/util"
 )
 
@@ -14,9 +15,9 @@ import (
 // will be run
 // omitempty must also be listed first (tags evaluated sequentially, I guess)
 type detailsReq struct {
-	Name    string `form:"name" binding:"omitempty,gte=1"`
-	Email   string `form:"email" binding:"omitempty,email"`
-	Website string `form:"website" binding:"omitempty,url"`
+	Name    string `json:"name" binding:"omitempty,alphanum"`
+	Email   string `json:"email" binding:"omitempty,email"`
+	Website string `json:"website" binding:"omitempty,url"`
 }
 
 // Details handler updates account information for a user
@@ -40,11 +41,14 @@ func (e *Env) Details(c *gin.Context) {
 
 	userClaims := claims.(*util.IDTokenCustomClaims)
 
-	u, err := e.UserService.UpdateDetails(userClaims.UID, &UserDetails{
+	u := model.User{
+		UID:     userClaims.UID,
 		Name:    req.Name,
 		Email:   req.Email,
 		Website: req.Website,
-	})
+	}
+
+	err := e.UserService.UpdateDetails(&u)
 
 	if err != nil {
 		log.Printf("Failed to update user: %v\n", err.Error())

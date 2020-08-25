@@ -18,7 +18,7 @@ type IUserRepository interface {
 	Delete(uid uuid.UUID) error
 	FindByID(uid uuid.UUID) (*model.User, error)
 	FindByEmail(email string) (*model.User, error)
-	Update(u *model.User) (*model.User, error)
+	Update(u *model.User) error
 }
 
 // ITokenRepository defines methods it expects a repository

@@ -27,9 +27,9 @@ func GenerateIDToken(u *model.User, key *rsa.PrivateKey) (string, error) {
 
 	claims := IDTokenCustomClaims{
 		UID:      u.UID,
-		Name:     u.Name.String,
+		Name:     u.Name,
 		Email:    u.Email,
-		ImageURL: u.ImageURL.String,
+		ImageURL: u.ImageURL,
 		StandardClaims: jwt.StandardClaims{
 			IssuedAt:  unixTime,
 			ExpiresAt: tokenExp,

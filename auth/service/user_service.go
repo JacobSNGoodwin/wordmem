@@ -91,6 +91,12 @@ func (s *UserService) SetProfileImage(uid uuid.UUID, imageFileHeader *multipart.
 		return "", nil
 	}
 
+	// Validate image mime-type is allowable
+	if valid := util.IsAllowedImageType(imageFileHeader); !valid {
+		log.Println("Image is not an allowable mimtype")
+		return "", errors.NewValidation("imageFile", "")
+	}
+
 	imageFile, err := imageFileHeader.Open()
 	if err != nil {
 		log.Printf("Failed to open image file: %v\n", err)

@@ -17,7 +17,9 @@ type signinReq struct {
 func (e *Env) Signin(c *gin.Context) {
 	var req signinReq
 
-	bindData(c, &req)
+	if ok := bindData(c, &req); !ok {
+		return
+	}
 
 	u, err := e.UserService.SignIn(req.Email, req.Password)
 

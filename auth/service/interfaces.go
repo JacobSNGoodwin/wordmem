@@ -19,6 +19,7 @@ type IUserRepository interface {
 	FindByID(uid uuid.UUID) (*model.User, error)
 	FindByEmail(email string) (*model.User, error)
 	Update(u *model.User) error
+	UpdateImage(uid uuid.UUID, url string) error
 }
 
 // ITokenRepository defines methods it expects a repository

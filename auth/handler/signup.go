@@ -18,7 +18,10 @@ func (e *Env) Signup(c *gin.Context) {
 	var req signupReq
 
 	// Bind incoming json to struct and check for validation errors
-	bindData(c, &req)
+
+	if ok := bindData(c, &req); !ok {
+		return
+	}
 
 	u, err := e.UserService.SignUp(req.Email, req.Password)
 

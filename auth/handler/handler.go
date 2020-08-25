@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"mime/multipart"
+
 	"github.com/google/uuid"
 	"github.com/jacobsngoodwin/wordmem/auth/model"
 	"github.com/jacobsngoodwin/wordmem/auth/util"
@@ -23,6 +25,7 @@ type IUserService interface {
 	SignUp(email string, password string) (*model.User, error)
 	SignIn(email string, password string) (*model.User, error)
 	UpdateDetails(u *model.User) error
+	SetProfileImage(uid uuid.UUID, imageFile *multipart.FileHeader) (string, error)
 }
 
 // ITokenService defines methods handler expects to interact

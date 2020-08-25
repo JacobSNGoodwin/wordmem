@@ -1,6 +1,9 @@
 package service
 
 import (
+	"fmt"
+	"log"
+	"mime/multipart"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -67,22 +70,47 @@ type UserDetails struct {
 // UpdateDetails updates a user's details
 // Or everything save photo and password
 func (s *UserService) UpdateDetails(u *model.User) error {
-	// // Open user file
-	// if options.ImageFile != nil {
-	// 	imageFile, err := options.ImageFile.Open()
-	// 	if err != nil {
-	// 		log.Printf("Failed to open image file: %v\n", err)
-	// 		return nil, errors.NewUnknown(500)
-	// 	}
-
-	// 	// Upload user's image to ImageRepository
-	// 	if err := s.ImageRepositroy.UploadUserImage(uid.String(), imageFile); err != nil {
-	// 		return nil, err
-	// 	}
-	// }
-
 	// Update user in UserRepository
 	err := s.UserRepository.Update(u)
 
 	return err
+}
+
+// SetProfileImage reaches out to the image repository to upload an image to
+// cloud storage. It also reaches out to the user repository to set the user's url
+// If the provided image file is nil, the user repository will be called to update the image
+// to nil
+func (s *UserService) SetProfileImage(uid uuid.UUID, imageFileHeader *multipart.FileHeader) (string, error) {
+	// Open user file
+	if imageFileHeader == nil {
+		// clear imageUrl in repo
+		if err := s.UserRepository.UpdateImage(uid, ""); err != nil {
+			return "", err
+		}
+
+		return "", nil
+	}
+
+	imageFile, err := imageFileHeader.Open()
+	if err != nil {
+		log.Printf("Failed to open image file: %v\n", err)
+		return "", errors.NewUnknown(500)
+	}
+
+	// Upload user's image to ImageRepository
+	if err := s.ImageRepositroy.UploadUserImage(uid.String(), imageFile); err != nil {
+		log.Printf("Unable to upload image to cloud provider: %v\n", err)
+		return "", err
+	}
+
+	// build url to store in DB
+	imageURL := fmt.Sprintf("https://storage.googleapis.com/wordmem_profile_images/%s", uid.String())
+
+	if err := s.UserRepository.UpdateImage(uid, imageURL); err != nil {
+		log.Printf("Unable to update imageURL: %v\n", err)
+		return "", err
+	}
+
+	return imageURL, nil
+
 }

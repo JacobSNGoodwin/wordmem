@@ -16,7 +16,9 @@ type tokensReq struct {
 func (e *Env) Tokens(c *gin.Context) {
 	var req tokensReq
 
-	bindData(c, &req)
+	if ok := bindData(c, &req); !ok {
+		return
+	}
 
 	// verify token - get token claims if valid
 	refreshClaims, err := e.TokenService.ValidateRefreshToken(req.RefreshToken)

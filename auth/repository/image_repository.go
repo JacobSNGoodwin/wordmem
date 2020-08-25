@@ -23,8 +23,8 @@ const bucketName = "wordmem_profile_images"
 
 // UploadUserImage uploads a user iamge file to provided storage client
 func (r *ImageRepository) UploadUserImage(uid string, imageFile multipart.File) error {
-	log.Printf("Uploading user image for uid: %v\n", uid)
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	// log.Printf("Uploading user image for uid: %v\n", uid)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5) // maybe don't hardcode this?
 	defer cancel()
 
 	wc := r.Storage.Bucket(bucketName).Object(uid).NewWriter(ctx)

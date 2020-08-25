@@ -86,7 +86,7 @@ func (r *UserRepository) FindByEmail(email string) (*model.User, error) {
 func (r *UserRepository) Update(u *model.User) error {
 	query := `
 		UPDATE users 
-		SET name=:name, email=:email, website=:website 
+		SET name=:name, email=:email, website=:website
 		WHERE uid=:uid
 		RETURNING *;
 	`
@@ -94,13 +94,31 @@ func (r *UserRepository) Update(u *model.User) error {
 	nstmt, err := r.DB.PrepareNamed(query)
 
 	if err != nil {
-		log.Println("Unable to prepare user update query")
+		log.Printf("Unable to prepare user update query: %v\n", err)
 		return errors.NewUnknown(http.StatusInternalServerError)
 	}
 
 	if err := nstmt.Get(u, u); err != nil {
 		log.Printf("Failed to update details for user: %v\n", u)
 		return errors.NewUnknown(http.StatusNotFound)
+	}
+
+	return nil
+}
+
+// UpdateImage is used to separately update a user's image separate from
+// other account details
+func (r *UserRepository) UpdateImage(uid uuid.UUID, imageURL string) error {
+	query := `
+		UPDATE users 
+		SET image_url=$1
+		WHERE uid=$2
+	`
+	_, err := r.DB.Exec(query, imageURL, uid)
+
+	if err != nil {
+		log.Printf("Error update image_url in database: %v\n", err)
+		return errors.NewUnknown(http.StatusInternalServerError)
 	}
 
 	return nil

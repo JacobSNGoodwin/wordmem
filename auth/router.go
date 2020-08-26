@@ -21,7 +21,7 @@ func (router *Router) Init(ic *InjectionContainer) {
 
 	// configure simple CORS
 	config := cors.DefaultConfig()
-	config.AllowAllOrigins = true
+	config.AllowOrigins = []string{"http://127.0.0.1:3000", "http://127.0.0.1:3001"}
 	r.Use(cors.New(config))
 
 	// set MaxBodySize to 4 MB

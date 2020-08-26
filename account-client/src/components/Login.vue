@@ -3,7 +3,7 @@
     <h2 class="title is-3 has-text-centered">
       {{ isLogin ? "Login" : "Sign Up" }}
     </h2>
-    <form action="" method="post" novalidate="true" @submit="validateForm">
+    <form novalidate="true" @submit="validateForm">
       <div class="field my-5">
         <div class="control">
           <input
@@ -56,11 +56,22 @@
 </template>
 
 <script>
+// example of using classic options API alongside vue composition API
+import { useFetch } from "vue-composable";
 export default {
   name: "Login",
   components: {},
   props: {
     isLogin: Boolean
+  },
+  setup() {
+    const { json: data, loading, exec } = useFetch();
+
+    return {
+      data,
+      loading,
+      exec
+    };
   },
   data: () => {
     return {
@@ -75,7 +86,10 @@ export default {
     };
   },
   methods: {
-    validateForm(event) {
+    async validateForm(event) {
+      // prevent submission if there are any errors
+      event.preventDefault();
+
       // clear previous errors
       this.errors.email = false;
       this.errors.password = false;
@@ -86,13 +100,6 @@ export default {
         this.password.length >= 6 && this.password.length <= 30;
       const doPasswordMatch =
         this.password === this.confirmPassword || this.isLogin;
-
-      console.log(
-        "In validation: ",
-        isEmailValid,
-        isPasswordValid,
-        doPasswordMatch
-      );
 
       if (!isEmailValid) {
         this.errors.email = true;
@@ -107,11 +114,18 @@ export default {
       }
 
       if (isEmailValid && isPasswordValid && doPasswordMatch) {
-        return true;
+        const req = new Request("http://localhost:8080/signin", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            email: this.email,
+            password: this.password
+          })
+        });
+        this.exec(req);
       }
-
-      // prevent submission if there are any errors
-      event.preventDefault();
     },
     isEmailValid: email => {
       const emailExp = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;

@@ -1,5 +1,10 @@
 <template>
-  <h1>Details!</h1>
+  <div class="container">
+    <h2 class="title is-3 has-text-centered">
+      Account Details
+    </h2>
+    <form></form>
+  </div>
 </template>
 
 <script>

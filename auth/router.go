@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/jacobsngoodwin/wordmem/auth/handler"
 )
@@ -17,6 +18,11 @@ func (router *Router) Init(ic *InjectionContainer) {
 	h := ic.handlerEnv
 
 	r := gin.Default()
+
+	// configure simple CORS
+	config := cors.DefaultConfig()
+	config.AllowAllOrigins = true
+	r.Use(cors.New(config))
 
 	// set MaxBodySize to 4 MB
 	r.Use(h.LimitBodySize(handler.MaxBodySize))

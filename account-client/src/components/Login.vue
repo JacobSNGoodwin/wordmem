@@ -114,7 +114,7 @@ export default {
       }
 
       if (isEmailValid && isPasswordValid && doPasswordMatch) {
-        const req = new Request("http://localhost:8080/signin", {
+        const req = new Request("/api/signin", {
           method: "POST",
           headers: {
             "Content-Type": "application/json"

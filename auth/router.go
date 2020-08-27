@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/jacobsngoodwin/wordmem/auth/handler"
 )
@@ -19,10 +18,11 @@ func (router *Router) Init(ic *InjectionContainer) {
 
 	r := gin.Default()
 
-	// configure simple CORS
-	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"http://127.0.0.1:3000", "http://127.0.0.1:3001"}
-	r.Use(cors.New(config))
+	// configure simple CORS - can also proxy in development on front end
+	// for vue, see CLI config ref
+	// config := cors.DefaultConfig()
+	// config.AllowOrigins = []string{"http://127.0.0.1:3000", "http://127.0.0.1:3001"}
+	// r.Use(cors.New(config))
 
 	// set MaxBodySize to 4 MB
 	r.Use(h.LimitBodySize(handler.MaxBodySize))

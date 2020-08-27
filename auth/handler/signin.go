@@ -26,7 +26,7 @@ func (e *Env) Signin(c *gin.Context) {
 	if err != nil {
 		//
 		log.Printf("Failed to sign in user: %v\n", err.Error())
-		c.JSON(http.StatusConflict, gin.H{
+		c.JSON(http.StatusUnauthorized, gin.H{
 			"error": err,
 		})
 		return

@@ -47,7 +47,11 @@
         </p>
       </div>
       <div class="buttons is-centered mt-6">
-        <button type="submit" class="button is-info is-rounded">
+        <button
+          type="submit"
+          class="button is-info is-rounded"
+          :class="{ 'is-loading': isFetchingData }"
+        >
           {{ isLogin ? "Login" : "Sign Up" }}
         </button>
       </div>
@@ -56,22 +60,18 @@
 </template>
 
 <script>
-// example of using classic options API alongside vue composition API
-import { useFetch } from "vue-composable";
 export default {
   name: "Login",
   components: {},
   props: {
-    isLogin: Boolean
-  },
-  setup() {
-    const { json: data, loading, exec } = useFetch();
-
-    return {
-      data,
-      loading,
-      exec
-    };
+    isLogin: {
+      type: Boolean,
+      default: true
+    },
+    isFetchingData: {
+      type: Boolean,
+      default: false
+    }
   },
   data: () => {
     return {
@@ -114,17 +114,10 @@ export default {
       }
 
       if (isEmailValid && isPasswordValid && doPasswordMatch) {
-        const req = new Request("/api/signin", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            email: this.email,
-            password: this.password
-          })
+        this.$emit("authSubmitted", {
+          email: this.email,
+          password: this.password
         });
-        this.exec(req);
       }
     },
     isEmailValid: email => {
@@ -141,5 +134,9 @@ export default {
   max-width: 480px;
   margin-left: auto;
   margin-right: auto;
+}
+
+button {
+  width: 120px;
 }
 </style>

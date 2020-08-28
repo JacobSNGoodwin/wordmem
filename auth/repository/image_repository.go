@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/storage"
-	"github.com/jacobsngoodwin/wordmem/auth/errors"
+	"github.com/jacobsngoodwin/wordmem/auth/rerrors"
 )
 
 // ImageRepository is data/repository implementation
@@ -32,7 +32,7 @@ func (r *ImageRepository) UploadUserImage(uid string, imageFile multipart.File) 
 	// multipart.File has a writer!
 	if _, err := io.Copy(wc, imageFile); err != nil {
 		log.Printf("Unable to write file to Google Cloud Storage: %v\n", err)
-		return errors.NewUnknown(http.StatusInternalServerError)
+		return rerrors.NewUnknown(http.StatusInternalServerError)
 	}
 
 	if err := wc.Close(); err != nil {

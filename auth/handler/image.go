@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jacobsngoodwin/wordmem/auth/errors"
+	"github.com/jacobsngoodwin/wordmem/auth/rerrors"
 	"github.com/jacobsngoodwin/wordmem/auth/util"
 )
 
@@ -17,7 +17,7 @@ func (e *Env) Image(c *gin.Context) {
 	if !exists {
 		log.Printf("Unable to extract user from request context for unknown reason: %v\n", c)
 		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": errors.NewUnknown(http.StatusInternalServerError),
+			"error": rerrors.NewUnknown(http.StatusInternalServerError),
 		})
 
 		return
@@ -34,7 +34,7 @@ func (e *Env) Image(c *gin.Context) {
 		// should be a validation error
 		log.Printf("Unable parse mutlipart/form")
 		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": errors.NewValidation("imageFile", ""),
+			"error": rerrors.NewValidation("imageFile", ""),
 		})
 		return
 	}

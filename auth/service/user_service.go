@@ -7,8 +7,8 @@ import (
 	"net/http"
 
 	"github.com/google/uuid"
-	"github.com/jacobsngoodwin/wordmem/auth/errors"
 	"github.com/jacobsngoodwin/wordmem/auth/model"
+	"github.com/jacobsngoodwin/wordmem/auth/rerrors"
 	"github.com/jacobsngoodwin/wordmem/auth/util"
 )
 
@@ -36,18 +36,18 @@ func (s *UserService) SignIn(email string, password string) (*model.User, error)
 
 	// Will return NotAuthorized to user doesn't know if no user was found
 	if err != nil {
-		return nil, errors.NewUnauthorized("Invalid email/password combination")
+		return nil, rerrors.NewUnauthorized("Invalid email/password combination")
 	}
 
 	// verify password
 	match, err := util.ComparePasswords(u.Password, password)
 
 	if err != nil {
-		return nil, errors.NewUnknown(http.StatusInternalServerError)
+		return nil, rerrors.NewUnknown(http.StatusInternalServerError)
 	}
 
 	if !match {
-		return nil, errors.NewUnauthorized("Invalid email and password combination")
+		return nil, rerrors.NewUnauthorized("Invalid email and password combination")
 	}
 
 	return u, nil
@@ -94,13 +94,13 @@ func (s *UserService) SetProfileImage(uid uuid.UUID, imageFileHeader *multipart.
 	// Validate image mime-type is allowable
 	if valid := util.IsAllowedImageType(imageFileHeader); !valid {
 		log.Println("Image is not an allowable mimtype")
-		return "", errors.NewValidation("imageFile", "")
+		return "", rerrors.NewValidation("imageFile", "")
 	}
 
 	imageFile, err := imageFileHeader.Open()
 	if err != nil {
 		log.Printf("Failed to open image file: %v\n", err)
-		return "", errors.NewUnknown(500)
+		return "", rerrors.NewUnknown(500)
 	}
 
 	// Upload user's image to ImageRepository

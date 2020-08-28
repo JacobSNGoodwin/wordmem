@@ -5,8 +5,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/jacobsngoodwin/wordmem/auth/errors"
 	"github.com/jacobsngoodwin/wordmem/auth/model"
+	"github.com/jacobsngoodwin/wordmem/auth/rerrors"
 	"github.com/jacobsngoodwin/wordmem/auth/util"
 )
 
@@ -28,20 +28,20 @@ func (s *TokenService) NewPairFromUser(u *model.User, prevTokenID string) (*mode
 
 	if err != nil {
 		log.Printf("Error generating idToken for uid: %v. Error: %v\n", u.UID, err.Error())
-		return nil, errors.NewUnknown(http.StatusInternalServerError)
+		return nil, rerrors.NewUnknown(http.StatusInternalServerError)
 	}
 
 	refreshToken, err := util.GenerateRefreshToken(u.UID, s.RefreshSecret)
 
 	if err != nil {
 		log.Printf("Error generating refreshToken for uid: %v. Error: %v\n", u.UID, err.Error())
-		return nil, errors.NewUnknown(http.StatusInternalServerError)
+		return nil, rerrors.NewUnknown(http.StatusInternalServerError)
 	}
 
 	// set freshly minted refresh token to valid list
 	if err := s.TokenRepository.SetRefreshToken(u.UID.String(), refreshToken.ID, refreshToken.ExpiresIn); err != nil {
 		log.Printf("Error storing tokenID for uid: %v. Error: %v\n", u.UID, err.Error())
-		return nil, errors.NewUnknown(http.StatusInternalServerError)
+		return nil, rerrors.NewUnknown(http.StatusInternalServerError)
 	}
 
 	// delete old refresh token
@@ -72,7 +72,7 @@ func (s *TokenService) ValidateRefreshToken(refreshTokenString string) (*util.Re
 	// We'll just return unauthorized error in all instances of failing to verify user
 	if err != nil {
 		log.Printf("Unable to validate or parse refreshToken for token string: %s\n%v\n", refreshTokenString, err)
-		return nil, errors.NewUnauthorized("Unable to verify user from refresh token")
+		return nil, rerrors.NewUnauthorized("Unable to verify user from refresh token")
 	}
 
 	return claims, nil
@@ -86,7 +86,7 @@ func (s *TokenService) ValidateIDToken(tokenString string) (*util.IDTokenCustomC
 	// We'll just return unauthorized error in all instances of failing to verify user
 	if err != nil {
 		log.Printf("Unable to validate or parse idToken - Error: %v\n", err)
-		return nil, errors.NewUnauthorized("Unable to verify user from idToken")
+		return nil, rerrors.NewUnauthorized("Unable to verify user from idToken")
 	}
 
 	return claims, nil

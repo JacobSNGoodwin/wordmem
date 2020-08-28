@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
-	"github.com/jacobsngoodwin/wordmem/auth/errors"
+	"github.com/jacobsngoodwin/wordmem/auth/rerrors"
 )
 
 type authHeader struct {
@@ -29,7 +29,7 @@ func (e *Env) AuthUser() gin.HandlerFunc {
 			}
 
 			// vErr is serializable because it has struct tags!
-			vErr := errors.NewFromValidationErrors(err.(validator.ValidationErrors))
+			vErr := rerrors.NewFromValidationErrors(err.(validator.ValidationErrors))
 			c.JSON(vErr.Status, gin.H{"error": vErr})
 			c.Abort()
 			return
@@ -39,7 +39,7 @@ func (e *Env) AuthUser() gin.HandlerFunc {
 
 		if len(idTokenHeader) < 2 {
 			c.JSON(http.StatusUnauthorized, gin.H{
-				"error": errors.NewUnauthorized("Must provide Authorization header with format Bearer token"),
+				"error": rerrors.NewUnauthorized("Must provide Authorization header with format Bearer token"),
 			})
 			c.Abort()
 			return
@@ -49,7 +49,7 @@ func (e *Env) AuthUser() gin.HandlerFunc {
 
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{
-				"error": errors.NewUnauthorized("Provided token is invalid"),
+				"error": rerrors.NewUnauthorized("Provided token is invalid"),
 			})
 			c.Abort()
 			return

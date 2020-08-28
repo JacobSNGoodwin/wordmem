@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
-	"github.com/jacobsngoodwin/wordmem/auth/errors"
+	"github.com/jacobsngoodwin/wordmem/auth/rerrors"
 )
 
 // bindData is helper function, returns false if data is not bound
@@ -18,7 +18,7 @@ func bindData(c *gin.Context, req interface{}) bool {
 		// find a case where this error was anything other than InvalidValidationError
 		// see https://godoc.org/github.com/go-playground/validator#InvalidValidationError
 		if _, ok := err.(*validator.InvalidValidationError); ok {
-			err := errors.NewUnknown(http.StatusBadRequest)
+			err := rerrors.NewUnknown(http.StatusBadRequest)
 			c.JSON(err.Status, gin.H{
 				"error": err,
 			})
@@ -27,18 +27,18 @@ func bindData(c *gin.Context, req interface{}) bool {
 
 		if err, ok := err.(validator.ValidationErrors); ok {
 			// vErr is serializable because it has struct tags!
-			vErr := errors.NewFromValidationErrors(err)
+			vErr := rerrors.NewFromValidationErrors(err)
 			c.JSON(vErr.Status, gin.H{"error": vErr})
 			return false
 		}
 
 		if err.Error() == "http: request body too large" {
-			err := errors.NewExceedsMaxSize(MaxBodySize, c.Request.ContentLength)
+			err := rerrors.NewExceedsMaxSize(MaxBodySize, c.Request.ContentLength)
 			c.JSON(err.Status, gin.H{"error": err})
 			return false
 		}
 
-		c.JSON(http.StatusInternalServerError, gin.H{"error": errors.NewUnknown(http.StatusInternalServerError)})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": rerrors.NewUnknown(http.StatusInternalServerError)})
 		return false
 	}
 

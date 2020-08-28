@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/go-redis/redis/v8"
-	"github.com/jacobsngoodwin/wordmem/auth/errors"
+	"github.com/jacobsngoodwin/wordmem/auth/rerrors"
 )
 
 // TokenRepository is data/repository implementation
@@ -28,7 +28,7 @@ func (r *TokenRepository) SetRefreshToken(userID string, tokenID string, expires
 	key := fmt.Sprintf("%s:%s", userID, tokenID)
 	if err := r.Redis.Set(context.Background(), key, 0, expiresIn).Err(); err != nil {
 		log.Printf("Could not SET refresh token to redis for userID/tokenID: %s/%s: %v\n", userID, tokenID, err)
-		return errors.NewUnknown(http.StatusInternalServerError)
+		return rerrors.NewUnknown(http.StatusInternalServerError)
 	}
 	return nil
 }
@@ -39,7 +39,7 @@ func (r *TokenRepository) DeleteRefreshToken(userID string, tokenID string) erro
 	key := fmt.Sprintf("%s:%s", userID, tokenID)
 	if err := r.Redis.Del(context.Background(), key).Err(); err != nil {
 		log.Printf("Could not delete refresh token to redis for userID/tokenID: %s/%s: %v\n", userID, tokenID, err)
-		return errors.NewUnknown(http.StatusInternalServerError)
+		return rerrors.NewUnknown(http.StatusInternalServerError)
 	}
 
 	return nil

@@ -26,8 +26,9 @@ func (e *Env) Details(c *gin.Context) {
 
 	if !exists {
 		log.Printf("Unable to extract user from request context for unknown reason: %v\n", c)
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": rerrors.NewUnknown(http.StatusInternalServerError),
+		err := rerrors.NewInternal()
+		c.JSON(err.Status(), gin.H{
+			"error": err,
 		})
 
 		return

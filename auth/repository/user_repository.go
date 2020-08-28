@@ -2,7 +2,6 @@ package repository
 
 import (
 	"log"
-	"net/http"
 
 	"github.com/google/uuid"
 	"github.com/jacobsngoodwin/wordmem/auth/model"
@@ -28,18 +27,18 @@ func (r *UserRepository) Create(u *model.User) (*model.User, error) {
 
 	if err != nil {
 		log.Printf("Unable to create password has for user: %v\n", u.Email)
-		return newU, rerrors.NewUnknown(http.StatusInternalServerError)
+		return newU, rerrors.NewInternal()
 	}
 
 	if err := r.DB.Get(newU, query, u.Email, pw); err != nil {
 		// check unique constraint
 		if err, ok := err.(*pq.Error); ok && err.Code.Name() == "unique_violation" {
 			log.Printf("Could not create a user with email: %v. Reason: %v\n", u.Email, err.Code.Name())
-			return newU, rerrors.NewAlreadyExists("email", u.Email)
+			return newU, rerrors.NewConflict("email", u.Email)
 		}
 
 		log.Printf("Could not create a user with email: %v. Reason: %v\n", u.Email, err)
-		return newU, rerrors.NewUnknown(http.StatusInternalServerError)
+		return newU, rerrors.NewInternal()
 	}
 	return newU, nil
 }
@@ -95,12 +94,12 @@ func (r *UserRepository) Update(u *model.User) error {
 
 	if err != nil {
 		log.Printf("Unable to prepare user update query: %v\n", err)
-		return rerrors.NewUnknown(http.StatusInternalServerError)
+		return rerrors.NewInternal()
 	}
 
 	if err := nstmt.Get(u, u); err != nil {
 		log.Printf("Failed to update details for user: %v\n", u)
-		return rerrors.NewUnknown(http.StatusNotFound)
+		return rerrors.NewInternal()
 	}
 
 	return nil
@@ -118,7 +117,7 @@ func (r *UserRepository) UpdateImage(uid uuid.UUID, imageURL string) error {
 
 	if err != nil {
 		log.Printf("Error update image_url in database: %v\n", err)
-		return rerrors.NewUnknown(http.StatusInternalServerError)
+		return rerrors.NewInternal()
 	}
 
 	return nil

@@ -13,18 +13,19 @@ import (
 // this allows user to have up-to-date resource for updating
 // their profile data. The token could be outdated
 func (e *Env) Me(c *gin.Context) {
-	userClaims, exists := c.Get("user")
+	claims, exists := c.Get("user")
 
 	if !exists {
 		log.Printf("Unable to extract user from request context for unknown reason: %v\n", c)
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": rerrors.NewUnknown(http.StatusInternalServerError),
+		err := rerrors.NewInternal()
+		c.JSON(err.Status(), gin.H{
+			"error": err,
 		})
 
 		return
 	}
 
-	uid := userClaims.(*util.IDTokenCustomClaims).User.UID
+	uid := claims.(*util.IDTokenCustomClaims).User.UID
 	u, err := e.UserService.Get(uid)
 
 	if err != nil {

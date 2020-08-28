@@ -16,8 +16,9 @@ func (e *Env) Image(c *gin.Context) {
 
 	if !exists {
 		log.Printf("Unable to extract user from request context for unknown reason: %v\n", c)
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": rerrors.NewUnknown(http.StatusInternalServerError),
+		err := rerrors.NewInternal()
+		c.JSON(err.Status(), gin.H{
+			"error": err,
 		})
 
 		return
@@ -34,7 +35,7 @@ func (e *Env) Image(c *gin.Context) {
 		// should be a validation error
 		log.Printf("Unable parse mutlipart/form")
 		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": rerrors.NewValidation("imageFile", ""),
+			"error": rerrors.NewBadRequest("Unable to parse multipart/form-data"),
 		})
 		return
 	}

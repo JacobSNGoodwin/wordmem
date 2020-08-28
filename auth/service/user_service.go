@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"mime/multipart"
-	"net/http"
 
 	"github.com/google/uuid"
 	"github.com/jacobsngoodwin/wordmem/auth/model"
@@ -36,18 +35,18 @@ func (s *UserService) SignIn(email string, password string) (*model.User, error)
 
 	// Will return NotAuthorized to user doesn't know if no user was found
 	if err != nil {
-		return nil, rerrors.NewUnauthorized("Invalid email/password combination")
+		return nil, rerrors.NewAuthorization("Invalid email/password combination")
 	}
 
 	// verify password
 	match, err := util.ComparePasswords(u.Password, password)
 
 	if err != nil {
-		return nil, rerrors.NewUnknown(http.StatusInternalServerError)
+		return nil, rerrors.NewInternal()
 	}
 
 	if !match {
-		return nil, rerrors.NewUnauthorized("Invalid email and password combination")
+		return nil, rerrors.NewAuthorization("Invalid email and password combination")
 	}
 
 	return u, nil
@@ -94,13 +93,13 @@ func (s *UserService) SetProfileImage(uid uuid.UUID, imageFileHeader *multipart.
 	// Validate image mime-type is allowable
 	if valid := util.IsAllowedImageType(imageFileHeader); !valid {
 		log.Println("Image is not an allowable mimtype")
-		return "", rerrors.NewValidation("imageFile", "")
+		return "", rerrors.NewBadRequest("imageFile must be 'image/jpeg' or 'image/png'")
 	}
 
 	imageFile, err := imageFileHeader.Open()
 	if err != nil {
 		log.Printf("Failed to open image file: %v\n", err)
-		return "", rerrors.NewUnknown(500)
+		return "", rerrors.NewInternal()
 	}
 
 	// Upload user's image to ImageRepository

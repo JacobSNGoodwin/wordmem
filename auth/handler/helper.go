@@ -2,12 +2,17 @@ package handler
 
 import (
 	"log"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"github.com/jacobsngoodwin/wordmem/auth/rerrors"
 )
+
+// used to help extract validation errors
+type invalidArgument struct {
+	Name  string `json:"name"`
+	Value string `json:"value"`
+}
 
 // bindData is helper function, returns false if data is not bound
 func bindData(c *gin.Context, req interface{}) bool {
@@ -18,27 +23,44 @@ func bindData(c *gin.Context, req interface{}) bool {
 		// find a case where this error was anything other than InvalidValidationError
 		// see https://godoc.org/github.com/go-playground/validator#InvalidValidationError
 		if _, ok := err.(*validator.InvalidValidationError); ok {
-			err := rerrors.NewUnknown(http.StatusBadRequest)
-			c.JSON(err.Status, gin.H{
+			err := rerrors.NewInternal()
+			c.JSON(err.Status(), gin.H{
 				"error": err,
 			})
 			return false
 		}
 
-		if err, ok := err.(validator.ValidationErrors); ok {
-			// vErr is serializable because it has struct tags!
-			vErr := rerrors.NewFromValidationErrors(err)
-			c.JSON(vErr.Status, gin.H{"error": vErr})
+		if errs, ok := err.(validator.ValidationErrors); ok {
+
+			// could probably extract this, it is also in middleware_auth_user
+			var invalidArgs []invalidArgument
+
+			for _, err := range errs {
+				invalidArgs = append(invalidArgs, invalidArgument{
+					err.Field(),
+					err.Value().(string),
+				})
+			}
+
+			err := rerrors.NewBadRequest("Invalid request parameters. See invalidArgs")
+
+			c.JSON(err.Status(), gin.H{
+				"error":       err,
+				"invalidArgs": invalidArgs,
+			})
 			return false
 		}
 
+		// Not specific type here, so we check the string
 		if err.Error() == "http: request body too large" {
-			err := rerrors.NewExceedsMaxSize(MaxBodySize, c.Request.ContentLength)
-			c.JSON(err.Status, gin.H{"error": err})
+			err := rerrors.NewPayloadTooLarge(MaxBodySize, c.Request.ContentLength)
+			c.JSON(err.Status(), gin.H{"error": err})
 			return false
 		}
 
-		c.JSON(http.StatusInternalServerError, gin.H{"error": rerrors.NewUnknown(http.StatusInternalServerError)})
+		fallBack := rerrors.NewInternal()
+
+		c.JSON(fallBack.Status(), gin.H{"error": fallBack})
 		return false
 	}
 

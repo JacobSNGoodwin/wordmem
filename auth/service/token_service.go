@@ -3,7 +3,6 @@ package service
 import (
 	"crypto/rsa"
 	"log"
-	"net/http"
 
 	"github.com/jacobsngoodwin/wordmem/auth/model"
 	"github.com/jacobsngoodwin/wordmem/auth/rerrors"
@@ -28,20 +27,20 @@ func (s *TokenService) NewPairFromUser(u *model.User, prevTokenID string) (*mode
 
 	if err != nil {
 		log.Printf("Error generating idToken for uid: %v. Error: %v\n", u.UID, err.Error())
-		return nil, rerrors.NewUnknown(http.StatusInternalServerError)
+		return nil, rerrors.NewInternal()
 	}
 
 	refreshToken, err := util.GenerateRefreshToken(u.UID, s.RefreshSecret)
 
 	if err != nil {
 		log.Printf("Error generating refreshToken for uid: %v. Error: %v\n", u.UID, err.Error())
-		return nil, rerrors.NewUnknown(http.StatusInternalServerError)
+		return nil, rerrors.NewInternal()
 	}
 
 	// set freshly minted refresh token to valid list
 	if err := s.TokenRepository.SetRefreshToken(u.UID.String(), refreshToken.ID, refreshToken.ExpiresIn); err != nil {
 		log.Printf("Error storing tokenID for uid: %v. Error: %v\n", u.UID, err.Error())
-		return nil, rerrors.NewUnknown(http.StatusInternalServerError)
+		return nil, rerrors.NewInternal()
 	}
 
 	// delete old refresh token
@@ -72,7 +71,7 @@ func (s *TokenService) ValidateRefreshToken(refreshTokenString string) (*util.Re
 	// We'll just return unauthorized error in all instances of failing to verify user
 	if err != nil {
 		log.Printf("Unable to validate or parse refreshToken for token string: %s\n%v\n", refreshTokenString, err)
-		return nil, rerrors.NewUnauthorized("Unable to verify user from refresh token")
+		return nil, rerrors.NewAuthorization("Unable to verify user from refresh token")
 	}
 
 	return claims, nil
@@ -86,7 +85,7 @@ func (s *TokenService) ValidateIDToken(tokenString string) (*util.IDTokenCustomC
 	// We'll just return unauthorized error in all instances of failing to verify user
 	if err != nil {
 		log.Printf("Unable to validate or parse idToken - Error: %v\n", err)
-		return nil, rerrors.NewUnauthorized("Unable to verify user from idToken")
+		return nil, rerrors.NewAuthorization("Unable to verify user from idToken")
 	}
 
 	return claims, nil

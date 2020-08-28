@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -21,16 +20,32 @@ func (e *Env) AuthUser() gin.HandlerFunc {
 		h := authHeader{}
 
 		if err := c.ShouldBindHeader(&h); err != nil {
-			// this type check appears to be extra cautious as I could not
-			// find a case where this error was anything other than InvalidValidationError
-			// see https://godoc.org/github.com/go-playground/validator#InvalidValidationError
-			if _, ok := err.(*validator.InvalidValidationError); ok {
-				c.JSON(http.StatusBadRequest, gin.H{"error": "Unknown Error"})
+			if errs, ok := err.(validator.ValidationErrors); ok {
+
+				// could probably extract this, it is also in middleware_auth_user
+				var invalidArgs []invalidArgument
+
+				for _, err := range errs {
+					invalidArgs = append(invalidArgs, invalidArgument{
+						err.Field(),
+						err.Value().(string),
+					})
+				}
+
+				err := rerrors.NewBadRequest("Invalid request parameters. See invalidArgs")
+
+				c.JSON(err.Status(), gin.H{
+					"error":       err,
+					"invalidArgs": invalidArgs,
+				})
+				c.Abort()
+				return
 			}
 
-			// vErr is serializable because it has struct tags!
-			vErr := rerrors.NewFromValidationErrors(err.(validator.ValidationErrors))
-			c.JSON(vErr.Status, gin.H{"error": vErr})
+			err := rerrors.NewInternal()
+			c.JSON(err.Status(), gin.H{
+				"error": err,
+			})
 			c.Abort()
 			return
 		}
@@ -38,8 +53,10 @@ func (e *Env) AuthUser() gin.HandlerFunc {
 		idTokenHeader := strings.Split(h.IDToken, "Bearer ")
 
 		if len(idTokenHeader) < 2 {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"error": rerrors.NewUnauthorized("Must provide Authorization header with format Bearer token"),
+			err := rerrors.NewAuthorization("Must provide Authorization header with format Bearer token")
+
+			c.JSON(err.Status(), gin.H{
+				"error": err,
 			})
 			c.Abort()
 			return
@@ -48,8 +65,9 @@ func (e *Env) AuthUser() gin.HandlerFunc {
 		claims, err := e.TokenService.ValidateIDToken(idTokenHeader[1])
 
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"error": rerrors.NewUnauthorized("Provided token is invalid"),
+			err := rerrors.NewAuthorization("Provided token is invalid")
+			c.JSON(err.Status(), gin.H{
+				"error": err,
 			})
 			c.Abort()
 			return

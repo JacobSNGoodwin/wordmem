@@ -6,7 +6,6 @@ import (
 	"io"
 	"log"
 	"mime/multipart"
-	"net/http"
 	"time"
 
 	"cloud.google.com/go/storage"
@@ -32,7 +31,7 @@ func (r *ImageRepository) UploadUserImage(uid string, imageFile multipart.File) 
 	// multipart.File has a writer!
 	if _, err := io.Copy(wc, imageFile); err != nil {
 		log.Printf("Unable to write file to Google Cloud Storage: %v\n", err)
-		return rerrors.NewUnknown(http.StatusInternalServerError)
+		return rerrors.NewInternal()
 	}
 
 	if err := wc.Close(); err != nil {

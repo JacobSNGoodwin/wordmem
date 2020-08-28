@@ -1,12 +1,10 @@
+import "./initComposition"; // this is because of webpack config updated in full VUE3
 import Vue from "vue";
-import VueCompositionAPI from "@vue/composition-api";
 import App from "./App.vue";
 import router from "./router";
 import "./scss/index.scss";
 
 Vue.config.productionTip = false;
-
-Vue.use(VueCompositionAPI);
 
 new Vue({
   router,

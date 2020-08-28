@@ -7,8 +7,12 @@
 </template>
 
 <script>
+import { provideAuth } from "./store/auth";
 export default {
-  name: "App"
+  name: "App",
+  setup() {
+    provideAuth();
+  }
 };
 </script>
 

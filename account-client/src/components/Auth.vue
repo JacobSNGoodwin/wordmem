@@ -15,10 +15,13 @@
         <h1 class="has-text-centered title is-2 mb-6">Not Too Evil, Inc.</h1>
         <Login
           :isLogin="isLogin"
-          :isFetchingData="false"
+          :isFetchingData="state.isLoading.value"
           class="mt-4 mb-4"
           @authSubmitted="authSubmitted"
         />
+      </div>
+      <div>
+        {{ state.currentUser.value }}
       </div>
     </div>
   </div>
@@ -27,7 +30,7 @@
 <script>
 import { ref } from "@vue/composition-api";
 import Login from "../components/Login";
-import { useAuthenticate } from "../composables/useAuthenticate";
+import { useAuth } from "../store/auth";
 
 export default {
   name: "Auth",
@@ -39,22 +42,19 @@ export default {
       isLogin.value = newVal;
     };
 
-    const { loading, error, json, authenticate } = useAuthenticate();
+    const { state, signin, signup } = useAuth();
+
+    console.log(state);
 
     const authSubmitted = ({ email, password }) => {
-      // make sure to use value and only set url in function so
-      // that it is not outdated
-      const url = isLogin.value ? "/api/signin" : "/api/signup";
-      authenticate({ email, password, url });
+      isLogin.value ? signin(email, password) : signup(email, password);
     };
 
     return {
       isLogin,
       setIsLogin,
-      loading,
-      error,
-      json,
-      authSubmitted
+      authSubmitted,
+      state
     };
   }
 };

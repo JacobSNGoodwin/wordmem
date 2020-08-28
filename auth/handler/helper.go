@@ -10,15 +10,17 @@ import (
 
 // used to help extract validation errors
 type invalidArgument struct {
-	Name  string `json:"name"`
+	Field string `json:"field"`
 	Value string `json:"value"`
+	Tag   string `json:"tag"`
+	Param string `json:"param"`
 }
 
 // bindData is helper function, returns false if data is not bound
 func bindData(c *gin.Context, req interface{}) bool {
 	// Bind incoming json to struct and check for validation errors
 	if err := c.ShouldBind(req); err != nil {
-		log.Printf("Error binding data: %v\n", err)
+		log.Printf("Error binding data: %+v\n", err)
 		// this type check appears to be extra cautious as I could not
 		// find a case where this error was anything other than InvalidValidationError
 		// see https://godoc.org/github.com/go-playground/validator#InvalidValidationError
@@ -31,7 +33,6 @@ func bindData(c *gin.Context, req interface{}) bool {
 		}
 
 		if errs, ok := err.(validator.ValidationErrors); ok {
-
 			// could probably extract this, it is also in middleware_auth_user
 			var invalidArgs []invalidArgument
 
@@ -39,6 +40,8 @@ func bindData(c *gin.Context, req interface{}) bool {
 				invalidArgs = append(invalidArgs, invalidArgument{
 					err.Field(),
 					err.Value().(string),
+					err.Tag(),
+					err.Param(),
 				})
 			}
 

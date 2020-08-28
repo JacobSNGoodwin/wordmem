@@ -29,6 +29,8 @@ func (e *Env) AuthUser() gin.HandlerFunc {
 					invalidArgs = append(invalidArgs, invalidArgument{
 						err.Field(),
 						err.Value().(string),
+						err.Tag(),
+						err.Param(),
 					})
 				}
 

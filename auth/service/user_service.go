@@ -122,3 +122,11 @@ func (s *UserService) SetProfileImage(uid uuid.UUID, imageFileHeader *multipart.
 	return imageURL, nil
 
 }
+
+// Delete is used to remove a user (for rollback purposes)
+func (s *UserService) Delete(uuid uuid.UUID) error {
+	// Update user in UserRepository
+	err := s.UserRepository.Delete(uuid)
+
+	return err
+}

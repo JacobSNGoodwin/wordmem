@@ -39,6 +39,10 @@ func (e *Env) Signup(c *gin.Context) {
 		log.Printf("Failed to create tokens for user: %v\n", err.Error())
 		log.Printf("Rolling back user creation for user: %v\n", u)
 
+		// rollback - add good unit test because
+		// this is tough to recreate
+		e.UserService.Delete(u.UID)
+
 		c.JSON(http.StatusConflict, gin.H{
 			"error": err,
 		})

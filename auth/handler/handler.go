@@ -25,6 +25,7 @@ type IUserService interface {
 	SignUp(email string, password string) (*model.User, error)
 	SignIn(email string, password string) (*model.User, error)
 	UpdateDetails(u *model.User) error
+	Delete(uid uuid.UUID) error
 	SetProfileImage(uid uuid.UUID, imageFile *multipart.FileHeader) (string, error)
 }
 

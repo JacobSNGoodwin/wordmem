@@ -1,4 +1,4 @@
-package errors
+package rerrors
 
 type invalidArgument struct {
 	Name  string `json:"name"`

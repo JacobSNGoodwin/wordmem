@@ -20,9 +20,6 @@
           @authSubmitted="authSubmitted"
         />
       </div>
-      <div>
-        {{ state.currentUser.value }}
-      </div>
     </div>
   </div>
 </template>
@@ -43,8 +40,6 @@ export default {
     };
 
     const { state, signin, signup } = useAuth();
-
-    console.log(state);
 
     const authSubmitted = ({ email, password }) => {
       isLogin.value ? signin(email, password) : signup(email, password);

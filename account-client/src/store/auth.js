@@ -11,17 +11,11 @@ const state = reactive({
 // signin/signup reach out to api endpoint
 // on successful request, it sets the current use
 // along with the id and refresh tokens
-const signin = async (email, password) => {
-  const res = await authenticate(email, password, "/api/signin");
+const signin = async (email, password) =>
+  await authenticate(email, password, "/api/signin");
 
-  console.log("Signin response: ", await res.json());
-};
-
-const signup = async (email, password) => {
-  const res = await authenticate(email, password, "/api/signup");
-
-  console.log("Signup response: ", await res.json());
-};
+const signup = async (email, password) =>
+  await authenticate(email, password, "/api/signup");
 
 // in vue3 (as opposed to plugin), we can use the "readonly"
 const authStore = {
@@ -65,9 +59,20 @@ const authenticate = async (email, password, endpoint) => {
 
   state.isLoading = true;
 
-  const res = await fetch(req);
+  try {
+    const res = await fetch(req);
+    const { user, tokens } = await res.json();
 
-  state.isLoading = false;
-
-  return res;
+    state.idToken = tokens.idToken;
+    state.refreshToken = tokens.refreshToken;
+    state.currentUser = user;
+  } catch (e) {
+    console.log(e);
+    state.currentUser = null;
+    state.idToken = null;
+    state.refreshToken = null;
+    state.error = new Error("Error fetching user");
+  } finally {
+    state.isLoading = false;
+  }
 };

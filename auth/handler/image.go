@@ -49,7 +49,7 @@ func (e *Env) Image(c *gin.Context) {
 
 	userClaims := claims.(*util.IDTokenCustomClaims)
 
-	url, err := e.UserService.SetProfileImage(userClaims.UID, imageFile)
+	url, err := e.UserService.SetProfileImage(userClaims.User.UID, imageFile)
 
 	if err != nil {
 		log.Printf("Failed to update profile image: %v\n", err.Error())

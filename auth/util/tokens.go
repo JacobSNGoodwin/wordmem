@@ -12,10 +12,7 @@ import (
 
 // IDTokenCustomClaims holds structure of jwt claims of idToken
 type IDTokenCustomClaims struct {
-	UID      uuid.UUID `json:"uid"`
-	Email    string    `json:"email"`
-	Name     string    `json:"name"`
-	ImageURL string    `json:"imageUrl"`
+	User *model.User `json:"user"`
 	jwt.StandardClaims
 }
 
@@ -26,10 +23,7 @@ func GenerateIDToken(u *model.User, key *rsa.PrivateKey) (string, error) {
 	tokenExp := unixTime + 60*15 // 15 minutes from current time
 
 	claims := IDTokenCustomClaims{
-		UID:      u.UID,
-		Name:     u.Name,
-		Email:    u.Email,
-		ImageURL: u.ImageURL,
+		User: u,
 		StandardClaims: jwt.StandardClaims{
 			IssuedAt:  unixTime,
 			ExpiresAt: tokenExp,

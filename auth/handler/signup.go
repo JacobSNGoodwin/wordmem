@@ -48,7 +48,6 @@ func (e *Env) Signup(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
-		"user":   u,
 		"tokens": tokens,
 	})
 }

@@ -42,7 +42,7 @@ func (e *Env) Details(c *gin.Context) {
 	userClaims := claims.(*util.IDTokenCustomClaims)
 
 	u := model.User{
-		UID:     userClaims.UID,
+		UID:     userClaims.User.UID,
 		Name:    req.Name,
 		Email:   req.Email,
 		Website: req.Website,

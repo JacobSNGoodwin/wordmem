@@ -18,29 +18,27 @@ type UserRepository struct {
 }
 
 // Create reaches out to database SQLX api
-func (r *UserRepository) Create(u *model.User) (*model.User, error) {
-	query := "INSERT INTO users (email, password) VALUES ($1, $2) RETURNING uid, email"
-
-	newU := &model.User{}
+func (r *UserRepository) Create(u *model.User) error {
+	query := "INSERT INTO users (email, password) VALUES ($1, $2) RETURNING *"
 
 	pw, err := util.HashPassword(u.Password)
 
 	if err != nil {
 		log.Printf("Unable to create password has for user: %v\n", u.Email)
-		return newU, rerrors.NewInternal()
+		return rerrors.NewInternal()
 	}
 
-	if err := r.DB.Get(newU, query, u.Email, pw); err != nil {
+	if err := r.DB.Get(u, query, u.Email, pw); err != nil {
 		// check unique constraint
 		if err, ok := err.(*pq.Error); ok && err.Code.Name() == "unique_violation" {
 			log.Printf("Could not create a user with email: %v. Reason: %v\n", u.Email, err.Code.Name())
-			return newU, rerrors.NewConflict("email", u.Email)
+			return rerrors.NewConflict("email", u.Email)
 		}
 
 		log.Printf("Could not create a user with email: %v. Reason: %v\n", u.Email, err)
-		return newU, rerrors.NewInternal()
+		return rerrors.NewInternal()
 	}
-	return newU, nil
+	return nil
 }
 
 // Delete removes a user based on their uid

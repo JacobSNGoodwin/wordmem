@@ -20,12 +20,15 @@ type UserService struct {
 
 // SignUp creates a new user based on data in model.User
 func (s *UserService) SignUp(email string, password string) (*model.User, error) {
-	// In this case, we have a one-to-one correspondence between service method "SignUp" and repository method "Create"
-	// This is not always the case, though I can understand why this looks redundant
-	return s.UserRepository.Create(&model.User{
+	u := &model.User{
 		Email:    email,
 		Password: password,
-	})
+	}
+	if err := s.UserRepository.Create(u); err != nil {
+		return nil, err
+	}
+
+	return u, nil
 }
 
 // SignIn returns a user after comparing supplied email/password with

@@ -14,7 +14,7 @@ import (
 // but I could not come up with a good verb name (best I could do was)
 // UserRepositoryInteractor
 type IUserRepository interface {
-	Create(u *model.User) (*model.User, error)
+	Create(u *model.User) error
 	Delete(uid uuid.UUID) error
 	FindByID(uid uuid.UUID) (*model.User, error)
 	FindByEmail(email string) (*model.User, error)

@@ -15,10 +15,13 @@
         <h1 class="has-text-centered title is-2 mb-6">Not Too Evil, Inc.</h1>
         <Login
           :isLogin="isLogin"
-          :isFetchingData="state.isLoading.value"
+          :isFetchingData="state.isLoading"
           class="mt-4 mb-4"
           @authSubmitted="authSubmitted"
         />
+        <div v-if="state.error">
+          <p>{{ state.error.message }}</p>
+        </div>
       </div>
     </div>
   </div>

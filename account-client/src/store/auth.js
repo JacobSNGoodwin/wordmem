@@ -1,4 +1,4 @@
-import { reactive, provide, inject, toRefs } from "@vue/composition-api";
+import { reactive, provide, inject } from "@vue/composition-api";
 import jwt_decode from "jwt-decode";
 import axios from "axios";
 
@@ -26,7 +26,7 @@ const signup = async (email, password) =>
 
 // in vue3 (as opposed to plugin), we can use the "readonly"
 const authStore = {
-  state: toRefs(state), // consuming component can destructure withou losing reactivity!
+  state, // consuming component can destructure withou losing reactivity!
   signin,
   signup
 };
@@ -85,7 +85,7 @@ const doRequest = async (url, method, body) => {
     data = response.data;
   } catch (e) {
     if (e.response) {
-      error = e.response.data;
+      error = e.response.data.error;
     } else if (e.request) {
       error = e.request;
     } else {

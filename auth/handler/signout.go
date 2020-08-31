@@ -9,7 +9,7 @@ import (
 	"github.com/jacobsngoodwin/wordmem/auth/util"
 )
 
-// Signout signs user out be invalidating all
+// Signout signs user out by invalidating all
 // of a users refresh tokens
 func (e *Env) Signout(c *gin.Context) {
 	claims, exists := c.Get("user")

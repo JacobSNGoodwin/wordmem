@@ -4,8 +4,6 @@ import axios from "axios";
 
 const state = reactive({
   currentUser: null,
-  idToken: null,
-  refreshToken: null,
   isLoading: false,
   error: null
 });
@@ -18,6 +16,13 @@ const signin = async (email, password) =>
 
 const signup = async (email, password) =>
   await authenticate(email, password, "/api/signup");
+
+// get user from idToken. Verify token validity
+// const getUser = async () =>
+
+// const refreshIdToken = async () =>
+
+// const signout = async(idToken) =>
 
 // in vue3 (as opposed to plugin), we can use the "readonly"
 const authStore = {
@@ -47,31 +52,55 @@ export function useAuth() {
 // util functions
 
 // authenticate implements common code between signin and signup
-const authenticate = async (email, password, endpoint) => {
+const authenticate = async (email, password, url) => {
   state.isLoading = true;
 
-  try {
-    const res = await axios.post(endpoint, { email, password });
+  const { data, error } = await doRequest(url, "post", { email, password });
 
-    const { tokens } = res.data;
-
-    state.idToken = tokens.idToken;
-    state.refreshToken = tokens.refreshToken;
-
-    const tokenClaims = jwt_decode(tokens.idToken);
-
-    // set tokens to local storage with expiry (separate function)
-    state.currentUser = tokenClaims.user;
-  } catch (e) {
-    // e.response for non 200
-    // e.request for requet errors
-    // else some other error
-    console.log(e.response);
-    state.currentUser = null;
-    state.idToken = null;
-    state.refreshToken = null;
-    state.error = e;
-  } finally {
+  if (error) {
+    state.error = error;
     state.isLoading = false;
+    return;
   }
+
+  const { tokens } = data;
+
+  storeTokens(tokens.idToken, tokens.refreshToken);
+
+  const tokenClaims = jwt_decode(tokens.idToken);
+
+  // set tokens to local storage with expiry (separate function)
+  state.currentUser = tokenClaims.user;
+  state.isLoading = false;
+};
+
+// doRequest is a helper function for
+// handling axios responses
+const doRequest = async (url, method, body) => {
+  let error;
+  let data;
+
+  try {
+    const response = await axios[method](url, body);
+    data = response.data;
+  } catch (e) {
+    if (e.response) {
+      error = e.response.data;
+    } else if (e.request) {
+      error = e.request;
+    } else {
+      error = e;
+    }
+  }
+
+  return {
+    data,
+    error
+  };
+};
+
+// storeTokens utility for storing idAndRefreshToken
+const storeTokens = (idToken, refreshToken) => {
+  localStorage.setItem("__evilCorpId", idToken);
+  localStorage.setItem("__evilCorpRf", refreshToken);
 };

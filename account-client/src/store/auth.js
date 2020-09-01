@@ -17,8 +17,60 @@ const signin = async (email, password) =>
 const signup = async (email, password) =>
   await authenticate(email, password, "/api/signup");
 
-// get user from idToken. Verify token validity
-// const getUser = async () =>
+// this method can be used on page load
+// to check for a current valid user idToken (short-lived)
+// If there is no short lived token, it checks for a long-lived token
+// and submits this to the refresh token endpoint
+const initUser = async () => {
+  state.isLoading = true;
+  state.error = null;
+
+  // check for idToken
+  const idToken = localStorage.getItem("__evilCorpId");
+  const idTokenClaims = getTokenPayload(idToken);
+
+  // if we have a valid idToken, set the user
+  if (idTokenClaims) {
+    state.currentUser = idTokenClaims.user;
+    state.isLoading = false;
+    return;
+  }
+
+  // we don't have a valid or non-expired idToken
+  // so we try the refresh token
+  const refreshToken = localStorage.getItem("__evilCorpRf");
+  const refreshTokenClaims = getTokenPayload(refreshToken);
+
+  // return setting user to null if no refresh token
+  if (!refreshTokenClaims) {
+    state.currentUser = null;
+    state.isLoading = false;
+
+    return;
+  }
+
+  // try refresh endpoint
+
+  const { data, error } = await doRequest("/api/tokens", "post", {
+    refreshToken
+  });
+
+  // failure to get a response from the endpoint
+  if (error) {
+    state.currentUser = null;
+    state.error = error;
+    state.isLoading = false;
+    return;
+  }
+
+  const { tokens } = data;
+  storeTokens(tokens.idToken, tokens.refreshToken);
+  const tokenClaims = jwt_decode(tokens.idToken);
+
+  // set tokens to local storage with expiry (separate function)
+  state.currentUser = tokenClaims.user;
+  state.isLoading = false;
+};
 
 // const refreshIdToken = async () =>
 
@@ -28,7 +80,8 @@ const signup = async (email, password) =>
 const authStore = {
   state, // consuming component can destructure withou losing reactivity!
   signin,
-  signup
+  signup,
+  initUser
 };
 
 // Create functions so the store can be
@@ -54,6 +107,7 @@ export function useAuth() {
 // authenticate implements common code between signin and signup
 const authenticate = async (email, password, url) => {
   state.isLoading = true;
+  state.error = null;
 
   const { data, error } = await doRequest(url, "post", { email, password });
 
@@ -103,4 +157,20 @@ const doRequest = async (url, method, body) => {
 const storeTokens = (idToken, refreshToken) => {
   localStorage.setItem("__evilCorpId", idToken);
   localStorage.setItem("__evilCorpRf", refreshToken);
+};
+
+// gets the token's payload, and returns null
+// if invalid
+const getTokenPayload = token => {
+  if (!token) {
+    return null;
+  }
+
+  const tokenClaims = jwt_decode(token);
+
+  if (tokenClaims.exp >= Date.now()) {
+    return null;
+  }
+
+  return tokenClaims;
 };

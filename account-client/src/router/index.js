@@ -1,8 +1,8 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import Home from "../views/Home";
-import Details from "../views/Details";
-// import Auth from "../components/Auth";
+import NotFound from "../views/NotFound";
+import Auth from "../views/Auth";
 
 Vue.use(VueRouter);
 
@@ -15,13 +15,14 @@ const routes = [
   {
     path: "/authenticate",
     name: "Auth",
-    component: () =>
-      import(/* webpackChunkName: "auth" */ "../components/Auth.vue")
+    component: Auth
+    // component: () =>
+    //   import(/* webpackChunkName: "auth" */ "../components/Auth.vue")
   },
   {
-    path: "/details",
-    name: "Details",
-    component: Details
+    path: "*",
+    name: "NotFound",
+    component: NotFound
   }
 ];
 

@@ -1,32 +1,33 @@
 <template>
   <div>
-    <Auth />
+    <Details />
   </div>
 </template>
 
 <script>
-// need to load auth state here and nav to details if we're authenticated
-// logout button and profile photo in navbar if logged in
-import Auth from "../components/Auth";
-import { onMounted } from "@vue/composition-api";
+import Details from "../components/Details";
 import { useAuth } from "../store/auth";
+import { onMounted } from "@vue/composition-api";
 
 export default {
   name: "Home",
   components: {
-    Auth
+    Details
   },
-  setup() {
-    const { state, initUser } = useAuth();
+  setup(_, ctx) {
+    const { currentUser, getUser } = useAuth();
 
     onMounted(async () => {
-      console.log("Home Mounted in setup, fools");
-      console.log("Before initUser(): ", state);
+      await getUser();
 
-      await initUser();
-
-      console.log("After initUser(): ", state);
+      if (!currentUser.value) {
+        ctx.root.$router.push("/authenticate");
+      }
     });
+
+    return {
+      currentUser
+    };
   }
 };
 </script>

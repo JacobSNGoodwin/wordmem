@@ -15,12 +15,12 @@
         <h1 class="has-text-centered title is-2 mb-6">Not Too Evil, Inc.</h1>
         <Login
           :isLogin="isLogin"
-          :isFetchingData="state.isLoading"
+          :isFetchingData="isLoading"
           class="mt-4 mb-4"
           @authSubmitted="authSubmitted"
         />
-        <div v-if="state.error">
-          <p>{{ state.error.message }}</p>
+        <div v-if="error">
+          <p>{{ error.message }}</p>
         </div>
       </div>
     </div>
@@ -35,24 +35,30 @@ import { useAuth } from "../store/auth";
 export default {
   name: "Auth",
   components: { Login },
-  setup() {
+  setup(_, ctx) {
     const isLogin = ref(true);
 
     const setIsLogin = newVal => {
       isLogin.value = newVal;
     };
 
-    const { state, signin, signup } = useAuth();
+    const { currentUser, error, isLoading, signin, signup } = useAuth();
 
     const authSubmitted = ({ email, password }) => {
       isLogin.value ? signin(email, password) : signup(email, password);
     };
 
+    if (currentUser) {
+      ctx.root.$router.push("/");
+    }
+
     return {
       isLogin,
       setIsLogin,
       authSubmitted,
-      state
+      currentUser,
+      error,
+      isLoading
     };
   }
 };

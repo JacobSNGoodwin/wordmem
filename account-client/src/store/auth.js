@@ -1,4 +1,4 @@
-import { reactive, provide, inject } from "@vue/composition-api";
+import { reactive, provide, inject, toRefs } from "@vue/composition-api";
 import jwt_decode from "jwt-decode";
 import axios from "axios";
 
@@ -21,7 +21,7 @@ const signup = async (email, password) =>
 // to check for a current valid user idToken (short-lived)
 // If there is no short lived token, it checks for a long-lived token
 // and submits this to the refresh token endpoint
-const initUser = async () => {
+const getUser = async () => {
   state.isLoading = true;
   state.error = null;
 
@@ -72,16 +72,14 @@ const initUser = async () => {
   state.isLoading = false;
 };
 
-// const refreshIdToken = async () =>
-
 // const signout = async(idToken) =>
 
-// in vue3 (as opposed to plugin), we can use the "readonly"
-const authStore = {
-  state, // consuming component can destructure withou losing reactivity!
+// in vue3 (as opposed to plugin), we can use the "readonly"/ Mp readonly option in preview
+export const authStore = {
+  ...toRefs(state), // consuming component can destructure withou losing reactivity!
   signin,
   signup,
-  initUser
+  getUser
 };
 
 // Create functions so the store can be

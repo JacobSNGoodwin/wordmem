@@ -1,8 +1,6 @@
 <template>
   <div>
-    <h2 class="title is-3 has-text-centered">
-      Update User Form
-    </h2>
+    {{ user }}
   </div>
 </template>
 
@@ -11,9 +9,9 @@ export default {
   name: "UpdateForm",
   components: {},
   props: {
-    isLogin: {
-      type: Boolean,
-      default: true
+    user: {
+      type: Object,
+      default: null
     },
     isFetchingData: {
       type: Boolean,

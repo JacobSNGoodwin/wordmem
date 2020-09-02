@@ -19,8 +19,8 @@
           class="mt-4 mb-4"
           @authSubmitted="authSubmitted"
         />
-        <div v-if="error">
-          <p>{{ error.message }}</p>
+        <div v-if="error" class="has-text-centered">
+          <p class="has-text-danger">{{ error.message }}</p>
         </div>
       </div>
     </div>

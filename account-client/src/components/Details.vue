@@ -9,12 +9,10 @@ export default {
   name: "Details",
   data: () => {
     return {
-      email: "",
       name: "",
       url: "",
       loadingUser: "",
       errors: {
-        email: false,
         password: false,
         confirmPassword: false
       }

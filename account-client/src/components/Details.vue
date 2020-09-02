@@ -7,8 +7,21 @@
 <script>
 export default {
   name: "Details",
+  data: () => {
+    return {
+      email: "",
+      name: "",
+      url: "",
+      loadingUser: "",
+      errors: {
+        email: false,
+        password: false,
+        confirmPassword: false
+      }
+    };
+  },
   async mounted() {
-    // fetch user fresh deets from "/me"
+    // fetch user details here
   }
 };
 </script>

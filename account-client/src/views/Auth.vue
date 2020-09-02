@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import { ref } from "@vue/composition-api";
+import { ref, watchEffect } from "@vue/composition-api";
 import Login from "../components/Login";
 import { useAuth } from "../store/auth";
 
@@ -48,9 +48,11 @@ export default {
       isLogin.value ? signin(email, password) : signup(email, password);
     };
 
-    if (currentUser) {
-      ctx.root.$router.push("/");
-    }
+    watchEffect(() => {
+      if (currentUser.value) {
+        ctx.root.$router.push({ name: "Home" });
+      }
+    });
 
     return {
       isLogin,

@@ -1,9 +1,6 @@
 <template>
   <div class="container">
-    <h2 class="title is-3 has-text-centered">
-      Account Details
-    </h2>
-    <form></form>
+    <h2 class="title is-3 has-text-centered">Account Details</h2>
   </div>
 </template>
 

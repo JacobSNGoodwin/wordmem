@@ -7,8 +7,27 @@
 </template>
 
 <script>
+import { useAuth } from "./store/auth";
+import { onMounted } from "@vue/composition-api";
 export default {
-  name: "App"
+  name: "App",
+  setup() {
+    const { getUser, currentUser } = useAuth();
+
+    onMounted(async () => {
+      await getUser();
+    });
+
+    // watchEffect(() => {
+    //   if (!currentUser.value) {
+    //     ctx.root.$router.push({ name: "Auth" });
+    //   }
+    // });
+
+    return {
+      currentUser
+    };
+  }
 };
 </script>
 

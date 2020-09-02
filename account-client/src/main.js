@@ -1,7 +1,8 @@
-import "./initComposition"; // this is because of webpack config updated in full VUE3
+import "./composition"; // this is because of webpack config updated in full VUE3
 import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
+import "./validator";
 import "./scss/index.scss";
 import { provideAuth } from "./store/auth";
 

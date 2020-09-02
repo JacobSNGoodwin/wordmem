@@ -1,9 +1,9 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import Home from "../views/Home";
-import NotFound from "../views/NotFound";
-import Auth from "../views/Auth";
-import { authStore } from "../store/auth";
+import Home from "./views/Home";
+import NotFound from "./views/NotFound";
+import Auth from "./views/Auth";
+import { authStore } from "./store/auth";
 
 Vue.use(VueRouter);
 

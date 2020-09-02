@@ -18,12 +18,6 @@ export default {
       await getUser();
     });
 
-    // watchEffect(() => {
-    //   if (!currentUser.value) {
-    //     ctx.root.$router.push({ name: "Auth" });
-    //   }
-    // });
-
     return {
       currentUser
     };

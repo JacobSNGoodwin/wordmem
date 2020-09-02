@@ -6,7 +6,10 @@
 
 <script>
 export default {
-  name: "Details"
+  name: "Details",
+  async mounted() {
+    // fetch user fresh deets from "/me"
+  }
 };
 </script>
 

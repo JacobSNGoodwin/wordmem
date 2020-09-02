@@ -2,13 +2,13 @@ import axios from "axios";
 import jwt_decode from "jwt-decode";
 
 // doRequest is a helper function for
-// handling axios responses
-export const doRequest = async (url, method, body) => {
+// handling axios responses - reqOptions follow axios req config
+export const doRequest = async reqOptions => {
   let error;
   let data;
 
   try {
-    const response = await axios[method](url, body);
+    const response = await axios(reqOptions);
     data = response.data;
   } catch (e) {
     if (e.response) {

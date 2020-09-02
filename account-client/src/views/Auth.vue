@@ -13,7 +13,7 @@
           </ul>
         </div>
         <h1 class="has-text-centered title is-2 mb-6">Not Too Evil, Inc.</h1>
-        <Login
+        <LoginForm
           :isLogin="isLogin"
           :isFetchingData="isLoading"
           class="mt-4 mb-4"
@@ -29,12 +29,12 @@
 
 <script>
 import { ref, watchEffect } from "@vue/composition-api";
-import Login from "../components/Login";
+import LoginForm from "../components/LoginForm";
 import { useAuth } from "../store/auth";
 
 export default {
   name: "Auth",
-  components: { Login },
+  components: { LoginForm },
   setup(_, ctx) {
     const isLogin = ref(true);
 

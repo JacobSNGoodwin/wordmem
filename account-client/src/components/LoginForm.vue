@@ -91,7 +91,7 @@
 
 <script>
 export default {
-  name: "Login",
+  name: "LoginForm",
   components: {},
   props: {
     isLogin: {

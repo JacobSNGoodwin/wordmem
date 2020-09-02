@@ -4,6 +4,7 @@ import { storeTokens, getTokenPayload, doRequest } from "../util";
 
 const state = reactive({
   currentUser: null,
+  idToken: null,
   isLoading: false,
   error: null
 });
@@ -31,6 +32,7 @@ const getUser = async () => {
 
   // if we have a valid idToken, set the user
   if (idTokenClaims) {
+    state.idToken = idToken;
     state.currentUser = idTokenClaims.user;
     state.isLoading = false;
     return;
@@ -44,6 +46,7 @@ const getUser = async () => {
   // return setting user to null if no refresh token
   if (!refreshTokenClaims) {
     state.currentUser = null;
+    state.idToken = null;
     state.isLoading = false;
 
     return;
@@ -51,13 +54,18 @@ const getUser = async () => {
 
   // try refresh endpoint
 
-  const { data, error } = await doRequest("/api/tokens", "post", {
-    refreshToken
+  const { data, error } = await doRequest({
+    url: "/api/tokens",
+    method: "post",
+    data: {
+      refreshToken
+    }
   });
 
   // failure to get a response from the endpoint
   if (error) {
     state.currentUser = null;
+    state.idToken = null;
     state.error = error;
     state.isLoading = false;
     return;
@@ -69,6 +77,7 @@ const getUser = async () => {
 
   // set tokens to local storage with expiry (separate function)
   state.currentUser = tokenClaims.user;
+  state.idToken = tokens.idToken;
   state.isLoading = false;
 };
 
@@ -105,7 +114,14 @@ const authenticate = async (email, password, url) => {
   state.isLoading = true;
   state.error = null;
 
-  const { data, error } = await doRequest(url, "post", { email, password });
+  const { data, error } = await doRequest({
+    url,
+    method: "post",
+    data: {
+      email,
+      password
+    }
+  });
 
   if (error) {
     state.error = error;
@@ -120,6 +136,7 @@ const authenticate = async (email, password, url) => {
   const tokenClaims = jwt_decode(tokens.idToken);
 
   // set tokens to local storage with expiry (separate function)
+  state.idToken = tokens.idToken;
   state.currentUser = tokenClaims.user;
   state.isLoading = false;
 };

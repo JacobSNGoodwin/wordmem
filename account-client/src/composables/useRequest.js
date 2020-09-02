@@ -1,32 +1,26 @@
-import axios from "axios";
 import { ref } from "@vue/composition-api";
+import { doRequest } from "../util";
 
-// a generic request function.
-// it will also help us to differentiate
-// between request/response errors
-const useRequest = (url, method, body) => {
-  const errors = ref([]);
+// request function to wrap the doRequest util method
+// this basically allows us to also add some state
+const useRequest = reqOptions => {
+  const error = ref(null);
   const data = ref(null);
   const loading = ref(false);
 
   const exec = async () => {
-    try {
-      loading.value = true;
-      errors.value = [];
-      data.value = null;
+    loading.value = true;
 
-      const response = await axios[method](url, body);
-      data.value = response.data;
-    } catch (error) {
-      console.log("error: ", error);
-    } finally {
-      loading.value = false;
-    }
+    const resp = await doRequest(reqOptions);
+    data.value = resp.value;
+    error.value = resp.error;
+
+    loading.value = false;
   };
 
   return {
     exec,
-    errors,
+    error,
     data,
     loading
   };

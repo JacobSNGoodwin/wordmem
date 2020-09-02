@@ -12,14 +12,15 @@ import { onMounted } from "@vue/composition-api";
 export default {
   name: "App",
   setup() {
-    const { getUser, currentUser } = useAuth();
+    const { getUser, currentUser, idToken } = useAuth();
 
     onMounted(async () => {
       await getUser();
     });
 
     return {
-      currentUser
+      currentUser,
+      idToken
     };
   }
 };

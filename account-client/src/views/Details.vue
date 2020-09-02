@@ -11,11 +11,7 @@ export default {
     return {
       name: "",
       url: "",
-      loadingUser: "",
-      errors: {
-        password: false,
-        confirmPassword: false
-      }
+      loadingUser: ""
     };
   },
   async mounted() {

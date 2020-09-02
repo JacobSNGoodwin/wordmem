@@ -1,8 +1,8 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import Home from "./views/Home";
 import NotFound from "./views/NotFound";
 import Auth from "./views/Auth";
+import Details from "./views/Details";
 import { authStore } from "./store/auth";
 
 Vue.use(VueRouter);
@@ -17,8 +17,8 @@ const routes = [
   },
   {
     path: "/",
-    name: "Home",
-    component: Home,
+    name: "Details",
+    component: Details,
     beforeEnter: requireAuth
   },
   {

@@ -50,7 +50,7 @@ export default {
 
     watchEffect(() => {
       if (currentUser.value) {
-        ctx.root.$router.push({ name: "Home" });
+        ctx.root.$router.push({ name: "Details" });
       }
     });
 

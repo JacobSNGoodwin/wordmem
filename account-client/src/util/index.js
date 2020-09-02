@@ -41,7 +41,7 @@ export const getTokenPayload = token => {
 
   const tokenClaims = jwt_decode(token);
 
-  if (tokenClaims.exp >= Date.now()) {
+  if (Date.now() / 1000 >= tokenClaims.exp) {
     return null;
   }
 

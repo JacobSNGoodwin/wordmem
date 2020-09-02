@@ -12,7 +12,7 @@ const useRequest = reqOptions => {
     loading.value = true;
 
     const resp = await doRequest(reqOptions);
-    data.value = resp.value;
+    data.value = resp.data;
     error.value = resp.error;
 
     loading.value = false;

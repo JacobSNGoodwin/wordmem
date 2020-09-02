@@ -26,7 +26,7 @@ export default {
 
     exec();
 
-    return { data, error, loading, exec };
+    return { data, error, loading };
   }
 };
 </script>

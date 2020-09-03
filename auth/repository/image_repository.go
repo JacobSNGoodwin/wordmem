@@ -28,20 +28,11 @@ func (r *ImageRepository) UploadUserImage(uid string, imageFile multipart.File) 
 
 	bckt := r.Storage.Bucket(bucketName)
 	object := bckt.Object(uid)
-
-	// make sure to update so profile images are always served fresh
-	attrs, err := object.Update(ctx, storage.ObjectAttrsToUpdate{
-		CacheControl: "Cache-Control:no-cache, max-age=0",
-	})
-
-	if err != nil {
-		log.Printf("Unable to write file to Google Cloud Storage: %v\n", err)
-		return rerrors.NewInternal()
-	}
-
-	fmt.Printf("Preparing object for upload to cloud storage with attrs: %+v\n", attrs)
-
 	wc := object.NewWriter(ctx)
+
+	// set cache control so profile image will be served fresh by browsers
+	// To do this with object handle, you'd first have to upload, then update
+	wc.ObjectAttrs.CacheControl = "Cache-Control:no-cache, max-age=0"
 
 	// multipart.File has a writer!
 	if _, err := io.Copy(wc, imageFile); err != nil {

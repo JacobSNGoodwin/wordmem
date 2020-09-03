@@ -2,6 +2,7 @@ package util
 
 import (
 	"crypto/rsa"
+	"fmt"
 	"log"
 	"time"
 
@@ -106,13 +107,13 @@ func ValidateRefreshToken(tokenString string, key string) (*RefreshTokenCustomCl
 	}
 
 	if !token.Valid {
-		return nil, err
+		return nil, fmt.Errorf("Refresh token is invalid")
 	}
 
 	claims, ok := token.Claims.(*RefreshTokenCustomClaims)
 
 	if !ok {
-		return nil, err
+		return nil, fmt.Errorf("Reresh token valid but couldn't parse claims")
 	}
 
 	return claims, nil
@@ -132,13 +133,13 @@ func ValidateIDToken(tokenString string, key *rsa.PublicKey) (*IDTokenCustomClai
 	}
 
 	if !token.Valid {
-		return nil, err
+		return nil, fmt.Errorf("ID token is invalid")
 	}
 
 	claims, ok := token.Claims.(*IDTokenCustomClaims)
 
 	if !ok {
-		return nil, err
+		return nil, fmt.Errorf("ID token valid but couldn't parse claims")
 	}
 
 	return claims, nil

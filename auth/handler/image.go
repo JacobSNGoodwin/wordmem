@@ -34,7 +34,7 @@ func (e *Env) Image(c *gin.Context) {
 	if err != nil {
 		// should be a validation error
 		log.Printf("Unable parse mutlipart/form")
-		c.JSON(http.StatusUnauthorized, gin.H{
+		c.JSON(rerrors.Status(err), gin.H{
 			"error": rerrors.NewBadRequest("Unable to parse multipart/form-data"),
 		})
 		return
@@ -55,7 +55,7 @@ func (e *Env) Image(c *gin.Context) {
 	if err != nil {
 		log.Printf("Failed to update profile image: %v\n", err.Error())
 
-		c.JSON(http.StatusConflict, gin.H{
+		c.JSON(rerrors.Status(err), gin.H{
 			"error": err,
 		})
 		return

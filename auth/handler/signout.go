@@ -28,7 +28,7 @@ func (e *Env) Signout(c *gin.Context) {
 	uid := userClaims.User.UID.String()
 
 	if err := e.TokenService.SignOut(uid); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
+		c.JSON(rerrors.Status(err), gin.H{
 			"error": err,
 		})
 		return

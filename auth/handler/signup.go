@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jacobsngoodwin/wordmem/auth/rerrors"
 )
 
 // signupReq is not exported
@@ -27,7 +28,7 @@ func (e *Env) Signup(c *gin.Context) {
 
 	if err != nil {
 		log.Printf("Failed to sign up user: %v\n", err.Error())
-		c.JSON(http.StatusConflict, gin.H{
+		c.JSON(rerrors.Status(err), gin.H{
 			"error": err,
 		})
 		return
@@ -43,7 +44,7 @@ func (e *Env) Signup(c *gin.Context) {
 		// this is tough to recreate
 		e.UserService.Delete(u.UID)
 
-		c.JSON(http.StatusConflict, gin.H{
+		c.JSON(rerrors.Status(err), gin.H{
 			"error": err,
 		})
 		return

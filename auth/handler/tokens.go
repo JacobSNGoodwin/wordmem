@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jacobsngoodwin/wordmem/auth/rerrors"
 )
 
 type tokensReq struct {
@@ -24,7 +25,7 @@ func (e *Env) Tokens(c *gin.Context) {
 	refreshClaims, err := e.TokenService.ValidateRefreshToken(req.RefreshToken)
 
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{
+		c.JSON(rerrors.Status(err), gin.H{
 			"error": err,
 		})
 	}
@@ -33,7 +34,7 @@ func (e *Env) Tokens(c *gin.Context) {
 	u, err := e.UserService.Get(refreshClaims.UID)
 
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{
+		c.JSON(rerrors.Status(err), gin.H{
 			"error": err,
 		})
 	}
@@ -44,7 +45,7 @@ func (e *Env) Tokens(c *gin.Context) {
 	if err != nil {
 		log.Printf("Failed to create tokens for user: %v\n", err.Error())
 
-		c.JSON(http.StatusConflict, gin.H{
+		c.JSON(rerrors.Status(err), gin.H{
 			"error": err,
 		})
 		return

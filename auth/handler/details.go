@@ -54,7 +54,7 @@ func (e *Env) Details(c *gin.Context) {
 	if err != nil {
 		log.Printf("Failed to update user: %v\n", err.Error())
 
-		c.JSON(http.StatusConflict, gin.H{
+		c.JSON(rerrors.Status(err), gin.H{
 			"error": err,
 		})
 		return

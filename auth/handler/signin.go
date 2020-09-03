@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jacobsngoodwin/wordmem/auth/rerrors"
 )
 
 // signinReq is not exported
@@ -25,7 +26,7 @@ func (e *Env) Signin(c *gin.Context) {
 
 	if err != nil {
 		log.Printf("Failed to sign in user: %v\n", err.Error())
-		c.JSON(http.StatusUnauthorized, gin.H{
+		c.JSON(rerrors.Status(err), gin.H{
 			"error": err,
 		})
 		return
@@ -36,7 +37,7 @@ func (e *Env) Signin(c *gin.Context) {
 	if err != nil {
 		log.Printf("Failed to create tokens for user: %v\n", err.Error())
 
-		c.JSON(http.StatusConflict, gin.H{
+		c.JSON(rerrors.Status(err), gin.H{
 			"error": err,
 		})
 		return

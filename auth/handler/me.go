@@ -30,7 +30,7 @@ func (e *Env) Me(c *gin.Context) {
 
 	if err != nil {
 		log.Printf("Unable to find user: %v\n", uid)
-		c.JSON(http.StatusNotFound, gin.H{
+		c.JSON(rerrors.Status(err), gin.H{
 			"error": rerrors.NewNotFound("user", "idToken"),
 		})
 		return

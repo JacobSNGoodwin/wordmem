@@ -26,7 +26,22 @@ func (r *ImageRepository) UploadUserImage(uid string, imageFile multipart.File) 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5) // maybe don't hardcode this?
 	defer cancel()
 
-	wc := r.Storage.Bucket(bucketName).Object(uid).NewWriter(ctx)
+	bckt := r.Storage.Bucket(bucketName)
+	object := bckt.Object(uid)
+
+	// make sure to update so profile images are always served fresh
+	attrs, err := object.Update(ctx, storage.ObjectAttrsToUpdate{
+		CacheControl: "Cache-Control:no-cache, max-age=0",
+	})
+
+	if err != nil {
+		log.Printf("Unable to write file to Google Cloud Storage: %v\n", err)
+		return rerrors.NewInternal()
+	}
+
+	fmt.Printf("Preparing object for upload to cloud storage with attrs: %+v\n", attrs)
+
+	wc := object.NewWriter(ctx)
 
 	// multipart.File has a writer!
 	if _, err := io.Copy(wc, imageFile); err != nil {

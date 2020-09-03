@@ -7,6 +7,7 @@ package rerrors
 // the layer down the request chain
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 )
@@ -57,7 +58,16 @@ func (e *Error) Status() int {
 	}
 }
 
-// Status Mapping
+// Status checks the runtime type
+// of the error and returns an http
+// status code if the error is rerrors.Error
+func Status(err error) int {
+	var rerr *Error
+	if errors.As(err, &rerr) {
+		return rerr.Status()
+	}
+	return http.StatusInternalServerError
+}
 
 /*
 * Error "Factories"

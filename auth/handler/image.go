@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"log"
 	"mime/multipart"
 	"net/http"
@@ -24,20 +25,26 @@ func (e *Env) Image(c *gin.Context) {
 		return
 	}
 
-	// problem with bind data if posting no file 🤷‍♂️
-	// we'll parse the form and check for "imageFile" key
-	// if it doesn't exist, return an error.
-	// If it exists and is empty, clear out file
+	// I had a lot of trouble just adding this to a middleware. So I'm placing it here
+	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, MaxBodySize)
 
 	form, err := c.MultipartForm()
 
 	if err != nil {
 		// should be a validation error
-		log.Printf("Unable parse mutlipart/form")
-		c.JSON(rerrors.Status(err), gin.H{
-			"error": rerrors.NewBadRequest("Unable to parse multipart/form-data"),
-		})
-		return
+		log.Printf("Unable parse mutlipart/form: %v", err)
+
+		if err.Error() == "http: request body too large" {
+			c.JSON(http.StatusRequestEntityTooLarge, gin.H{
+				"error": fmt.Sprintf("Max request body size is %v bytes\n", MaxBodySize),
+			})
+		} else {
+			e := rerrors.NewBadRequest("Unable to parse multipart/form-data")
+			c.JSON(e.Status(), gin.H{
+				"error": e,
+			})
+			return
+		}
 	}
 
 	files := form.File["imageFile"]

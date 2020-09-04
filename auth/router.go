@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/jacobsngoodwin/wordmem/auth/handler"
 )
 
 // Router holds a reference to a router with access to services
@@ -24,8 +23,9 @@ func (router *Router) Init(ic *InjectionContainer) {
 	// config.AllowOrigins = []string{"http://127.0.0.1:3000", "http://127.0.0.1:3001"}
 	// r.Use(cors.New(config))
 
-	// set MaxBodySize to 4 MB
-	r.Use(h.LimitBodySize(handler.MaxBodySize))
+	// set MaxBodySize to 4 MB - set directly in handler. Had trouble in middleware
+	// r.Use(h.LimitBodySize(handler.MaxBodySize))
+	// r.Use(limits.RequestSizeLimiter(handler.MaxBodySize))
 
 	r.GET("/me", h.AuthUser(), h.Me)
 	r.POST("/signup", h.Signup)

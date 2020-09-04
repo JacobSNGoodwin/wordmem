@@ -1,26 +1,30 @@
 <template>
   <div id="app">
     <section class="section">
-      <router-view></router-view>
+      <Loader v-if="loading" class="my-5" />
+      <router-view v-else></router-view>
     </section>
   </div>
 </template>
 
 <script>
-import { useAuth } from "./store/auth";
 import { onMounted } from "@vue/composition-api";
+import { useAuth } from "./store/auth";
+import Loader from "./components/ui/Loader";
 export default {
   name: "App",
+  components: {
+    Loader
+  },
   setup() {
-    const { getUser, currentUser, idToken } = useAuth();
+    const { getUser, loading } = useAuth();
 
-    onMounted(async () => {
-      await getUser();
+    onMounted(() => {
+      getUser();
     });
 
     return {
-      currentUser,
-      idToken
+      loading
     };
   }
 };

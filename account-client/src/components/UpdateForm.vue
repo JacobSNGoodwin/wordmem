@@ -5,13 +5,24 @@
         <img v-if="imageUrl" :src="imageUrl" />
       </div>
     </figure>
+    <div class="buttons is-centered my-5">
+      <div class="button is-link" @click="openImageSelector">Update Image</div>
+    </div>
+    <ImageSelector
+      :isActive="imageSelectorActive"
+      @close="closeImageSelector"
+    />
   </div>
 </template>
 
 <script>
+import ImageSelector from "./ImageSelector";
+
 export default {
   name: "UpdateForm",
-  components: {},
+  components: {
+    ImageSelector
+  },
   props: {
     user: {
       type: Object,
@@ -28,8 +39,17 @@ export default {
       email: this.user.email,
       website: this.user.website,
       imageUrl: this.user.imageUrl,
-      imageFile: null
+      imageFile: null,
+      imageSelectorActive: false
     };
+  },
+  methods: {
+    openImageSelector() {
+      this.imageSelectorActive = true;
+    },
+    closeImageSelector() {
+      this.imageSelectorActive = false;
+    }
   }
 };
 </script>

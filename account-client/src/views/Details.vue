@@ -1,6 +1,7 @@
 <template>
   <div class="container">
     <h2 class="title is-3 has-text-centered">Account Details</h2>
+    <Loader v-if="loading" class="my-5" />
     <UpdateForm v-if="data && !loading" :user="data.user" />
   </div>
 </template>
@@ -9,10 +10,12 @@
 import { useAuth } from "../store/auth";
 import useRequest from "../composables/useRequest";
 import UpdateForm from "../components/UpdateForm";
+import Loader from "../components/ui/Loader";
 export default {
   name: "Details",
   components: {
-    UpdateForm
+    UpdateForm,
+    Loader
   },
   setup() {
     const { idToken } = useAuth();

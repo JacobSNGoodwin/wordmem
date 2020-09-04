@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <h2 class="title is-3 has-text-centered">Account Details</h2>
-    <Loader v-if="loading" class="my-5" />
+    <Loader v-if="loading" class="my-6" />
     <UpdateForm v-if="data && !loading" :user="data.user" />
   </div>
 </template>

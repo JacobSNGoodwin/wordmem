@@ -1,12 +1,15 @@
 <template>
-  <div>
+  <div class="my-6">
     <figure class="image is-128x128">
       <div class="placeholder">
         <img v-if="imageUrl" :src="imageUrl" />
       </div>
     </figure>
-    <div class="buttons is-centered my-5">
+    <div class="buttons is-centered my-6">
       <div class="button is-link" @click="openImageSelector">Update Image</div>
+      <div class="button is-danger">
+        Delete Image
+      </div>
     </div>
     <ImageSelector
       :isActive="imageSelectorActive"

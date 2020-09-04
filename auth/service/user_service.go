@@ -83,10 +83,30 @@ func (s *UserService) UpdateDetails(u *model.User) error {
 // If the provided image file is nil, the user repository will be called to update the image
 // to nil
 func (s *UserService) SetProfileImage(uid uuid.UUID, imageFileHeader *multipart.FileHeader) (string, error) {
+	// get current users image url to get object name that will be replaced/deleted
+	u, err := s.UserRepository.FindByID(uid)
+	if err != nil {
+		return "", err
+	}
+
+	// if the user has empty string for image,
+	// create a new identifier for the image
+	var objName string
+
+	if u.StorageID == "" {
+		objID, _ := uuid.NewRandom()
+		objName = objID.String()
+		fmt.Println("User creating fresh image")
+	} else {
+		objName = u.StorageID
+	}
+
 	// Open user file
 	if imageFileHeader == nil {
-		// clear imageUrl in repo
-		if err := s.UserRepository.UpdateImage(uid, ""); err != nil {
+		// clear imageUrl in user repo
+		// we'll keep the storageID and actual object
+		// for future overwrites
+		if err := s.UserRepository.UpdateImage(uid, "", objName); err != nil {
 			return "", err
 		}
 
@@ -106,15 +126,15 @@ func (s *UserService) SetProfileImage(uid uuid.UUID, imageFileHeader *multipart.
 	}
 
 	// Upload user's image to ImageRepository
-	if err := s.ImageRepositroy.UploadUserImage(uid.String(), imageFile); err != nil {
+	if err := s.ImageRepositroy.UploadUserImage(objName, imageFile); err != nil {
 		log.Printf("Unable to upload image to cloud provider: %v\n", err)
 		return "", err
 	}
 
-	// build url to store in DB
-	imageURL := fmt.Sprintf("https://storage.googleapis.com/wordmem_profile_images/%s", uid.String())
+	// build url to store in DB (should store this path globally somewhere - maybe env)
+	imageURL := fmt.Sprintf("https://storage.googleapis.com/wordmem_profile_images/%s", objName)
 
-	if err := s.UserRepository.UpdateImage(uid, imageURL); err != nil {
+	if err := s.UserRepository.UpdateImage(uid, imageURL, objName); err != nil {
 		log.Printf("Unable to update imageURL: %v\n", err)
 		return "", err
 	}

@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <h2 class="title is-3 has-text-centered">Account Details</h2>
-    <UpdateForm :user="data.user" />
+    <UpdateForm v-if="data && !loading" :user="data.user" />
   </div>
 </template>
 

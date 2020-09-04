@@ -63,5 +63,6 @@ func (e *Env) Image(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"imageUrl": url,
+		"message":  "success",
 	})
 }

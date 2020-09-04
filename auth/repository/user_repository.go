@@ -105,13 +105,13 @@ func (r *UserRepository) Update(u *model.User) error {
 
 // UpdateImage is used to separately update a user's image separate from
 // other account details
-func (r *UserRepository) UpdateImage(uid uuid.UUID, imageURL string) error {
+func (r *UserRepository) UpdateImage(uid uuid.UUID, imageURL string, storageID string) error {
 	query := `
 		UPDATE users 
-		SET image_url=$1
-		WHERE uid=$2
+		SET image_url=$2, storage_id=$3
+		WHERE uid=$1
 	`
-	_, err := r.DB.Exec(query, imageURL, uid)
+	_, err := r.DB.Exec(query, uid, imageURL, storageID)
 
 	if err != nil {
 		log.Printf("Error update image_url in database: %v\n", err)

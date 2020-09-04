@@ -21,13 +21,13 @@ type ImageRepository struct {
 const bucketName = "wordmem_profile_images"
 
 // UploadUserImage uploads a user iamge file to provided storage client
-func (r *ImageRepository) UploadUserImage(uid string, imageFile multipart.File) error {
-	// log.Printf("Uploading user image for uid: %v\n", uid)
+func (r *ImageRepository) UploadUserImage(objName string, imageFile multipart.File) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5) // maybe don't hardcode this?
 	defer cancel()
 
 	bckt := r.Storage.Bucket(bucketName)
-	object := bckt.Object(uid)
+
+	object := bckt.Object(objName)
 	wc := object.NewWriter(ctx)
 
 	// set cache control so profile image will be served fresh by browsers

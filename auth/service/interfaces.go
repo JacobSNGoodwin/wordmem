@@ -19,7 +19,7 @@ type IUserRepository interface {
 	FindByID(uid uuid.UUID) (*model.User, error)
 	FindByEmail(email string) (*model.User, error)
 	Update(u *model.User) error
-	UpdateImage(uid uuid.UUID, url string) error
+	UpdateImage(uid uuid.UUID, url string, storageID string) error
 }
 
 // ITokenRepository defines methods it expects a repository
@@ -33,5 +33,5 @@ type ITokenRepository interface {
 // IImageRepositroy defines methods it expects
 // any image repostiroy the application interacts with to implement
 type IImageRepositroy interface {
-	UploadUserImage(uid string, imageFile multipart.File) error
+	UploadUserImage(objName string, imageFile multipart.File) error
 }

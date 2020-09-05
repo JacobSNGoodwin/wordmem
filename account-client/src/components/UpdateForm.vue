@@ -148,6 +148,7 @@ export default {
 
     const {
       exec: updateUser,
+      data: updateUserData,
       error: updateError,
       loading: isUpdating
     } = useRequest({
@@ -163,6 +164,7 @@ export default {
       deleteError,
       isDeleteing,
       updateUser,
+      updateUserData,
       updateError,
       isUpdating
     };
@@ -203,6 +205,13 @@ export default {
         website: this.website
       };
       this.updateUser(data);
+    }
+  },
+  watch: {
+    updateUserData: function({ user }) {
+      this.name = user.name;
+      this.email = user.email;
+      this.website = user.website;
     }
   }
 };

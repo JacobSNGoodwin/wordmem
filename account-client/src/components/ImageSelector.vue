@@ -16,7 +16,10 @@
             :showZoomer="true"
           />
         </div>
-        <FileSelector @fileChanged="fileChanged" />
+        <FileSelector v-model="selectedFile" />
+        <div v-if="uploadError" class="has-text-centered mt-3">
+          <p class="has-text-danger">{{ uploadError.message }}</p>
+        </div>
       </section>
       <footer class="modal-card-foot">
         <button
@@ -33,7 +36,7 @@
 </template>
 
 <script>
-import { watchEffect } from "@vue/composition-api";
+import { watchEffect, ref } from "@vue/composition-api";
 import FileSelector from "./ui/FileSelector";
 import useRequest from "../composables/useRequest";
 import { useAuth } from "../store/auth";
@@ -51,6 +54,7 @@ export default {
   },
   setup(_, { emit }) {
     const { idToken } = useAuth();
+    const selectedFile = ref(null);
 
     const {
       exec: uploadImage,
@@ -68,26 +72,17 @@ export default {
 
     watchEffect(() => {
       if (uploadData.value) {
+        selectedFile.value = null;
         emit("imageUrlUpdated", uploadData.value.imageUrl);
       }
     });
 
-    return { uploadImage, uploadData, uploadError, isUploading };
+    return { uploadImage, uploadData, uploadError, isUploading, selectedFile };
   },
   methods: {
     close() {
+      this.selectedFile = null;
       this.$emit("close");
-    },
-    fileChanged(file) {
-      const reader = new FileReader();
-
-      reader.onload = e => {
-        this.$refs.croppieRef.bind({
-          url: e.target.result
-        });
-      };
-
-      reader.readAsDataURL(file);
     },
     cropAndUpload() {
       const cropOptions = {
@@ -102,6 +97,24 @@ export default {
         this.uploadImage(formData);
       });
     }
+  },
+  watch: {
+    selectedFile: function(file) {
+      if (!file) {
+        this.$refs.croppieRef.refresh(); // replaces croppie isntance (clearing out the old)
+        return;
+      }
+      const reader = new FileReader();
+
+      reader.onload = e => {
+        this.$refs.croppieRef.bind({
+          url: e.target.result
+        });
+      };
+
+      reader.readAsDataURL(file);
+    },
+    deep: true
   }
 };
 </script>

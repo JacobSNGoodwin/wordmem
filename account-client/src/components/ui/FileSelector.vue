@@ -13,7 +13,7 @@
         </span>
       </span>
       <span class="file-name">
-        {{ selectedFile && selectedFile.name }}
+        {{ file && file.name }}
       </span>
     </label>
   </div>
@@ -22,22 +22,28 @@
 <script>
 export default {
   name: "FileSelector",
-  data() {
-    return {
-      selectedFile: null
-    };
+  // create a custom v-model
+  props: ["selectedFile"],
+  model: {
+    prop: "selectedFile",
+    event: "fileChanged"
+  },
+  computed: {
+    file: function() {
+      return this.selectedFile;
+    }
   },
   methods: {
     fileChanged(e) {
       const files = e.target.files || e.dataTransfer.files;
       if (!files.length) {
         // no file
-        this.selectedFile = null;
+        this.file = null;
         this.$emit("fileChanged", null);
         return;
       }
       const selectedFile = files[0];
-      this.selectedFile = selectedFile;
+      this.file = selectedFile;
       this.$emit("fileChanged", selectedFile);
     }
   }

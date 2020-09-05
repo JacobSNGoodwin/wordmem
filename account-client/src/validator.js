@@ -1,6 +1,13 @@
 import Vue from "vue";
 import { ValidationProvider, ValidationObserver, extend } from "vee-validate";
-import { required, email, min, max, confirmed } from "vee-validate/dist/rules";
+import {
+  required,
+  email,
+  min,
+  max,
+  confirmed,
+  alpha_spaces
+} from "vee-validate/dist/rules";
 
 extend("required", {
   ...required,
@@ -21,6 +28,10 @@ extend("max", {
 extend("confirmed", {
   ...confirmed,
   message: "Field must match {target}"
+});
+extend("alpha_spaces", {
+  ...alpha_spaces,
+  message: "Can only contain names and spaces"
 });
 
 // custom rule to validate urls

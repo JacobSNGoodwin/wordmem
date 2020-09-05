@@ -7,19 +7,27 @@
     </figure>
     <div class="buttons is-centered my-6">
       <div class="button is-link" @click="openImageSelector">Update Image</div>
-      <div class="button is-danger">
+      <div
+        @click="deleteUserImage"
+        class="button is-danger"
+        :class="{ 'is-loading': isDeleteing }"
+      >
         Delete Image
       </div>
     </div>
+    <div v-if="deleteError">{{ deleteError }}</div>
     <ImageSelector
       :isActive="imageSelectorActive"
       @close="closeImageSelector"
     />
+    <!-- Insert rest of form here -->
   </div>
 </template>
 
 <script>
 import ImageSelector from "./ImageSelector";
+import useRequest from "../composables/useRequest";
+import { useAuth } from "../store/auth";
 
 export default {
   name: "UpdateForm",
@@ -30,11 +38,19 @@ export default {
     user: {
       type: Object,
       default: null
-    },
-    isFetchingData: {
-      type: Boolean,
-      default: false
     }
+  },
+  setup() {
+    const { idToken } = useAuth();
+
+    const { exec, error: deleteError, loading: isDeleteing } = useRequest({
+      url: "/api/image",
+      method: "delete",
+      headers: {
+        Authorization: `Bearer ${idToken.value}`
+      }
+    });
+    return { exec, deleteError, isDeleteing };
   },
   data() {
     return {
@@ -42,7 +58,6 @@ export default {
       email: this.user.email,
       website: this.user.website,
       imageUrl: this.user.imageUrl,
-      imageFile: null,
       imageSelectorActive: false
     };
   },
@@ -52,6 +67,13 @@ export default {
     },
     closeImageSelector() {
       this.imageSelectorActive = false;
+    },
+    async deleteUserImage() {
+      await this.exec();
+
+      if (!this.deleteError) {
+        this.imageUrl = "";
+      }
     }
   }
 };

@@ -10,11 +10,12 @@ const useRequest = reqOptions => {
 
   const exec = async () => {
     loading.value = true;
+    error.value = null;
 
     const resp = await doRequest(reqOptions);
+
     data.value = resp.data;
     error.value = resp.error;
-
     loading.value = false;
   };
 

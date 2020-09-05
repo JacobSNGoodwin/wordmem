@@ -28,6 +28,9 @@
 
 <script>
 import FileSelector from "./ui/FileSelector";
+import useRequest from "../composables/useRequest";
+import { useAuth } from "../store/auth";
+
 export default {
   name: "ImageSelector",
   components: {
@@ -38,6 +41,25 @@ export default {
       type: Boolean,
       required: true
     }
+  },
+  setup() {
+    const { idToken } = useAuth();
+
+    const {
+      exec: uploadImage,
+      data: uploadData,
+      error: uploadError,
+      loading: isUploading
+    } = useRequest({
+      url: "/api/image",
+      method: "post",
+      headers: {
+        Authorization: `Bearer ${idToken.value}`,
+        "Content-Type": "multipart/form-data"
+      }
+    });
+
+    return { uploadImage, uploadData, uploadError, isUploading };
   },
   methods: {
     close() {

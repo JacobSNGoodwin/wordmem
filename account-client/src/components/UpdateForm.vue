@@ -69,6 +69,8 @@ export default {
       this.imageSelectorActive = false;
     },
     async deleteUserImage() {
+      // probably this should be built into the composable
+      // as we might have to repeat this callback in other components
       await this.exec();
 
       if (!this.deleteError) {

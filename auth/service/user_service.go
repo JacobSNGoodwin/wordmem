@@ -101,16 +101,8 @@ func (s *UserService) SetProfileImage(uid uuid.UUID, imageFileHeader *multipart.
 		objName = u.StorageID
 	}
 
-	// Open user file
 	if imageFileHeader == nil {
-		// clear imageUrl in user repo
-		// we'll keep the storageID and actual object
-		// for future overwrites
-		if err := s.UserRepository.UpdateImage(uid, "", objName); err != nil {
-			return "", err
-		}
-
-		return "", nil
+		return "", rerrors.NewBadRequest("Must include an imageFile")
 	}
 
 	// Validate image mime-type is allowable
@@ -141,6 +133,32 @@ func (s *UserService) SetProfileImage(uid uuid.UUID, imageFileHeader *multipart.
 
 	return imageURL, nil
 
+}
+
+// ClearProfileImage reaches out to the user repository to
+// clear the user's image url
+func (s *UserService) ClearProfileImage(uid uuid.UUID) error {
+	// get current users image url to get object name that will be replaced/deleted
+	u, err := s.UserRepository.FindByID(uid)
+	if err != nil {
+		return err
+	}
+
+	// if the user has empty string for image,
+	// create a new identifier for the image
+	var objName string
+
+	if u.StorageID == "" {
+		objID, _ := uuid.NewRandom()
+		objName = objID.String()
+		fmt.Println("User creating fresh image")
+	} else {
+		objName = u.StorageID
+	}
+	// clear imageUrl in user repo
+	// we'll keep the storageID and actual object
+	// for future overwrites
+	return s.UserRepository.UpdateImage(uid, "", objName)
 }
 
 // Delete is used to remove a user (for rollback purposes)

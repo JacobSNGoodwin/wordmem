@@ -27,6 +27,7 @@ type IUserService interface {
 	UpdateDetails(u *model.User) error
 	Delete(uid uuid.UUID) error
 	SetProfileImage(uid uuid.UUID, imageFile *multipart.FileHeader) (string, error)
+	ClearProfileImage(uid uuid.UUID) error
 }
 
 // ITokenService defines methods handler expects to interact

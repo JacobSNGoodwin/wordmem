@@ -33,6 +33,7 @@ func (router *Router) Init(ic *InjectionContainer) {
 	r.POST("/tokens", h.Tokens)
 	r.POST("/signout", h.AuthUser(), h.Signout)
 	r.POST("/image", h.AuthUser(), h.Image)
+	r.DELETE("/image", h.AuthUser(), h.DeleteImage)
 	r.PUT("/details", h.AuthUser(), h.Details)
 
 	router.r = r

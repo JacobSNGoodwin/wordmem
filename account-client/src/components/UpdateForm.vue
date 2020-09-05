@@ -6,18 +6,21 @@
       </div>
     </figure>
     <div class="buttons is-centered my-6">
-      <div class="button is-link" @click="openImageSelector">Update Image</div>
-      <div
+      <button class="button is-link" @click="openImageSelector">
+        Update Image
+      </button>
+      <button
         @click="deleteUserImage"
         class="button is-danger"
         :class="{ 'is-loading': isDeleteing }"
       >
         Delete Image
-      </div>
+      </button>
     </div>
     <div v-if="deleteError">{{ deleteError }}</div>
     <ImageSelector
       :isActive="imageSelectorActive"
+      @imageUrlUpdated="updateImageUrl"
       @close="closeImageSelector"
     />
     <!-- Insert rest of form here -->
@@ -67,6 +70,10 @@ export default {
     },
     closeImageSelector() {
       this.imageSelectorActive = false;
+    },
+    updateImageUrl(newImageUrl) {
+      this.imageSelectorActive = false;
+      this.imageUrl = newImageUrl;
     },
     async deleteUserImage() {
       // probably this should be built into the composable

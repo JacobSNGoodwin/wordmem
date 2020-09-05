@@ -19,7 +19,13 @@
         <FileSelector @fileChanged="fileChanged" />
       </section>
       <footer class="modal-card-foot">
-        <button class="button is-link" @click="cropAndUpload">Upload</button>
+        <button
+          class="button is-link"
+          :class="{ 'is-loading': isUploading }"
+          @click="cropAndUpload"
+        >
+          Upload
+        </button>
         <button class="button" @click="close">Cancel</button>
       </footer>
     </div>
@@ -27,6 +33,7 @@
 </template>
 
 <script>
+import { watchEffect } from "@vue/composition-api";
 import FileSelector from "./ui/FileSelector";
 import useRequest from "../composables/useRequest";
 import { useAuth } from "../store/auth";
@@ -42,7 +49,7 @@ export default {
       required: true
     }
   },
-  setup() {
+  setup(_, { emit }) {
     const { idToken } = useAuth();
 
     const {
@@ -56,6 +63,12 @@ export default {
       headers: {
         Authorization: `Bearer ${idToken.value}`,
         "Content-Type": "multipart/form-data"
+      }
+    });
+
+    watchEffect(() => {
+      if (uploadData.value) {
+        emit("imageUrlUpdated", uploadData.value.imageUrl);
       }
     });
 
@@ -77,7 +90,6 @@ export default {
       reader.readAsDataURL(file);
     },
     cropAndUpload() {
-      console.log("Uploading image");
       const cropOptions = {
         type: "blob",
         size: "viewport",
@@ -85,7 +97,9 @@ export default {
       };
 
       this.$refs.croppieRef.result(cropOptions, output => {
-        console.log(output);
+        const formData = new FormData();
+        formData.append("imageFile", output);
+        this.uploadImage(formData);
       });
     }
   }

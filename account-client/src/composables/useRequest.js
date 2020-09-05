@@ -8,9 +8,17 @@ const useRequest = reqOptions => {
   const data = ref(null);
   const loading = ref(false);
 
-  const exec = async () => {
+  // optional data param to merge into request options
+  const exec = async reqData => {
     loading.value = true;
     error.value = null;
+
+    if (data) {
+      reqOptions = {
+        data: reqData,
+        ...reqOptions
+      };
+    }
 
     const resp = await doRequest(reqOptions);
 

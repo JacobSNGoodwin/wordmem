@@ -26,11 +26,14 @@
       @close="closeImageSelector"
     />
 
-    <!-- Detauls Form -->
+    <!-- Details Form -->
     <div class="columns is-centered">
       <div class="column is-half-desktop">
         <ValidationObserver v-slot="{ handleSubmit, invalid, changed }">
-          <form novalidate="true" @submit.prevent="handleSubmit(submitForm)">
+          <form
+            novalidate="true"
+            @submit.prevent="handleSubmit(submitUserDetails)"
+          >
             <div class="field my-5">
               <div class="control">
                 <ValidationProvider name="email" rules="required" v-slot="v">
@@ -56,7 +59,7 @@
              -->
             <div class="field mb-5">
               <div class="control">
-                <ValidationProvider name="name" rules="alpha_spaces" v-slot="v">
+                <ValidationProvider name="name" rules="max:40" v-slot="v">
                   <input
                     class="input is-rounded has-text-weight-bold is-centered"
                     type="text"
@@ -100,7 +103,7 @@
                 type="submit"
                 :disabled="invalid || !changed"
                 class="button is-info is-rounded"
-                :class="{ 'is-loading': isFetchingData }"
+                :class="{ 'is-loading': isUpdating }"
               >
                 Update Details
               </button>
@@ -131,14 +134,38 @@ export default {
   setup() {
     const { idToken } = useAuth();
 
-    const { exec, error: deleteError, loading: isDeleteing } = useRequest({
+    const {
+      deleteImage,
+      error: deleteError,
+      loading: isDeleteing
+    } = useRequest({
       url: "/api/image",
       method: "delete",
       headers: {
         Authorization: `Bearer ${idToken.value}`
       }
     });
-    return { exec, deleteError, isDeleteing };
+
+    const {
+      exec: updateUser,
+      error: updateError,
+      loading: isUpdating
+    } = useRequest({
+      url: "/api/details",
+      method: "put",
+      headers: {
+        Authorization: `Bearer ${idToken.value}`
+      }
+    });
+
+    return {
+      deleteImage,
+      deleteError,
+      isDeleteing,
+      updateUser,
+      updateError,
+      isUpdating
+    };
   },
   data() {
     return {
@@ -163,11 +190,19 @@ export default {
     async deleteUserImage() {
       // probably this should be built into the composable
       // as we might have to repeat this callback in other components
-      await this.exec();
+      await this.deleteImage();
 
       if (!this.deleteError) {
         this.imageUrl = "";
       }
+    },
+    submitUserDetails() {
+      const data = {
+        name: this.name,
+        email: this.email,
+        website: this.website
+      };
+      this.updateUser(data);
     }
   }
 };

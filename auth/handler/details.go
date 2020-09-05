@@ -15,7 +15,7 @@ import (
 // will be run
 // omitempty must also be listed first (tags evaluated sequentially, I guess)
 type detailsReq struct {
-	Name    string `json:"name" binding:"omitempty,alphanum"`
+	Name    string `json:"name" binding:"omitempty,max=40"`
 	Email   string `json:"email" binding:"omitempty,email"`
 	Website string `json:"website" binding:"omitempty,url"`
 }

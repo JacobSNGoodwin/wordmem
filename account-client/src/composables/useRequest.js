@@ -10,13 +10,14 @@ const useRequest = reqOptions => {
 
   // optional data param to merge into request options
   const exec = async reqData => {
+    data.value = null;
     loading.value = true;
     error.value = null;
 
-    if (data) {
+    if (reqData) {
       reqOptions = {
-        data: reqData,
-        ...reqOptions
+        ...reqOptions,
+        data: reqData
       };
     }
 

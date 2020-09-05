@@ -12,6 +12,7 @@
       <button
         @click="deleteUserImage"
         class="button is-danger"
+        :disabled="!imageUrl"
         :class="{ 'is-loading': isDeleteing }"
       >
         Delete Image
@@ -72,8 +73,8 @@ export default {
       this.imageSelectorActive = false;
     },
     updateImageUrl(newImageUrl) {
+      this.imageUrl = newImageUrl + `?_${Date.now()}`; // trick to refresh cached value
       this.imageSelectorActive = false;
-      this.imageUrl = newImageUrl;
     },
     async deleteUserImage() {
       // probably this should be built into the composable

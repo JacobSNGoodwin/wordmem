@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import { watchEffect, ref } from "@vue/composition-api";
+import { watch, ref } from "@vue/composition-api";
 import FileSelector from "./ui/FileSelector";
 import useRequest from "../composables/useRequest";
 import { useAuth } from "../store/auth";
@@ -70,10 +70,12 @@ export default {
       }
     });
 
-    watchEffect(() => {
+    // watchEffect was running twice, not sure if uploadData and uploadData.value.url
+    // count as 2 deps???
+    watch(uploadData, () => {
       if (uploadData.value) {
-        selectedFile.value = null;
         emit("imageUrlUpdated", uploadData.value.imageUrl);
+        selectedFile.value = null;
       }
     });
 

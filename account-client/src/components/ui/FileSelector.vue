@@ -13,7 +13,7 @@
         </span>
       </span>
       <span class="file-name">
-        {{ file && file.name }}
+        {{ selectedFile && selectedFile.name }}
       </span>
     </label>
   </div>
@@ -28,22 +28,14 @@ export default {
     prop: "selectedFile",
     event: "fileChanged"
   },
-  computed: {
-    file: function() {
-      return this.selectedFile;
-    }
-  },
   methods: {
     fileChanged(e) {
       const files = e.target.files || e.dataTransfer.files;
       if (!files.length) {
-        // no file
-        this.file = null;
         this.$emit("fileChanged", null);
         return;
       }
       const selectedFile = files[0];
-      this.file = selectedFile;
       this.$emit("fileChanged", selectedFile);
     }
   }

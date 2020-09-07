@@ -22,7 +22,7 @@ type DataSources struct {
 // Init create data sources defined in DataSources struct
 func (d *DataSources) Init() error {
 	log.Printf("Connecting to Postgresql\n")
-	db, err := sqlx.Open("postgres", "host=localhost port=5432 user=postgres password=password dbname=postgres sslmode=disable")
+	db, err := sqlx.Open("postgres", "host=postgres-auth port=5432 user=postgres password=password dbname=postgres sslmode=disable")
 
 	if err != nil {
 		return fmt.Errorf("error opening db: %w", err)
@@ -36,7 +36,7 @@ func (d *DataSources) Init() error {
 	// Initialize redis connection
 	log.Printf("Connecting to Redis\n")
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
+		Addr:     "redis-auth:6379",
 		Password: "",
 		DB:       0,
 	})

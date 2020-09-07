@@ -1,4 +1,4 @@
-version: "3.1"
+version: "3.8"
 services:
   postgres-auth:
     image: "postgres:alpine"
@@ -18,3 +18,12 @@ services:
       - "6379:6379"
     volumes:
       - ./redis-data:/data
+  account:
+    build: ./auth
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./auth:/go/src/app
+    depends_on:
+      - postgres-auth
+      - redis-auth

@@ -1,9 +1,5 @@
-import express, { json } from "express";
+import app from "./app";
 
-const app = express();
-
-app.use(json());
-
-app.listen(3000, () => {
-  console.log("Listening on port 3000, chowdaheads!");
+app.listen(8080, () => {
+  console.log("Listening on port 8090, chowdaheads!");
 });

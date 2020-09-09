@@ -1,5 +1,20 @@
 version: "3.8"
 services:
+  reverse-proxy:
+    # The official v2 Traefik docker image
+    image: traefik:v2.2
+    # Enables the web UI and tells Traefik to listen to docker
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker"
+    ports:
+      # The HTTP port
+      - "80:80"
+      # The Web UI (enabled by --api.insecure=true)
+      - "8080:8080"
+    volumes:
+      # So that Traefik can listen to the Docker events
+      - /var/run/docker.sock:/var/run/docker.sock
   postgres-auth:
     image: "postgres:alpine"
     environment:
@@ -20,8 +35,11 @@ services:
       - ./redis-data:/data
   account:
     build: ./auth
-    ports:
-      - "8080:8080"
+    image: account # if we don't give image name, traefik won't create router 🤷‍♂️
+    expose:
+      - "8080" # seems necessary for Traefik to have internal expose of port
+    labels:
+      - "traefik.http.routers.account.rule=Host(`wordmem.dev`) && PathPrefix(`/api/account`)"
     volumes:
       - ./auth:/go/src/app
     depends_on:

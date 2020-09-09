@@ -27,14 +27,17 @@ func (router *Router) Init(ic *InjectionContainer) {
 	// r.Use(h.LimitBodySize(handler.MaxBodySize))
 	// r.Use(limits.RequestSizeLimiter(handler.MaxBodySize))
 
-	r.GET("/me", h.AuthUser(), h.Me)
-	r.POST("/signup", h.Signup)
-	r.POST("/signin", h.Signin)
-	r.POST("/tokens", h.Tokens)
-	r.POST("/signout", h.AuthUser(), h.Signout)
-	r.POST("/image", h.AuthUser(), h.Image)
-	r.DELETE("/image", h.AuthUser(), h.DeleteImage)
-	r.PUT("/details", h.AuthUser(), h.Details)
+	// consider using env variable
+	baseGroup := r.Group("/api/account")
+
+	baseGroup.GET("/me", h.AuthUser(), h.Me)
+	baseGroup.POST("/signup", h.Signup)
+	baseGroup.POST("/signin", h.Signin)
+	baseGroup.POST("/tokens", h.Tokens)
+	baseGroup.POST("/signout", h.AuthUser(), h.Signout)
+	baseGroup.POST("/image", h.AuthUser(), h.Image)
+	baseGroup.DELETE("/image", h.AuthUser(), h.DeleteImage)
+	baseGroup.PUT("/details", h.AuthUser(), h.Details)
 
 	router.r = r
 }

@@ -139,7 +139,7 @@ export default {
       error: deleteError,
       loading: isDeleteing
     } = useRequest({
-      url: "/api/image",
+      url: "/api/account/image",
       method: "delete",
       headers: {
         Authorization: `Bearer ${idToken.value}`
@@ -152,7 +152,7 @@ export default {
       error: updateError,
       loading: isUpdating
     } = useRequest({
-      url: "/api/details",
+      url: "/api/account/details",
       method: "put",
       headers: {
         Authorization: `Bearer ${idToken.value}`

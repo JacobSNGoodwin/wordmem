@@ -13,10 +13,10 @@ const state = reactive({
 // on successful request, it sets the current use
 // along with the id and refresh tokens
 const signin = async (email, password) =>
-  await authenticate(email, password, "/api/signin");
+  await authenticate(email, password, "/api/account/signin");
 
 const signup = async (email, password) =>
-  await authenticate(email, password, "/api/signup");
+  await authenticate(email, password, "/api/account/signup");
 
 // this method can be used on page load
 // to check for a current valid user idToken (short-lived)
@@ -55,7 +55,7 @@ const getUser = async () => {
   // try refresh endpoint
 
   const { data, error } = await doRequest({
-    url: "/api/tokens",
+    url: "/api/account/tokens",
     method: "post",
     data: {
       refreshToken

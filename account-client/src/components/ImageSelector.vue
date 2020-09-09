@@ -62,7 +62,7 @@ export default {
       error: uploadError,
       loading: isUploading
     } = useRequest({
-      url: "/api/image",
+      url: "/api/account/image",
       method: "post",
       headers: {
         Authorization: `Bearer ${idToken.value}`,

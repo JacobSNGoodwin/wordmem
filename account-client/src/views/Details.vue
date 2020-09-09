@@ -20,7 +20,7 @@ export default {
   setup() {
     const { idToken } = useAuth();
     const { data, error, loading, exec } = useRequest({
-      url: "/api/me",
+      url: "/api/account/me",
       method: "get",
       headers: {
         Authorization: `Bearer ${idToken.value}`

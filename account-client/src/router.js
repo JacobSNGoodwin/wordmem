@@ -9,17 +9,17 @@ Vue.use(VueRouter);
 
 const routes = [
   {
+    path: "/",
+    name: "Details",
+    component: Details,
+    beforeEnter: requireAuth
+  },
+  {
     path: "/authenticate",
     name: "Auth",
     component: Auth
     // component: () =>
     //   import(/* webpackChunkName: "auth" */ "../components/Auth.vue")
-  },
-  {
-    path: "/",
-    name: "Details",
-    component: Details,
-    beforeEnter: requireAuth
   },
   {
     path: "*",
@@ -38,6 +38,7 @@ const router = new VueRouter({
 // of how the vue instance is injected into the
 // route configuration
 function requireAuth(to, from, next) {
+  // TODO: Get user before checking
   const { currentUser } = authStore;
 
   if (currentUser.value) {

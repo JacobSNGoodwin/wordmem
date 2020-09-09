@@ -63,7 +63,7 @@ func (s *TokenService) SignOut(uid string) error {
 }
 
 // ValidateRefreshToken validates the refresh token jwt string
-// It returns the claims on the token if is valid
+// It returns the claims on the token if is valid and token is in the whitelisted cache
 func (s *TokenService) ValidateRefreshToken(refreshTokenString string) (*util.RefreshTokenCustomClaims, error) {
 	// Validate the refresh toksn
 	claims, err := util.ValidateRefreshToken(refreshTokenString, s.RefreshSecret)
@@ -72,6 +72,11 @@ func (s *TokenService) ValidateRefreshToken(refreshTokenString string) (*util.Re
 	if err != nil {
 		log.Printf("Unable to validate or parse refreshToken for token string: %s\n%v\n", refreshTokenString, err)
 		return nil, rerrors.NewAuthorization("Unable to verify user from refresh token")
+	}
+
+	// check tokens in token repository
+	if err := s.TokenRepository.ValidateRefreshToken(claims.UID.String(), claims.Id); err != nil {
+		return nil, rerrors.NewAuthorization("User is not logged in")
 	}
 
 	return claims, nil

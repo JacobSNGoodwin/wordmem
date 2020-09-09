@@ -18,6 +18,33 @@ const signin = async (email, password) =>
 const signup = async (email, password) =>
   await authenticate(email, password, "/api/account/signup");
 
+const signout = async () => {
+  state.isLoading = true;
+  state.error = null;
+
+  const { error } = await doRequest({
+    url: "/api/account/signout",
+    method: "post",
+    headers: {
+      Authorization: `Bearer ${state.idToken}`
+    }
+  });
+
+  if (error) {
+    state.error = error;
+    state.isLoading = false;
+    return;
+  }
+
+  state.currentUser = null;
+  state.idToken = null;
+
+  localStorage.removeItem("__evilCorpId");
+  localStorage.removeItem("__evilCorpRf");
+
+  state.isLoading = false;
+};
+
 // this method can be used on page load
 // to check for a current valid user idToken (short-lived)
 // If there is no short lived token, it checks for a long-lived token
@@ -88,7 +115,8 @@ export const authStore = {
   ...toRefs(state), // consuming component can destructure withou losing reactivity!
   signin,
   signup,
-  getUser
+  getUser,
+  signout
 };
 
 // Create functions so the store can be

@@ -26,6 +26,7 @@ type IUserRepository interface {
 // it interacts with to implement
 type ITokenRepository interface {
 	SetRefreshToken(userID string, tokenID string, expiresIn time.Duration) error
+	ValidateRefreshToken(userID string, tokenID string) error
 	DeleteRefreshToken(userID string, prevTokenID string) error
 	DeleteUserRefreshTokens(userID string) error
 }

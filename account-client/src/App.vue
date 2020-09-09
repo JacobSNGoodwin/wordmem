@@ -8,6 +8,7 @@
 </template>
 
 <script>
+import { watchEffect } from "@vue/composition-api";
 import { onMounted } from "@vue/composition-api";
 import { useAuth } from "./store/auth";
 import Loader from "./components/ui/Loader";
@@ -16,14 +17,21 @@ export default {
   components: {
     Loader
   },
-  setup() {
-    const { getUser, loading } = useAuth();
+  setup(_, ctx) {
+    const { currentUser, getUser, loading } = useAuth();
 
     onMounted(() => {
       getUser();
     });
 
+    watchEffect(() => {
+      if (!currentUser.value) {
+        ctx.root.$router.push("/authenticate");
+      }
+    });
+
     return {
+      currentUser,
       loading
     };
   }

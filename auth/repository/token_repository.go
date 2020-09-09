@@ -30,6 +30,27 @@ func (r *TokenRepository) SetRefreshToken(userID string, tokenID string, expires
 		return rerrors.NewInternal()
 	}
 	return nil
+
+}
+
+// ValidateRefreshToken checks for userID:tokenID key in repository of valid refresh tokens
+func (r *TokenRepository) ValidateRefreshToken(userID string, tokenID string) error {
+	// for deleting multiple keys
+	key := fmt.Sprintf("%s:%s", userID, tokenID)
+
+	_, err := r.Redis.Get(context.Background(), key).Result()
+
+	if err == redis.Nil {
+		log.Printf("Could not find refresh token in redis for userID/tokenID: %s/%s: %v\n", userID, tokenID, err)
+		return rerrors.NewInternal()
+	}
+
+	if err != nil {
+		log.Printf("Key not found: %s\n", key)
+		return rerrors.NewAuthorization("User is not logged in")
+	}
+
+	return nil
 }
 
 // DeleteRefreshToken used to delete old  refresh tokens

@@ -24,7 +24,19 @@ services:
     #   Set a volume for data and initial sql script
     #   May configure initial db for future demo
     volumes:
-      - ./postgres-data:/var/lib/postgresql/data
+      - "pgdata:/var/lib/postgresql/data"
+      # - ./init:/docker-entrypoint-initdb.d/
+    command: ["postgres", "-c", "log_statement=all"]
+  postgres-words:
+    image: "postgres:alpine"
+    environment:
+      - POSTGRES_PASSWORD=password
+    ports:
+      - "5433:5432"
+    #   Set a volume for data and initial sql script
+    #   May configure initial db for future demo
+    volumes:
+      - "pgdata:/var/lib/postgresql/data"
       # - ./init:/docker-entrypoint-initdb.d/
     command: ["postgres", "-c", "log_statement=all"]
   redis-auth:
@@ -32,7 +44,7 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - ./redis-data:/data
+      - "redisdata:/data"
   account:
     build: ./auth
     image: account # if we don't give image name, traefik won't create router 🤷‍♂️
@@ -45,3 +57,6 @@ services:
     depends_on:
       - postgres-auth
       - redis-auth
+volumes:
+  pgdata:
+  redisdata:

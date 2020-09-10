@@ -58,7 +58,10 @@ services:
       - postgres-auth
       - redis-auth
   words:
-    build: ./words
+    build:
+      # build from build stage of dockerfile in words directory
+      context: ./words
+      target: build
     image: words # if we don't give image name, traefik won't create router 🤷‍♂️
     expose:
       - "8080" # seems necessary for Traefik to have internal expose of port
@@ -66,6 +69,11 @@ services:
       - "traefik.http.routers.account.rule=Host(`wordmem.dev`) && PathPrefix(`/api/words`)"
     volumes:
       - ./words:/app
+    depends_on:
+      - postgres-words
+    environment:
+      - NODE_ENV=dev
+    command: ["npm", "run", "dev"]
 volumes:
   pgdata:
   redisdata:

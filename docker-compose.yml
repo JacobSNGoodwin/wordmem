@@ -57,6 +57,15 @@ services:
     depends_on:
       - postgres-auth
       - redis-auth
+  words:
+    build: ./words
+    image: words # if we don't give image name, traefik won't create router 🤷‍♂️
+    expose:
+      - "8080" # seems necessary for Traefik to have internal expose of port
+    labels:
+      - "traefik.http.routers.account.rule=Host(`wordmem.dev`) && PathPrefix(`/api/words`)"
+    volumes:
+      - ./words:/app
 volumes:
   pgdata:
   redisdata:

@@ -2,6 +2,7 @@
 
 PWD = $(shell pwd)
 MPATH = $(PWD)/src/migrations
+PORT = 5433
 
 # docker command to run migrations
 # MIGRATE = docker run --rm --name migrateTmp -v $(MPATH):/migrations --network host migrate/migrate
@@ -14,10 +15,10 @@ migrate-create:
 	# docker cp migrateTmp:migrations $(MPATH)
 
 migrate-up:
-	migrate -source file://$(MPATH) -database postgres://postgres:password@localhost:5433/postgres?sslmode=disable up $(N)
+	migrate -source file://$(MPATH) -database postgres://postgres:password@localhost:$(PORT)/postgres?sslmode=disable up $(N)
 
 migrate-down:
-	migrate -source file://$(MPATH) -database postgres://postgres:password@localhost:5433/postgres?sslmode=disable down $(N)
+	migrate -source file://$(MPATH) -database postgres://postgres:password@localhost:$(PORT)/postgres?sslmode=disable down $(N)
 
 migrate-force:
-	migrate -source file://$(MPATH) -database postgres://postgres:password@localhost:5433/postgres?sslmode=disable force $(VERSION)
+	migrate -source file://$(MPATH) -database postgres://postgres:password@localhost:$(PORT)/postgres?sslmode=disable force $(VERSION)

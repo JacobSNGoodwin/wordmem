@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import { NotAuthorizedError } from "../errors/not-authorized-error";
 
 interface TokenClaims {
   user: UserClaims;
@@ -32,7 +33,8 @@ export const authUser = (req: Request, res: Response, next: NextFunction) => {
   const token = authHeader?.split(" ")[1];
 
   if (!token) {
-    const err = new Error("No token included");
+    const err = new NotAuthorizedError();
+    console.log("No token found in Auth Header: ", err);
     return next(err);
   }
 
@@ -41,10 +43,9 @@ export const authUser = (req: Request, res: Response, next: NextFunction) => {
     // for invalid or unverified token
     const tokenPayload = jwt.verify(token, pubKey) as TokenClaims;
     req.currentUser = tokenPayload.user;
-    console.log(req.currentUser);
-  } catch (e) {
-    // TODO - Throw an authorization error to be handled by middleware
-    console.log("Error verifying token");
+  } catch (err) {
+    console.log("Invalid or unverified token...");
+    console.log(err);
   }
 
   next();

@@ -1,13 +1,16 @@
 import express from "express";
-import app from "../app";
-import { authUser } from "../middleware/auth-user";
 
-const appRouter = express.Router();
+import { requireAuth } from "../middleware/require-auth";
 
-appRouter.use(authUser);
+const wordRouter = express.Router();
 
-appRouter.get("/", (req, res) => {
-  res.json(req.body);
+wordRouter.use(requireAuth);
+
+wordRouter.get("/", (req, res) => {
+  res.json({
+    user: req.currentUser,
+    reqBody: req.body,
+  });
 });
 
-export default appRouter;
+export { wordRouter };

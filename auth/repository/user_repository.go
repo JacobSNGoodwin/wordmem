@@ -21,6 +21,7 @@ type UserRepository struct {
 func (r *UserRepository) Create(u *model.User) error {
 	query := "INSERT INTO users (email, password) VALUES ($1, $2) RETURNING *"
 
+	// should be in service layer
 	pw, err := util.HashPassword(u.Password)
 
 	if err != nil {

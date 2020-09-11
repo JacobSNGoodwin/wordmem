@@ -14,6 +14,9 @@ import (
 
 func main() {
 	log.Println("Loading environment variables...")
+	// should only do this in dev environment
+	// or else we need an env file for production
+	// though we'll usually pass the env variables in another way
 	err := godotenv.Load(".env.dev")
 	if err != nil {
 		log.Fatal("Error loading .env file")

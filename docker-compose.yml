@@ -46,22 +46,28 @@ services:
     volumes:
       - "redisdata:/data"
   account:
-    build: ./auth
+    build:
+      context: ./auth
+      target: builder
     image: account # if we don't give image name, traefik won't create router 🤷‍♂️
     expose:
       - "8080" # seems necessary for Traefik to have internal expose of port
     labels:
       - "traefik.http.routers.account.rule=Host(`wordmem.dev`) && PathPrefix(`/api/account`)"
+    environment:
+      - ENV=dev
     volumes:
       - ./auth:/go/src/app
     depends_on:
       - postgres-auth
       - redis-auth
+    # have to use $$ (double-dolla) so docker doesn't try to substitute a variable
+    command: reflex -r "\.go$$" -s -- sh -c "go run ./"
   words:
     build:
       # build from build stage of dockerfile in words directory
       context: ./words
-      target: build
+      target: builder
     image: words # if we don't give image name, traefik won't create router 🤷‍♂️
     expose:
       - "8080" # seems necessary for Traefik to have internal expose of port

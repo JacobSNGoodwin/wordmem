@@ -25,7 +25,7 @@ services:
     #   Set a volume for data and initial sql script
     #   May configure initial db for future demo
     volumes:
-      - "pgdata:/var/lib/postgresql/data"
+      - "pgdata_auth:/var/lib/postgresql/data"
       # - ./init:/docker-entrypoint-initdb.d/
     command: ["postgres", "-c", "log_statement=all"]
   postgres-words:
@@ -37,7 +37,7 @@ services:
     #   Set a volume for data and initial sql script
     #   May configure initial db for future demo
     volumes:
-      - "pgdata:/var/lib/postgresql/data"
+      - "pgdata_words:/var/lib/postgresql/data"
       # - ./init:/docker-entrypoint-initdb.d/
     command: ["postgres", "-c", "log_statement=all"]
   redis-auth:
@@ -84,5 +84,6 @@ services:
       - NODE_ENV=dev
     command: ["npm", "run", "dev"]
 volumes:
-  pgdata:
+  pgdata_auth:
+  pgdata_words:
   redisdata:

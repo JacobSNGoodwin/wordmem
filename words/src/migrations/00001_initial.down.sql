@@ -1,0 +1,2 @@
+DROP TABLE words;
+DROP EXTENSION IF EXISTS "uuid-ossp";

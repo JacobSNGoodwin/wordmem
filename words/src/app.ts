@@ -1,4 +1,5 @@
 import express, { json } from "express";
+
 import { authUser } from "./middleware/auth-user";
 import { errorHandler } from "./middleware/error-handler";
 import { wordRouter } from "./handler/routes";

@@ -21,7 +21,7 @@ export class WordService {
     this.r = r;
   }
 
-  async addWord(): Promise<Word | CustomError> {
+  async addWord(word: WordInput, user: UserInput): Promise<Word | CustomError> {
     return new NotAuthorizedError();
   }
 }

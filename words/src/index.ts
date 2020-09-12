@@ -1,8 +1,8 @@
 import dotenv from "dotenv";
 import path from "path";
-import app from "./app";
-import { init } from "./data_sources";
-import { PoolConfig } from "pg";
+import { initDS, DataSources } from "./data";
+import { serviceContainer } from "./injection";
+import createApp from "./app";
 
 const startup = async () => {
   /*
@@ -25,15 +25,27 @@ const startup = async () => {
    * Initialize data sources (just postgres so far)
    */
 
+  let ds: DataSources;
+
   try {
     // note that we still use port 5432 since we're in the world of containers
-    await init();
+    ds = await initDS();
   } catch (err) {
     console.error(err);
     process.exit();
   }
 
   console.info("Successfully initialized data sources!");
+  // console.info(ds);
+
+  /*
+   * Inject concrete repository implementations into services
+   */
+  serviceContainer.init(ds);
+
+  console.info("Service container initialized");
+
+  const app = createApp(serviceContainer.services);
 
   app.listen(process.env.PORT, () => {
     console.log(`Listening on port ${process.env.PORT}`);

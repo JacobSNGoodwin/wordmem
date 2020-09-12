@@ -1,10 +1,10 @@
-import { Pool, PoolConfig } from "pg";
+import { Pool } from "pg";
 
-interface DataSources {
+export interface DataSources {
   db: Pool;
 }
 
-export const init = async (): Promise<DataSources> => {
+export const initDS = async (): Promise<DataSources> => {
   const db = new Pool();
 
   // test connection

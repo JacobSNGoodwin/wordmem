@@ -10,7 +10,7 @@ export class PGWordRepository implements WordRepository {
     this.client = client;
   }
 
-  create(w: Word): Promise<Word | CustomError> {
+  create(w: Word): Promise<Word> {
     throw new Error("Method not implemented.");
   }
 }

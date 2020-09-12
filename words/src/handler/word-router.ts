@@ -1,12 +1,13 @@
-import express, { Request, Response, Router } from "express";
+import express, { Request, Response, Router, NextFunction } from "express";
 import { body, validationResult } from "express-validator";
 
 import { requireAuth } from "../middleware/require-auth";
 import { RequestValidationError } from "../errors/request-validation-error";
-import { WordService } from "../service/word-service";
+import { serviceContainer } from "../injection";
 
-export const createWordRouter = (ws: WordService): Router => {
+export const createWordRouter = (): Router => {
   const wordRouter = express.Router();
+  const { wordService } = serviceContainer.services;
 
   wordRouter.use(requireAuth);
 
@@ -24,18 +25,25 @@ export const createWordRouter = (ws: WordService): Router => {
       body("refUrl").optional().isURL().trim().withMessage("url"),
       body("emailReminder").optional().isBoolean().withMessage("boolean"),
     ],
-    (req: Request, res: Response) => {
+    async (req: Request, res: Response, next: NextFunction) => {
       const errors = validationResult(req);
 
       if (!errors.isEmpty()) {
         throw new RequestValidationError(errors.array());
       }
 
-      res.status(200).json({
-        word: req.body.word,
-        refUrl: req.body.refUrl,
-        emailReminder: req.body.emailReminder,
-      });
+      const { word, refUrl, emailReminder } = req.body;
+
+      try {
+        const created = await wordService.addWord(
+          { word, refUrl, emailReminder },
+          { email: req.currentUser!.email, id: req.currentUser!.uid }
+        );
+
+        res.status(201).json(created);
+      } catch (err) {
+        next(err);
+      }
     }
   );
 

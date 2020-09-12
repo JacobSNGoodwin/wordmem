@@ -45,7 +45,7 @@ const startup = async () => {
 
   console.info("Service container initialized");
 
-  const app = createApp(serviceContainer.services);
+  const app = createApp();
 
   app.listen(process.env.PORT, () => {
     console.log(`Listening on port ${process.env.PORT}`);

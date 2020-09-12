@@ -1,6 +1,6 @@
 import { CustomError } from "./custom-error";
 
-export class Internal extends CustomError {
+export class InternalError extends CustomError {
   statusCode = 500;
 
   constructor(public reason: string = "Unknown error") {

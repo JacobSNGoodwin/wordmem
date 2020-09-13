@@ -1,9 +1,9 @@
 import express, { Request, Response, Router, NextFunction } from "express";
-import { body, validationResult } from "express-validator";
+import { body } from "express-validator";
 
 import { requireAuth } from "../middleware/require-auth";
-import { RequestValidationError } from "../errors/request-validation-error";
 import { serviceContainer } from "../injection";
+import { validateRequest } from "../middleware/validate-request";
 
 export const createWordRouter = (): Router => {
   const wordRouter = express.Router();
@@ -25,13 +25,8 @@ export const createWordRouter = (): Router => {
       body("refUrl").optional().isURL().trim().withMessage("url"),
       body("emailReminder").optional().isBoolean().withMessage("boolean"),
     ],
+    validateRequest,
     async (req: Request, res: Response, next: NextFunction) => {
-      const errors = validationResult(req);
-
-      if (!errors.isEmpty()) {
-        throw new RequestValidationError(errors.array());
-      }
-
       const { word, refUrl, emailReminder } = req.body;
 
       try {

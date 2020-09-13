@@ -1,9 +1,9 @@
 export interface Word {
-  id: string;
+  id: string; // optional as this will be created in postgres
   userId: string;
   email: string;
   word: string;
-  refUrl?: string;
+  refUrl: string;
   emailReminder: Boolean;
-  startDate?: string;
+  startDate: Date;
 }

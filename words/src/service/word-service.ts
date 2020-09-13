@@ -1,16 +1,14 @@
+import { v4 } from "uuid";
 import { WordRepository } from "./interfaces";
-import { CustomError } from "../errors/custom-error";
 import { Word } from "../model/word";
-import { NotAuthorizedError } from "../errors/not-authorized-error";
-import { nextTick } from "process";
 
-interface WordInput {
+interface WordData {
   word: string;
   refUrl?: string;
-  emailReminder: boolean;
+  emailReminder?: boolean;
 }
 
-interface UserInput {
+interface UserData {
   id: string;
   email: string;
 }
@@ -22,13 +20,18 @@ export class WordService {
     this.r = r;
   }
 
-  async addWord(word: WordInput, user: UserInput): Promise<Word> {
-    return {
-      id: "abc123",
-      email: "bob@bob.com",
-      emailReminder: false,
-      userId: "123",
-      word: "A word",
-    };
+  async addWord(w: WordData, u: UserData): Promise<Word> {
+    const id = v4();
+    const createdWord = this.r.create({
+      id,
+      word: w.word,
+      refUrl: w.refUrl ?? "",
+      emailReminder: w.emailReminder ?? false,
+      email: u.email,
+      userId: u.id,
+      startDate: new Date(),
+    });
+
+    return createdWord;
   }
 }

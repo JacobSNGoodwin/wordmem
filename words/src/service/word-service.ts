@@ -14,15 +14,15 @@ interface UserData {
 }
 
 export class WordService {
-  private r: WordRepository;
+  private wr: WordRepository;
 
   constructor(r: WordRepository) {
-    this.r = r;
+    this.wr = r;
   }
 
   async addWord(w: WordData, u: UserData): Promise<Word> {
     const id = v4();
-    const createdWord = this.r.create({
+    const createdWord = this.wr.create({
       id,
       word: w.word,
       refUrl: w.refUrl ?? "",
@@ -33,5 +33,11 @@ export class WordService {
     });
 
     return createdWord;
+  }
+
+  async getWords(userId: string): Promise<Word[]> {
+    const words = await this.wr.getByUser(userId);
+
+    return words;
   }
 }

@@ -5,4 +5,5 @@ import { Word } from "../model/word";
 // concerned.
 export interface WordRepository {
   create(w: Word): Promise<Word>;
+  getByUser(uid: string): Promise<Word[]>;
 }

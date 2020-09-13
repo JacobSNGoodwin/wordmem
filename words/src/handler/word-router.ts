@@ -4,6 +4,7 @@ import { body } from "express-validator";
 import { requireAuth } from "../middleware/require-auth";
 import { serviceContainer } from "../injection";
 import { validateRequest } from "../middleware/validate-request";
+import { nextTick } from "process";
 
 export const createWordRouter = (): Router => {
   const wordRouter = express.Router();
@@ -11,12 +12,18 @@ export const createWordRouter = (): Router => {
 
   wordRouter.use(requireAuth);
 
-  wordRouter.get("/", (req: Request, res: Response) => {
-    res.json({
-      user: req.currentUser,
-      reqBody: req.body,
-    });
-  });
+  wordRouter.get(
+    "/",
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const wordList = await wordService.getWords(req.currentUser!.uid);
+
+        res.status(200).json(wordList);
+      } catch (err) {
+        next(err);
+      }
+    }
+  );
 
   wordRouter.post(
     "/",

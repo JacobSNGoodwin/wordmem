@@ -1,9 +1,7 @@
 import { WordRepository } from "../service/interfaces";
-import { Word } from "../model/word";
-import { CustomError } from "../errors/custom-error";
+import { Word, wordFromData } from "../model/word";
 import { Pool } from "pg";
 import { InternalError } from "../errors/internal-error";
-import { create } from "domain";
 
 export class PGWordRepository implements WordRepository {
   private client: Pool;
@@ -11,7 +9,6 @@ export class PGWordRepository implements WordRepository {
   constructor(client: Pool) {
     this.client = client;
   }
-
   async create(w: Word): Promise<Word> {
     const text =
       "INSERT INTO words (id, userId, email, word, ref_url, email_reminder, start_date) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *";
@@ -33,15 +30,30 @@ export class PGWordRepository implements WordRepository {
 
       const createdWord = queryRes.rows[0];
 
-      return {
-        id: createdWord.id,
-        email: createdWord.email,
-        emailReminder: createdWord.email_reminder,
-        refUrl: createdWord.ref_url,
-        startDate: createdWord.start_date,
-        userId: createdWord.userid,
-        word: createdWord.word,
-      };
+      return wordFromData(createdWord);
+    } catch (e) {
+      console.debug("Error inserting word into database: ", e);
+      throw new InternalError();
+    }
+  }
+
+  async getByUser(uid: string): Promise<Word[]> {
+    const text = `
+      SELECT * FROM words 
+      WHERE userid=$1 
+      ORDER BY lower(word)
+    `;
+    const values = [uid];
+
+    try {
+      const queryRes = await this.client.query({
+        text,
+        values,
+      });
+
+      const fetchedWords = queryRes.rows;
+
+      return fetchedWords.map((word) => wordFromData(word));
     } catch (e) {
       console.debug("Error inserting word into database: ", e);
       throw new InternalError();

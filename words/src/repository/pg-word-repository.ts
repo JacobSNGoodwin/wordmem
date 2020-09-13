@@ -12,14 +12,14 @@ export class PGWordRepository implements WordRepository {
 
   async create(w: Word): Promise<Word> {
     const text = `
-        INSERT INTO words (id, userId, email, word, ref_url, email_reminder, start_date) 
+        INSERT INTO words (id, userId, word, definition, ref_url, email_reminder, start_date) 
         VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *
       `;
     const values = [
       w.id,
       w.userId,
-      w.email,
       w.word,
+      w.definition,
       w.refUrl,
       w.emailReminder,
       w.startDate,
@@ -93,17 +93,50 @@ export class PGWordRepository implements WordRepository {
   }
 
   async update(w: Word): Promise<Word> {
-    throw new Error("Method not implemented.");
+    // current word does not allow for optional parameters, so we must receive the whole shebang of a word
+    // no need for coalescing if value is not present
+    const text = `
+        UPDATE words 
+        SET word=$1,
+        SET definition=$2,
+        SET ref_url=$3,
+        SET email_reminder=$4,
+        SET start_date=$5
+        WHERE id=$6
+        RETURNING *;
+      `;
+    const values = [
+      w.word,
+      w.definition,
+      w.refUrl,
+      w.emailReminder,
+      w.startDate,
+      w.id,
+    ];
+
+    try {
+      const queryRes = await this.client.query({
+        text,
+        values,
+      });
+
+      const updatedWord = queryRes.rows[0];
+
+      return wordFromData(updatedWord);
+    } catch (e) {
+      console.debug("Error updating word in database: ", e);
+      throw new InternalError();
+    }
   }
 }
 
 const wordFromData = (dataObj: any): Word => ({
   id: dataObj.id,
-  email: dataObj.email,
   emailReminder: dataObj.email_reminder,
   refUrl: dataObj.ref_url,
   startDate: dataObj.start_date,
   userId: dataObj.userid,
+  email: dataObj.email,
   word: dataObj.word,
   definition: dataObj.definition,
 });

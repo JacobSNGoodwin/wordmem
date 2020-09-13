@@ -37,10 +37,14 @@ export const createWordRouter = (): Router => {
       const { word, refUrl, emailReminder, definition } = req.body;
 
       try {
-        const created = await wordService.addWord(
-          { word, definition, refUrl, emailReminder },
-          { email: req.currentUser!.email, id: req.currentUser!.uid }
-        );
+        const created = await wordService.addWord({
+          word,
+          definition,
+          refUrl,
+          emailReminder,
+          email: req.currentUser!.email,
+          uid: req.currentUser!.uid,
+        });
 
         res.status(201).json(created);
       } catch (err) {
@@ -65,6 +69,44 @@ export const createWordRouter = (): Router => {
       try {
         const deletedIds = await wordService.deleteWords(req.body.wordIds);
         return res.status(200).json(deletedIds);
+      } catch (err) {
+        next(err);
+      }
+    }
+  );
+
+  wordRouter.put(
+    "/:id",
+    [
+      body("word")
+        .optional()
+        .notEmpty()
+        .trim()
+        .withMessage("must be non-empty string or null"),
+      body("definition")
+        .optional()
+        .notEmpty()
+        .trim()
+        .withMessage("must be non-empty string or null"),
+      body("refUrl").optional().isURL().trim().withMessage("url"),
+      body("emailReminder").optional().isBoolean().withMessage("boolean"),
+      body("startDate").optional().isDate().withMessage("data"),
+    ],
+    validateRequest,
+    async (req: Request, res: Response, next: NextFunction) => {
+      const { word, refUrl, emailReminder, definition, startDate } = req.body;
+
+      try {
+        const updated = await wordService.updateWord(req.params.id, {
+          word,
+          definition,
+          refUrl,
+          emailReminder,
+          startDate,
+          email: req.currentUser!.email,
+        });
+
+        res.status(200).json(updated);
       } catch (err) {
         next(err);
       }

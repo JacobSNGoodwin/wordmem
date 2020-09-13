@@ -3,6 +3,7 @@ export interface Word {
   userId: string;
   email: string;
   word: string;
+  definition: string;
   refUrl: string;
   emailReminder: Boolean;
   startDate: Date;
@@ -16,4 +17,5 @@ export const wordFromData = (dataObj: any): Word => ({
   startDate: dataObj.start_date,
   userId: dataObj.userid,
   word: dataObj.word,
+  definition: dataObj.definition,
 });

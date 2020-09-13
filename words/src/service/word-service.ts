@@ -4,6 +4,7 @@ import { Word } from "../model/word";
 
 interface WordData {
   word: string;
+  definition: string;
   refUrl?: string;
   emailReminder?: boolean;
 }
@@ -25,6 +26,7 @@ export class WordService {
     const createdWord = this.wr.create({
       id,
       word: w.word,
+      definition: w.definition,
       refUrl: w.refUrl ?? "",
       emailReminder: w.emailReminder ?? false,
       email: u.email,

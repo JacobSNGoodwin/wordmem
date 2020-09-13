@@ -29,16 +29,17 @@ export const createWordRouter = (): Router => {
     "/",
     [
       body("word").not().isEmpty().trim().withMessage("required"),
+      body("definition").not().isEmpty().trim().withMessage("required"),
       body("refUrl").optional().isURL().trim().withMessage("url"),
       body("emailReminder").optional().isBoolean().withMessage("boolean"),
     ],
     validateRequest,
     async (req: Request, res: Response, next: NextFunction) => {
-      const { word, refUrl, emailReminder } = req.body;
+      const { word, refUrl, emailReminder, definition } = req.body;
 
       try {
         const created = await wordService.addWord(
-          { word, refUrl, emailReminder },
+          { word, definition, refUrl, emailReminder },
           { email: req.currentUser!.email, id: req.currentUser!.uid }
         );
 

@@ -6,4 +6,6 @@ import { Word } from "../model/word";
 export interface WordRepository {
   create(w: Word): Promise<Word>;
   getByUser(uid: string): Promise<Word[]>;
+  deleteByIds(wordId: string[]): Promise<string[]>;
+  update(w: Word): Promise<Word>;
 }

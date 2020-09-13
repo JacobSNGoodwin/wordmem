@@ -8,14 +8,3 @@ export interface Word {
   emailReminder: Boolean;
   startDate: Date;
 }
-
-export const wordFromData = (dataObj: any): Word => ({
-  id: dataObj.id,
-  email: dataObj.email,
-  emailReminder: dataObj.email_reminder,
-  refUrl: dataObj.ref_url,
-  startDate: dataObj.start_date,
-  userId: dataObj.userid,
-  word: dataObj.word,
-  definition: dataObj.definition,
-});

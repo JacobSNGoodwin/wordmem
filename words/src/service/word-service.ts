@@ -42,4 +42,10 @@ export class WordService {
 
     return words;
   }
+
+  async deleteWords(wordIds: string[]): Promise<string[]> {
+    const deletedIds = await this.wr.deleteByIds(wordIds);
+
+    return deletedIds;
+  }
 }

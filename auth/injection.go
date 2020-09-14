@@ -28,6 +28,7 @@ func (ic *InjectionContainer) Init(d *DataSources) error {
 		DB:            d.DB,
 		RedisClient:   d.RedisClient,
 		StorageClient: d.StorageClient,
+		PubSubClient:  d.PubSubClient,
 	})
 
 	if err != nil {
@@ -38,6 +39,7 @@ func (ic *InjectionContainer) Init(d *DataSources) error {
 	userService := &service.UserService{
 		UserRepository:  repo.UserRepository,
 		ImageRepositroy: repo.ImageRepository,
+		EventsBroker:    repo.EventsBroker,
 	}
 
 	// Create a TokenService from concrete impl of TokenRepository

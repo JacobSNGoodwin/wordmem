@@ -36,3 +36,8 @@ type ITokenRepository interface {
 type IImageRepositroy interface {
 	UploadUserImage(objName string, imageFile multipart.File) error
 }
+
+// IEventsBroker is contract for services interacted with publisher
+type IEventsBroker interface {
+	PublishUserUpdated(u *model.User) error
+}

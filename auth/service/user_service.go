@@ -16,6 +16,7 @@ import (
 type UserService struct {
 	UserRepository  IUserRepository
 	ImageRepositroy IImageRepositroy
+	EventsBroker    IEventsBroker
 }
 
 // SignUp creates a new user based on data in model.User

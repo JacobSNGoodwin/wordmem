@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"cloud.google.com/go/pubsub"
 	"cloud.google.com/go/storage"
 	"github.com/go-redis/redis/v8"
 
@@ -14,6 +15,7 @@ type Repository struct {
 	UserRepository  *UserRepository
 	TokenRepository *TokenRepository
 	ImageRepository *ImageRepository
+	EventsBroker    *EventsBroker
 }
 
 // Create is a utility function for initializing a dababase
@@ -30,6 +32,9 @@ func Create(options *Options) (*Repository, error) {
 		ImageRepository: &ImageRepository{
 			Storage: options.StorageClient,
 		},
+		EventsBroker: &EventsBroker{
+			PubSub: options.PubSubClient,
+		},
 	}, nil
 }
 
@@ -39,4 +44,5 @@ type Options struct {
 	DB            *sqlx.DB
 	RedisClient   *redis.Client
 	StorageClient *storage.Client
+	PubSubClient  *pubsub.Client
 }

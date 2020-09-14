@@ -39,5 +39,5 @@ type IImageRepositroy interface {
 
 // IEventsBroker is contract for services interacted with publisher
 type IEventsBroker interface {
-	PublishUserUpdated(u *model.User) error
+	PublishUserUpdated(u *model.User, isNewUser bool) error
 }

@@ -29,6 +29,13 @@ func (s *UserService) SignUp(email string, password string) (*model.User, error)
 		return nil, err
 	}
 
+	// Publish user created event
+	err := s.EventsBroker.PublishUserUpdated(u, true)
+
+	if err != nil {
+		return nil, rerrors.NewInternal()
+	}
+
 	return u, nil
 }
 
@@ -76,7 +83,17 @@ func (s *UserService) UpdateDetails(u *model.User) error {
 	// Update user in UserRepository
 	err := s.UserRepository.Update(u)
 
-	return err
+	if err != nil {
+		return err
+	}
+
+	// Publish user updated
+	err = s.EventsBroker.PublishUserUpdated(u, false)
+	if err != nil {
+		return rerrors.NewInternal()
+	}
+
+	return nil
 }
 
 // SetProfileImage reaches out to the image repository to upload an image to
@@ -130,6 +147,12 @@ func (s *UserService) SetProfileImage(uid uuid.UUID, imageFileHeader *multipart.
 	if err := s.UserRepository.UpdateImage(uid, imageURL, objName); err != nil {
 		log.Printf("Unable to update imageURL: %v\n", err)
 		return "", err
+	}
+
+	// Publish user updated
+	err = s.EventsBroker.PublishUserUpdated(u, false)
+	if err != nil {
+		log.Printf("Failure to publish event: %v\n", err)
 	}
 
 	return imageURL, nil

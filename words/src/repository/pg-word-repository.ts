@@ -12,7 +12,7 @@ export class PGWordRepository implements WordRepository {
 
   async create(w: Word): Promise<Word> {
     const text = `
-        INSERT INTO words (id, userId, word, definition, ref_url, email_reminder, start_date) 
+        INSERT INTO words (id, user_id, word, definition, ref_url, email_reminder, start_date) 
         VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *
       `;
     const values = [
@@ -43,7 +43,7 @@ export class PGWordRepository implements WordRepository {
   async getByUser(uid: string): Promise<Word[]> {
     const text = `
       SELECT * FROM words 
-      WHERE userid=$1 
+      WHERE user_id=$1 
       ORDER BY lower(word);
     `;
     const values = [uid];

@@ -59,7 +59,7 @@ const startup = async () => {
     pubSub: ds.pubSubClient,
   });
 
-  await listener.init("word-app"); // has to start with a letter
+  await listener.init("word-app");
   listener.listen();
 
   process.on("SIGINT", async () => await shutdown());

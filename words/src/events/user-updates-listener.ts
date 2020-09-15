@@ -23,6 +23,11 @@ export class UserUpdatesListener extends PubSubListener<UserUpdatesData> {
   }
 
   onMessage(msg: DecodedMessage<UserUpdatesData>): void {
-    console.log("Decoded message: ", msg);
+    console.log("Decoded message:");
+
+    console.log(msg.type);
+    console.log(msg.data);
+
+    msg.ack();
   }
 }

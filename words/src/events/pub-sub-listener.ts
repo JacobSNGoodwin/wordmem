@@ -4,17 +4,18 @@ import {
   PubSub,
   Subscription,
 } from "@google-cloud/pubsub";
-import { type } from "os";
 import { InternalError } from "../errors/internal-error";
 
 export interface DecodedMessage<T> {
   type: string;
   data: T;
+  ack(): void;
+  nack(): void;
 }
 
 export abstract class PubSubListener<T> {
   abstract topicName: string;
-  abstract onMessage(msg: DecodedMessage<T>): void;
+  abstract onMessage(msg: DecodedMessage<T>): void; // needs to receive message for acking
 
   protected pubSubClinet: PubSub;
   private _subscriptionName?: string;
@@ -24,6 +25,9 @@ export abstract class PubSubListener<T> {
     this.pubSubClinet = pubSubClient;
   }
 
+  // init initizes s subscription
+  // it checks if the desired subscription exists, and creates
+  // it otherwise
   async init(subscriptionName: string, options?: CreateSubscriptionOptions) {
     this._subscriptionName = subscriptionName;
 
@@ -64,6 +68,8 @@ export abstract class PubSubListener<T> {
       this.onMessage({
         type: rawMsg.attributes.type,
         data: parsedData,
+        ack: () => rawMsg.ack(), // passing function reference no worky
+        nack: () => rawMsg.nack(),
       });
     });
   }

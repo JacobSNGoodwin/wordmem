@@ -26,6 +26,10 @@ export class UserUpdatesListener {
 
     subscription.on("message", (msg) => {
       console.log(`${this.subscriberName} received a message: ${msg}`);
+      console.log(msg.attributes);
+      console.log(JSON.parse(msg.data.toString()));
+
+      msg.ack();
     });
   }
 }

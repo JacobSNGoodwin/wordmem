@@ -22,12 +22,19 @@ export class UserUpdatesListener extends PubSubListener<UserUpdatesData> {
     this.userService = options.userService;
   }
 
-  onMessage(msg: DecodedMessage<UserUpdatesData>): void {
-    console.log("Decoded message:");
-
-    console.log(msg.type);
-    console.log(msg.data);
-
+  async onMessage(msg: DecodedMessage<UserUpdatesData>): Promise<void> {
+    try {
+      await this.userService.createOrUpdateUser({
+        id: msg.data.uid,
+        email: msg.data.email,
+      });
+    } catch (err) {
+      console.error(
+        `Error creating or updating user for userId: ${msg.data.uid}`,
+        err
+      );
+      msg.nack();
+    }
     msg.ack();
   }
 }

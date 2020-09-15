@@ -1,9 +1,10 @@
 import {
-  CreateSubscriptionOptions,
   Message,
   PubSub,
   Subscription,
+  SubscriptionOptions,
 } from "@google-cloud/pubsub";
+import { raw } from "express";
 import { InternalError } from "../errors/internal-error";
 
 export interface DecodedMessage<T> {
@@ -17,34 +18,37 @@ export abstract class PubSubListener<T> {
   abstract topicName: string;
   abstract onMessage(msg: DecodedMessage<T>): void; // needs to receive message for acking
 
-  protected pubSubClinet: PubSub;
+  protected pubSubClient: PubSub;
   private _subscriptionName?: string;
   subscription?: Subscription;
 
   constructor(pubSubClient: PubSub) {
-    this.pubSubClinet = pubSubClient;
+    this.pubSubClient = pubSubClient;
   }
 
   // init initizes s subscription
   // it checks if the desired subscription exists, and creates
   // it otherwise
-  async init(subscriptionName: string, options?: CreateSubscriptionOptions) {
-    this._subscriptionName = subscriptionName;
-
+  async init(subscriptionName: string, options?: SubscriptionOptions) {
     // first array element is boolean, why google did this. who the hell knows?
-    const [exists] = await this.pubSubClinet
+    const [exists] = await this.pubSubClient
       .subscription(subscriptionName)
       .exists();
+    this._subscriptionName = subscriptionName;
 
     if (exists) {
-      this.subscription = this.pubSubClinet.subscription(
+      this.subscription = this.pubSubClient.subscription(
         this._subscriptionName
       );
     } else {
-      const [subscription] = await this.pubSubClinet
+      const [subscription] = await this.pubSubClient
         .topic(this.topicName)
-        .createSubscription(this._subscriptionName, options);
+        .createSubscription(this._subscriptionName);
       this.subscription = subscription;
+    }
+
+    if (options) {
+      this.subscription?.setOptions(options);
     }
   }
 
@@ -64,6 +68,10 @@ export abstract class PubSubListener<T> {
         console.log("Error receiving and parsing incoming data: ", err);
         throw new InternalError("Unable to receive incoming message");
       }
+
+      console.log(
+        `Message received and parsed. Type: ${rawMsg.attributes.type}, Data: ${parsedData}`
+      );
 
       this.onMessage({
         type: rawMsg.attributes.type,

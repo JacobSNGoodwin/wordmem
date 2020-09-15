@@ -59,7 +59,9 @@ const startup = async () => {
     pubSub: ds.pubSubClient,
   });
 
-  await listener.init("word-app");
+  await listener.init("word-app", {
+    ackDeadline: 30,
+  });
   listener.listen();
 
   process.on("SIGINT", async () => await shutdown());

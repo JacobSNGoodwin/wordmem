@@ -12,6 +12,5 @@ export interface WordRepository {
 }
 
 export interface UserRepository {
-  create(u: User): Promise<User>;
-  updateUser(u: User): Promise<User>;
+  upsert(u: User): Promise<User>;
 }

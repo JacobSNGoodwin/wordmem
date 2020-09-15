@@ -59,9 +59,7 @@ const startup = async () => {
     pubSub: ds.pubSubClient,
   });
 
-  // create a unique subscription for this process
-  const id = crypto.randomBytes(16).toString("hex");
-  await listener.init(`a${id}`); // has to start with a letter
+  await listener.init("word-app"); // has to start with a letter
   listener.listen();
 
   process.on("SIGINT", async () => await shutdown());

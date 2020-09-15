@@ -8,9 +8,7 @@ import { type } from "os";
 import { InternalError } from "../errors/internal-error";
 
 export interface DecodedMessage<T> {
-  attributes: {
-    [type: string]: string;
-  };
+  type: string;
   data: T;
 }
 
@@ -28,10 +26,22 @@ export abstract class PubSubListener<T> {
 
   async init(subscriptionName: string, options?: CreateSubscriptionOptions) {
     this._subscriptionName = subscriptionName;
-    const subscriptionResp = await this.pubSubClinet
-      .topic(this.topicName)
-      .createSubscription(this._subscriptionName, options);
-    this.subscription = subscriptionResp[0];
+
+    // first array element is boolean, why google did this. who the hell knows?
+    const [exists] = await this.pubSubClinet
+      .subscription(subscriptionName)
+      .exists();
+
+    if (exists) {
+      this.subscription = this.pubSubClinet.subscription(
+        this._subscriptionName
+      );
+    } else {
+      const [subscription] = await this.pubSubClinet
+        .topic(this.topicName)
+        .createSubscription(this._subscriptionName, options);
+      this.subscription = subscription;
+    }
   }
 
   listen() {
@@ -42,8 +52,6 @@ export abstract class PubSubListener<T> {
     }
 
     this.subscription.on("message", (rawMsg: Message) => {
-      console.log(`${this._subscriptionName} received a message`);
-
       let parsedData: T;
 
       try {
@@ -54,7 +62,7 @@ export abstract class PubSubListener<T> {
       }
 
       this.onMessage({
-        attributes: rawMsg.attributes,
+        type: rawMsg.attributes.type,
         data: parsedData,
       });
     });

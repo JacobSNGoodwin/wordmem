@@ -135,8 +135,7 @@ const wordFromData = (dataObj: any): Word => ({
   emailReminder: dataObj.email_reminder,
   refUrl: dataObj.ref_url,
   startDate: dataObj.start_date,
-  userId: dataObj.userid,
-  email: dataObj.email,
+  userId: dataObj.user_id,
   word: dataObj.word,
   definition: dataObj.definition,
 });

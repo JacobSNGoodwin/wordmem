@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 import path from "path";
+import crypto from "crypto";
 import { initDS, DataSources } from "./data";
 import { serviceContainer } from "./injection";
 import createApp from "./app";
@@ -53,13 +54,23 @@ const startup = async () => {
   });
 
   // create listener for pubsub
-  new UserUpdatesListener({
+  const listener = new UserUpdatesListener({
     userService: serviceContainer.services.userService,
     pubSub: ds.pubSubClient,
-  }).listen();
+  });
 
-  process.on("SIGINT", () => ds.pubSubClient.close());
-  process.on("SIGTERM", () => ds.pubSubClient.close());
+  // create a unique subscription for this process
+  const id = crypto.randomBytes(16).toString("hex");
+  await listener.init(`a${id}`); // has to start with a letter
+  listener.listen();
+
+  process.on("SIGINT", async () => await shutdown());
+  process.on("SIGTERM", async () => await shutdown());
+
+  const shutdown = async () => {
+    ds.pubSubClient.close();
+    await listener.subscription?.delete();
+  };
 };
 
 startup();

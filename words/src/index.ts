@@ -59,8 +59,10 @@ const startup = async () => {
     pubSub: ds.pubSubClient,
   });
 
+  // Setup listener
+  console.info("Setting up listener");
   await listener.init("word-app", {
-    ackDeadline: 30,
+    ackDeadlineSeconds: 30,
   });
   listener.listen();
 

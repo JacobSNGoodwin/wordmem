@@ -4,6 +4,8 @@ import { body, check } from "express-validator";
 import { requireAuth } from "../middleware/require-auth";
 import { serviceContainer } from "../injection";
 import { validateRequest } from "../middleware/validate-request";
+import { RequestValidationError } from "../errors/request-validation-error";
+import { BadRequestError } from "../errors/bad-request-error";
 
 export const createWordRouter = (): Router => {
   const wordRouter = express.Router();
@@ -79,31 +81,60 @@ export const createWordRouter = (): Router => {
     "/:id",
     [
       body("word")
-        .optional()
-        .notEmpty()
+        .isString()
+        .isLength({ min: 1 })
         .trim()
-        .withMessage("must be non-empty string or null"),
+        .withMessage("required"),
       body("definition")
-        .optional()
-        .notEmpty()
+        .exists({ checkNull: true })
+        .isString()
         .trim()
-        .withMessage("must be non-empty string or null"),
-      body("refUrl").optional().isURL().trim().withMessage("url"),
-      body("emailReminder").optional().isBoolean().withMessage("boolean"),
-      body("startDate").optional().isDate().withMessage("data"),
+        .withMessage("required"),
+      body("refUrl")
+        .exists({ checkNull: true })
+        .if(body("refUrl").notEmpty())
+        .isURL()
+        .trim()
+        .withMessage("url"),
+      body("emailReminder")
+        .exists({ checkNull: true })
+        .isBoolean()
+        .withMessage("boolean"),
+      body("startDate")
+        .exists({ checkNull: true })
+        .notEmpty()
+        .withMessage("date"),
     ],
     validateRequest,
     async (req: Request, res: Response, next: NextFunction) => {
-      const { word, refUrl, emailReminder, definition, startDate } = req.body;
+      const {
+        word,
+        refUrl,
+        emailReminder,
+        definition,
+        startDate: strDate,
+      } = req.body;
+
+      // parse date
+      let startDate: Date;
+      try {
+        startDate = new Date(strDate as string);
+      } catch (err) {
+        console.error("Invalid date string!", err);
+        throw new BadRequestError(
+          "startDate must be a string that can be parsed as a date"
+        );
+      }
 
       try {
-        const updated = await wordService.updateWord(req.params.id, {
+        const updated = await wordService.updateWord({
+          id: req.params.id,
+          uid: req.currentUser!.uid,
           word,
           definition,
           refUrl,
           emailReminder,
           startDate,
-          email: req.currentUser!.email,
         });
 
         res.status(200).json(updated);

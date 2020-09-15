@@ -1,8 +1,8 @@
 import {
+  CreateSubscriptionOptions,
   Message,
   PubSub,
   Subscription,
-  SubscriptionOptions,
 } from "@google-cloud/pubsub";
 import { raw } from "express";
 import { InternalError } from "../errors/internal-error";
@@ -29,7 +29,7 @@ export abstract class PubSubListener<T> {
   // init initizes s subscription
   // it checks if the desired subscription exists, and creates
   // it otherwise
-  async init(subscriptionName: string, options?: SubscriptionOptions) {
+  async init(subscriptionName: string, options?: CreateSubscriptionOptions) {
     // first array element is boolean, why google did this. who the hell knows?
     const [exists] = await this.pubSubClient
       .subscription(subscriptionName)
@@ -43,12 +43,8 @@ export abstract class PubSubListener<T> {
     } else {
       const [subscription] = await this.pubSubClient
         .topic(this.topicName)
-        .createSubscription(this._subscriptionName);
+        .createSubscription(this._subscriptionName, options);
       this.subscription = subscription;
-    }
-
-    if (options) {
-      this.subscription?.setOptions(options);
     }
   }
 

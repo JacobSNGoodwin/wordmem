@@ -13,12 +13,13 @@ interface CreateData {
 }
 
 interface UpdateData {
+  id: string;
   word: string;
+  uid: string;
   definition: string;
   refUrl: string;
   emailReminder: boolean;
   startDate: Date;
-  email: string;
 }
 
 export class WordService {
@@ -55,14 +56,14 @@ export class WordService {
     return deletedIds;
   }
 
-  async updateWord(wordId: string, d: UpdateData): Promise<Word> {
+  async updateWord(d: UpdateData): Promise<Word> {
     const updatedWord = this.wr.update({
-      id: wordId,
+      id: d.id,
       word: d.word,
       definition: d.definition,
       refUrl: d.refUrl,
       emailReminder: d.emailReminder,
-      userId: "", // will not be changed
+      userId: d.uid, // user for making sure you can't change other users words
       startDate: d.startDate,
     });
 

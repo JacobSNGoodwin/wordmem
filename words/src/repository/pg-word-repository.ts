@@ -98,11 +98,11 @@ export class PGWordRepository implements WordRepository {
     const text = `
         UPDATE words 
         SET word=$1,
-        SET definition=$2,
-        SET ref_url=$3,
-        SET email_reminder=$4,
-        SET start_date=$5
-        WHERE id=$6
+        definition=$2,
+        ref_url=$3,
+        email_reminder=$4,
+        start_date=$5
+        WHERE id=$6 AND user_id=$7
         RETURNING *;
       `;
     const values = [
@@ -112,6 +112,7 @@ export class PGWordRepository implements WordRepository {
       w.emailReminder,
       w.startDate,
       w.id,
+      w.userId,
     ];
 
     try {

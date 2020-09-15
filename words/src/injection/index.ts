@@ -1,9 +1,12 @@
 import { DataSources } from "../data";
 import { WordService } from "../service/word-service";
 import { PGWordRepository } from "../repository/pg-word-repository";
+import { UserService } from "../service/user-service";
+import { PGUserRepository } from "../repository/pg-user-repository";
 
 export interface Services {
   wordService: WordService;
+  userService: UserService;
 }
 
 class ServiceContainer {
@@ -14,8 +17,12 @@ class ServiceContainer {
     const wordRepository = new PGWordRepository(dataSources.db);
     const wordService = new WordService(wordRepository);
 
+    const userRepository = new PGUserRepository(dataSources.db);
+    const userService = new UserService(userRepository);
+
     this._services = {
       wordService,
+      userService,
     };
   }
 

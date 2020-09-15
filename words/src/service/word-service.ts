@@ -38,7 +38,6 @@ export class WordService {
       emailReminder: d.emailReminder ?? false,
       userId: d.uid,
       startDate: new Date(),
-      email: d.email,
     });
 
     return createdWord;
@@ -65,7 +64,6 @@ export class WordService {
       emailReminder: d.emailReminder,
       userId: "", // will not be changed
       startDate: d.startDate,
-      email: d.email,
     });
 
     return updatedWord;

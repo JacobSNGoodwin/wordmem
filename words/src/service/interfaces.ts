@@ -1,3 +1,4 @@
+import { User } from "../model/user";
 import { Word } from "../model/word";
 
 // Could try responses with algebraic data types in the future,
@@ -8,4 +9,9 @@ export interface WordRepository {
   getByUser(uid: string): Promise<Word[]>;
   deleteByIds(wordId: string[]): Promise<string[]>;
   update(w: Word): Promise<Word>;
+}
+
+export interface UserRepository {
+  create(u: User): Promise<User>;
+  updateUser(u: User): Promise<User>;
 }

@@ -54,10 +54,10 @@ const getUser = async () => {
   state.error = null;
 
   // check for idToken
-  const idToken = localStorage.getItem("__evilCorpId");
+  const idToken = localStorage.getItem("__evilCorpId"); // maybe set this key in an environment variable so it's matched among services
   const idTokenClaims = getTokenPayload(idToken);
 
-  // if we have a valid idToken, set the user
+  // if we have a valid idToken, set the user (use spread with merged obj?)
   if (idTokenClaims) {
     state.idToken = idToken;
     state.currentUser = idTokenClaims.user;

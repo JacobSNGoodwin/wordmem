@@ -1,17 +1,23 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./App.scss";
+import Loader from "./components/ui/Loader";
+import { useAuth } from "./store/auth";
 
-function App() {
+const App: React.FC = () => {
+  const { getUser, isLoading } = useAuth();
+
+  useEffect(() => {
+    getUser();
+  }, [getUser]);
+
   return (
     <section className="section">
       <div className="container">
         <h1 className="title">Hello World</h1>
-        <p className="subtitle">
-          My first website with <strong>Bulma</strong>!
-        </p>
+        {isLoading && <Loader />}
       </div>
     </section>
   );
-}
+};
 
 export default App;

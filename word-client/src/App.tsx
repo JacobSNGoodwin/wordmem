@@ -13,7 +13,7 @@ const App: React.FC = () => {
   return (
     <section className="section">
       <div className="container">
-        <h1 className="title">Hello World</h1>
+        <h1 className="title">Hello Dummy!</h1>
         {isLoading && <Loader />}
       </div>
     </section>

@@ -12,7 +12,9 @@
             </li>
           </ul>
         </div>
-        <h1 class="has-text-centered title is-2 mb-6">Not Too Evil, Inc.</h1>
+        <h1 class="has-text-centered title is-2 mb-6">
+          Not Too Evil, Inc.
+        </h1>
         <LoginForm
           :isLogin="isLogin"
           :isFetchingData="isLoading"

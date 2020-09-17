@@ -73,11 +73,9 @@ services:
       - "8080"
     ports:
       - "3000:8080"
-    environment:
-      - CHOKIDAR_USEPOLLING=true # allows reload over network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.account-client.rule=Host(`account.wordmem.test`)"
+      - "traefik.http.routers.account-client.rule=Host(`wordmem.test`) && PathPrefix(`/account`)"
     volumes:
       - /app/node_modules #avoid overwriting node_modules
       - ./account-client:/app

@@ -1,6 +1,7 @@
-// module.exports = {
-//   publicPath: "/account",
-//   devServer: {
-//     public: "/account",
-//   },
-// };
+module.exports = {
+  // publicPath: "/account",
+  devServer: {
+    // public: "/account",
+    disableHostCheck: true
+  }
+};

@@ -55,7 +55,7 @@ services:
       - "8080" # seems necessary for Traefik to have internal expose of port
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.account.rule=Host(`wordmem.dev`) && PathPrefix(`/api/account`)"
+      - "traefik.http.routers.account.rule=Host(`wordmem.test`) && PathPrefix(`/api/account`)"
     environment:
       - ENV=dev
     volumes:
@@ -77,7 +77,7 @@ services:
       - CHOKIDAR_USEPOLLING=true # allows reload over network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.account-client.rule=Host(`wordmem.dev`) && PathPrefix(`/account`)"
+      - "traefik.http.routers.account-client.rule=Host(`account.wordmem.test`)"
     volumes:
       - /app/node_modules #avoid overwriting node_modules
       - ./account-client:/app
@@ -91,7 +91,7 @@ services:
       - "8080" # seems necessary for Traefik to have internal expose of port
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.words.rule=Host(`wordmem.dev`) && PathPrefix(`/api/words`)"
+      - "traefik.http.routers.words.rule=Host(`wordmem.test`) && PathPrefix(`/api/words`)"
     volumes:
       - ./words:/app
     depends_on:
@@ -110,7 +110,7 @@ services:
       - "3003:3000"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.word-client.rule=Host(`wordmem.dev`)"
+      - "traefik.http.routers.word-client.rule=Host(`wordmem.test`)"
     volumes:
       - /app/node_modules #avoid overwriting node_modules
       - ./word-client:/app

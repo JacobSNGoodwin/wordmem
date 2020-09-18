@@ -52,7 +52,11 @@ export default {
 
     watchEffect(() => {
       if (currentUser.value) {
-        ctx.root.$router.push({ name: "Details" });
+        if ("loginOnly" in ctx.root.$route.query) {
+          window.close();
+        } else {
+          ctx.root.$router.push({ name: "Details" });
+        }
       }
     });
 

@@ -98,6 +98,10 @@
               </div>
             </div>
 
+            <div class="has-text-centered has-text-danger" v-if="updateError">
+              <p>Unknown Validation Error</p>
+            </div>
+
             <div class="buttons is-centered mt-6">
               <button
                 type="submit"

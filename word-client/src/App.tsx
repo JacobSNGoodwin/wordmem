@@ -4,10 +4,10 @@ import Loader from "./components/ui/Loader";
 import { useAuth } from "./store/auth";
 
 const App: React.FC = () => {
-  const { getUser, isLoading } = useAuth();
+  const { getUser, isLoading, currentUser } = useAuth();
 
   useEffect(() => {
-    getUser();
+    getUser(true);
   }, [getUser]);
 
   return (
@@ -15,6 +15,7 @@ const App: React.FC = () => {
       <div className="container">
         <h1 className="title">Hello Mouth-breathing-homosapiens!</h1>
         {isLoading && <Loader />}
+        {currentUser && <h1>{currentUser.name}</h1>}
       </div>
     </section>
   );

@@ -21,7 +21,7 @@ type AuthState = {
   idToken?: string;
   isLoading: boolean;
   error?: Error;
-  getUser: () => Promise<void>;
+  getUser: (forceRefresh: boolean) => Promise<void>;
 };
 
 export const useAuth = create<AuthState>((set) => {
@@ -30,23 +30,27 @@ export const useAuth = create<AuthState>((set) => {
     idToken: "",
     isLoading: false,
     error: undefined,
-    getUser: () => getUser(set),
+    getUser: (forceRefresh: boolean = false) => getUser({ set, forceRefresh }),
   };
 });
 
-const getUser = async (set: SetState<AuthState>) => {
+const getUser = async (options: {
+  set: SetState<AuthState>;
+  forceRefresh: boolean;
+}) => {
+  const { set, forceRefresh } = options;
   set({
     isLoading: true,
     error: undefined,
   });
 
-  // ghetto ass way to convertt possible null to undefined since
+  // ghetto ass way to convert possible null to undefined since
   // I likes working with undefineds onlyz
   const idToken = localStorage.getItem("__evilCorpId") ?? undefined; // add env variable globally
   const idTokenClaims = getTokenPayload<IdTokenClaims>(idToken);
 
   // if we have a valid idToken, set the user (use spread with merged obj?)
-  if (idTokenClaims) {
+  if (idTokenClaims && !forceRefresh) {
     set({
       idToken: idToken,
       currentUser: idTokenClaims.user,
@@ -56,7 +60,7 @@ const getUser = async (set: SetState<AuthState>) => {
     return;
   }
 
-  // we don't have a valid or non-expired idToken
+  // we don't have a valid or non-expired idToken, or we want to force refresh
   // so we try the refresh token
   const refreshToken = localStorage.getItem("__evilCorpRf") ?? undefined;
   const refreshTokenClaims = getTokenPayload<RefreshTokenClaims>(refreshToken);

@@ -77,8 +77,8 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.account-client.rule=Host(`wordmem.test`) && PathPrefix(`/account`)"
     volumes:
-      - /app/node_modules #avoid overwriting node_modules
       - ./account-client:/app
+      - /app/node_modules #avoid overwriting node_modules
   words:
     build:
       # build from build stage of dockerfile in words directory
@@ -110,8 +110,8 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.word-client.rule=Host(`wordmem.test`)"
     volumes:
-      - /app/node_modules #avoid overwriting node_modules
       - ./word-client:/app
+      - /app/node_modules
 volumes:
   pgdata_auth:
   pgdata_words:

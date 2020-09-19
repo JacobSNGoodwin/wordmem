@@ -1,60 +1,75 @@
 import React, { useEffect, useState } from "react";
+import { BrowserRouter, Link, Route, Switch } from "react-router-dom";
 import "./App.scss";
 import Loader from "./components/ui/Loader";
+// import Loader from "./components/ui/Loader";
+import AuthRoute from "./routes/AuthRoute";
 import { useAuth } from "./store/auth";
+import Edit from "./views/Edit";
+import Overview from "./views/Overview";
+import Welcome from "./views/Welcome";
 
 const App: React.FC = () => {
-  const [loginWindow, setLoginWindow] = useState<Window | undefined>(undefined);
   const getUser = useAuth((state) => state.getUser);
+  const [beginUserLoad, setBeginUserLoad] = useState(false);
   const isLoading = useAuth((state) => state.isLoading);
   const currentUser = useAuth((state) => state.currentUser);
 
-  if (loginWindow) {
-    loginWindow.onbeforeunload = () => {
-      getUser(false);
-    };
-  }
-
   useEffect(() => {
     getUser(true);
+    setBeginUserLoad(true);
   }, [getUser]);
 
-  // not sure if this is necessary, but we'll do it!
-  useEffect(() => {
-    return () => {
-      if (loginWindow) {
-        loginWindow.close();
-      }
-    };
-  });
-
-  const loginButton =
-    !isLoading && !currentUser ? (
-      <div
-        onClick={() => openLoginWindow()}
-        className="buttons is-centered mt-6"
-      >
-        <button className="button is-info">Login</button>
+  const navigationMenu = currentUser ? (
+    <div className="navbar-menu">
+      <div className="navbar-start">
+        <Link to="/" className="navbar-item">
+          Overview
+        </Link>
+        <Link to="/edit" className="navbar-item">
+          Edit
+        </Link>
       </div>
-    ) : null;
+    </div>
+  ) : undefined;
 
-  const openLoginWindow = () => {
-    const popUp = window.open(
-      "http://wordmem.test/account/authenticate?loginOnly",
-      "_blank"
-    );
-    setLoginWindow(popUp ?? undefined);
-  };
+  // since the auth state's isLoading is initially false, we need to make
+  // sure we also initiating the auth state check (getUser) before loading routes
+  const routes =
+    beginUserLoad && !isLoading ? (
+      <Switch>
+        <Route exact path="/welcome">
+          <Welcome />
+        </Route>
+        <AuthRoute
+          user={currentUser}
+          exact
+          path="/edit"
+          redirectPath="/welcome"
+        >
+          <Edit />
+        </AuthRoute>
+        <AuthRoute user={currentUser} exact path="/" redirectPath="/welcome">
+          <Overview />
+        </AuthRoute>
+      </Switch>
+    ) : undefined;
 
   return (
-    <section className="section">
-      <div className="container">
-        <h1 className="title has-text-centered">Welcome to WordMem</h1>
-        {isLoading && <Loader />}
-        {loginButton}
-        {currentUser && currentUser.name}
-      </div>
-    </section>
+    <BrowserRouter>
+      <nav className="navbar is-info" role="navigation">
+        <div className="navbar-brand">
+          <div className="navbar-item"></div>
+        </div>
+        {navigationMenu}
+      </nav>
+      <section className="section">
+        <div className="container">
+          {isLoading || (!beginUserLoad && <Loader radius={200} />)}
+          {routes}
+        </div>
+      </section>
+    </BrowserRouter>
   );
 };
 

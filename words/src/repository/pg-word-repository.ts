@@ -44,13 +44,18 @@ export class PGWordRepository implements WordRepository {
     uid: string;
     limit: number;
     offset: number;
+    isFibo: boolean;
   }): Promise<WordListResponse> {
     // query to retun count with results
+    const isFiboText = options.isFibo
+      ? "AND EXTRACT(DAY FROM CURRENT_TIMESTAMP - start_date) in (1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233)"
+      : "";
     const text = `
       WITH cte AS (
-        SELECT word
+        SELECT *
         FROM words
         WHERE user_id=$1 
+        ${isFiboText}
       )
       
       SELECT * FROM (
@@ -70,27 +75,25 @@ export class PGWordRepository implements WordRepository {
       });
 
       const fetchedWords = queryRes.rows;
+      const count = fetchedWords[0].count;
+
+      if (!fetchedWords[0].id) {
+        return {
+          count,
+          words: [],
+        };
+      }
 
       const words = fetchedWords.map((word) => wordFromData(word));
+
       return {
-        count: fetchedWords[0].count,
+        count,
         words,
       };
     } catch (e) {
       console.debug("Error retrieving words for user: ", e);
       throw new InternalError();
     }
-  }
-
-  async getFiboByUser(options: {
-    uid: string;
-    limit: number;
-    offset: number;
-  }): Promise<WordListResponse> {
-    return {
-      count: 0,
-      words: [],
-    };
   }
 
   // returns list of deleted words

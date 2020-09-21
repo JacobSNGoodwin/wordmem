@@ -1,5 +1,5 @@
 export interface Word {
-  id: string; // optional as this will be created in postgres
+  id: string;
   userId: string;
   word: string;
   definition: string;

@@ -53,16 +53,18 @@ export class WordService {
     const page = options.page ?? 1;
     const limit = options.limit ?? 10;
     const offset = (page - 1) * limit;
+    const isFibo = options.isFibo ?? false;
 
-    const words = await this.wr.getByUser({
+    const wordResponse = await this.wr.getByUser({
       uid: options.userId,
       limit,
       offset,
+      isFibo,
     });
 
-    const pages = Math.ceil(words.count / limit);
+    const pages = Math.ceil(wordResponse.count / limit);
 
-    return { ...words, page, pages };
+    return { ...wordResponse, page, pages, limit };
   }
 
   async deleteWords(wordIds: string[]): Promise<string[]> {

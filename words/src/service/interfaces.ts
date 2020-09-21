@@ -15,11 +15,7 @@ export interface WordRepository {
     uid: string;
     limit: number;
     offset: number;
-  }): Promise<WordListResponse>;
-  getFiboByUser(options: {
-    uid: string;
-    limit: number;
-    offset: number;
+    isFibo: boolean;
   }): Promise<WordListResponse>;
   deleteByIds(wordId: string[]): Promise<string[]>;
   update(w: Word): Promise<Word>;

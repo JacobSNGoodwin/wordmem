@@ -30,8 +30,12 @@ export const createWordRouter = (): Router => {
     ],
     validateRequest,
     async (req: Request, res: Response, next: NextFunction) => {
-      const limit = parseInt(req.query["limit"] as string);
-      const page = parseInt(req.query["page"] as string);
+      const limit = req.query["limit"]
+        ? parseInt(req.query["limit"] as string)
+        : undefined;
+      const page = req.query["page"]
+        ? parseInt(req.query["page"] as string)
+        : undefined;
       const isFibo = req.query["fib"] === "true" ? true : false;
 
       try {

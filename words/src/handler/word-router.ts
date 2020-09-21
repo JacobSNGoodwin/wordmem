@@ -1,10 +1,9 @@
 import express, { Request, Response, Router, NextFunction } from "express";
-import { body, check } from "express-validator";
+import { body, query } from "express-validator";
 
 import { requireAuth } from "../middleware/require-auth";
 import { serviceContainer } from "../injection";
 import { validateRequest } from "../middleware/validate-request";
-import { RequestValidationError } from "../errors/request-validation-error";
 import { BadRequestError } from "../errors/bad-request-error";
 
 export const createWordRouter = (): Router => {
@@ -15,9 +14,33 @@ export const createWordRouter = (): Router => {
 
   wordRouter.get(
     "/",
+    [
+      query("fib")
+        .optional({ nullable: true })
+        .isBoolean()
+        .withMessage("Must be null or a boolean"),
+      query("page")
+        .optional({ nullable: true })
+        .isInt()
+        .withMessage("Must be null or an integer"),
+      query("limit")
+        .optional({ nullable: true })
+        .isInt({ max: 100 })
+        .withMessage("Must be null or an integer less than or equal to 100"),
+    ],
+    validateRequest,
     async (req: Request, res: Response, next: NextFunction) => {
+      const limit = parseInt(req.query["limit"] as string);
+      const page = parseInt(req.query["page"] as string);
+      const isFibo = req.query["fib"] === "true" ? true : false;
+
       try {
-        const wordList = await wordService.getWords(req.currentUser!.uid);
+        const wordList = await wordService.getWords({
+          userId: req.currentUser!.uid,
+          limit,
+          page,
+          isFibo,
+        });
 
         res.status(200).json(wordList);
       } catch (err) {

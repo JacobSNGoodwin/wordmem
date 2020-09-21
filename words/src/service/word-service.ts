@@ -1,5 +1,5 @@
 import { v4 } from "uuid";
-import { WordRepository } from "./interfaces";
+import { WordListResponse, WordRepository } from "./interfaces";
 import { Word } from "../model/word";
 
 interface CreateData {
@@ -44,10 +44,25 @@ export class WordService {
     return createdWord;
   }
 
-  async getWords(userId: string): Promise<Word[]> {
-    const words = await this.wr.getByUser(userId);
+  async getWords(options: {
+    userId: string;
+    limit?: number;
+    page?: number;
+    isFibo?: boolean;
+  }) {
+    const page = options.page ?? 1;
+    const limit = options.limit ?? 10;
+    const offset = (page - 1) * limit;
 
-    return words;
+    const words = await this.wr.getByUser({
+      uid: options.userId,
+      limit,
+      offset,
+    });
+
+    const pages = Math.ceil(words.count / limit);
+
+    return { ...words, page, pages };
   }
 
   async deleteWords(wordIds: string[]): Promise<string[]> {

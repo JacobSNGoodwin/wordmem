@@ -1,4 +1,4 @@
-import { WordRepository } from "../service/interfaces";
+import { WordListResponse, WordRepository } from "../service/interfaces";
 import { Word } from "../model/word";
 import { Pool } from "pg";
 import { InternalError } from "../errors/internal-error";
@@ -40,13 +40,28 @@ export class PGWordRepository implements WordRepository {
     }
   }
 
-  async getByUser(uid: string): Promise<Word[]> {
+  async getByUser(options: {
+    uid: string;
+    limit: number;
+    offset: number;
+  }): Promise<WordListResponse> {
+    // query to retun count with results
     const text = `
-      SELECT * FROM words 
-      WHERE user_id=$1 
-      ORDER BY lower(word);
+      WITH cte AS (
+        SELECT word
+        FROM words
+        WHERE user_id=$1 
+      )
+      
+      SELECT * FROM (
+        TABLE cte
+        ORDER BY lower(word)
+        LIMIT $2
+        OFFSET $3
+      ) sub
+      RIGHT JOIN (SELECT count(*) FROM cte) c(count) ON true;
     `;
-    const values = [uid];
+    const values = [options.uid, options.limit, options.offset];
 
     try {
       const queryRes = await this.client.query({
@@ -56,11 +71,26 @@ export class PGWordRepository implements WordRepository {
 
       const fetchedWords = queryRes.rows;
 
-      return fetchedWords.map((word) => wordFromData(word));
+      const words = fetchedWords.map((word) => wordFromData(word));
+      return {
+        count: fetchedWords[0].count,
+        words,
+      };
     } catch (e) {
       console.debug("Error retrieving words for user: ", e);
       throw new InternalError();
     }
+  }
+
+  async getFiboByUser(options: {
+    uid: string;
+    limit: number;
+    offset: number;
+  }): Promise<WordListResponse> {
+    return {
+      count: 0,
+      words: [],
+    };
   }
 
   // returns list of deleted words

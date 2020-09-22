@@ -1,16 +1,11 @@
 import React from "react";
 import { Word } from "../data/fetchWords";
+import { daysSinceCreation } from "../util";
 
 type WordCardProps = Word;
 
 const WordCard: React.FC<WordCardProps> = (props) => {
-  const startDate = new Date(props.startDate);
-  const today = new Date();
-  const msPerDay = 24 * 60 * 60 * 1000;
-
-  const msDiff = today.getTime() - startDate.getTime();
-
-  const days = Math.floor(msDiff / msPerDay);
+  const days = daysSinceCreation(props.startDate);
 
   return (
     <div className="box">

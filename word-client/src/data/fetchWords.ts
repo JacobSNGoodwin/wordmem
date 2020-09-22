@@ -22,7 +22,7 @@ export interface Word {
   definition: string;
   refUrl: string;
   emailReminder: Boolean;
-  startDate: Date;
+  startDate: string;
 }
 
 export const fetchWords = async (

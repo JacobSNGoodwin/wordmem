@@ -46,3 +46,13 @@ export const getTokenPayload = <T extends TokenClaims>(
 
   return tokenClaims;
 };
+
+export const daysSinceCreation = (creationDate: string) => {
+  const startDate = new Date(creationDate);
+  const today = new Date();
+  const msPerDay = 24 * 60 * 60 * 1000;
+
+  const msDiff = today.getTime() - startDate.getTime();
+
+  return Math.floor(msDiff / msPerDay);
+};

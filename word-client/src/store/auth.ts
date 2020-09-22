@@ -1,6 +1,6 @@
 import create, { SetState } from "zustand";
+import { doRequest } from "../data/doRequest";
 import {
-  doRequest,
   getTokenPayload,
   IdTokenClaims,
   RefreshTokenClaims,

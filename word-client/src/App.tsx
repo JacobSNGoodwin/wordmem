@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
+import { QueryCache, ReactQueryCacheProvider } from "react-query";
+import { ReactQueryDevtools } from "react-query-devtools";
 import { BrowserRouter, Link, Route, Switch } from "react-router-dom";
 import "./App.scss";
 import Loader from "./components/ui/Loader";
-// import Loader from "./components/ui/Loader";
 import AuthRoute from "./routes/AuthRoute";
 import { useAuth } from "./store/auth";
 import Edit from "./views/Edit";
 import Overview from "./views/Overview";
 import Welcome from "./views/Welcome";
+
+const queryCache = new QueryCache();
 
 const App: React.FC = () => {
   const getUser = useAuth((state) => state.getUser);
@@ -48,10 +51,10 @@ const App: React.FC = () => {
     <div className="navbar-menu">
       <div className="navbar-start">
         <Link to="/" className="navbar-item">
-          Overview
+          Your Day
         </Link>
         <Link to="/edit" className="navbar-item">
-          Edit
+          Your List
         </Link>
       </div>
       <div className="navbar-end">
@@ -93,20 +96,25 @@ const App: React.FC = () => {
     ) : undefined;
 
   return (
-    <BrowserRouter>
-      <nav className="navbar is-info" role="navigation">
-        <div className="navbar-brand">
-          <div className="navbar-item"></div>
-        </div>
-        {navigationMenu}
-      </nav>
-      <section className="section">
-        <div className="container">
-          {isLoading || (!beginUserLoad && <Loader radius={200} />)}
-          {routes}
-        </div>
-      </section>
-    </BrowserRouter>
+    <>
+      <ReactQueryCacheProvider queryCache={queryCache}>
+        <BrowserRouter>
+          <nav className="navbar is-info" role="navigation">
+            <div className="navbar-brand">
+              <div className="navbar-item"></div>
+            </div>
+            {navigationMenu}
+          </nav>
+          <section className="section">
+            <div className="container">
+              {isLoading || (!beginUserLoad && <Loader radius={200} />)}
+              {routes}
+            </div>
+          </section>
+        </BrowserRouter>
+      </ReactQueryCacheProvider>
+      <ReactQueryDevtools initialIsOpen={false} />
+    </>
   );
 };
 

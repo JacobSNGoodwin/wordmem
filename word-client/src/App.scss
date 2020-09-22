@@ -1,5 +1,13 @@
+$navbar-height: 4.5rem;
+
 @import "~bulma/bulma.sass";
 
 .navbar-item {
-  cursor: pointer;
+  img {
+    max-height: 48px;
+  }
+}
+
+.navbar-end {
+  padding-right: 1.5rem;
 }

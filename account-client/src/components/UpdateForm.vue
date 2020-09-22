@@ -139,7 +139,7 @@ export default {
     const { idToken } = useAuth();
 
     const {
-      deleteImage,
+      exec: deleteImage,
       error: deleteError,
       loading: isDeleteing
     } = useRequest({

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { ReactQueryDevtools } from "react-query-devtools";
-import { BrowserRouter, Link, Route, Switch } from "react-router-dom";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
 import "./App.scss";
+import Navbar from "./components/Navbar";
 import Loader from "./components/ui/Loader";
 import AuthRoute from "./routes/AuthRoute";
 import { useAuth } from "./store/auth";
@@ -20,58 +21,10 @@ const App: React.FC = () => {
     setBeginUserLoad(true);
   }, [getUser]);
 
-  const placeHolderImage = (
-    <div
-      style={{
-        height: 48,
-        width: 48,
-        backgroundColor: "hsl(0, 0%, 86%)",
-        borderRadius: 24,
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-      }}
-    >
-      <div
-        style={{
-          textAlign: "center",
-          fontSize: 20,
-          fontWeight: "bold",
-        }}
-      >
-        {currentUser?.name ? currentUser.name[0].toUpperCase() : "U"}
-      </div>
-    </div>
-  );
-
-  const navigationMenu = currentUser ? (
-    <div className="navbar-menu">
-      <div className="navbar-start">
-        <Link to="/" className="navbar-item">
-          Your Day
-        </Link>
-        <Link to="/edit" className="navbar-item">
-          Your List
-        </Link>
-      </div>
-      <div className="navbar-end">
-        <div className="navbar-item">
-          <a href="/account" target="_blank">
-            <figure className="image">
-              {currentUser.imageUrl ? (
-                <img src={currentUser.imageUrl} alt="Profile" />
-              ) : (
-                placeHolderImage
-              )}
-            </figure>
-          </a>
-        </div>
-      </div>
-    </div>
-  ) : undefined;
-
   // since the auth state's isLoading is initially false, we need to make
   // sure we also initiating the auth state check (getUser) before loading routes
+  // we could also create a config array of routs that could be shared betwen this and
+  // the navbar
   const routes =
     beginUserLoad && !isLoading ? (
       <Switch>
@@ -95,12 +48,7 @@ const App: React.FC = () => {
   return (
     <>
       <BrowserRouter>
-        <nav className="navbar is-info" role="navigation">
-          <div className="navbar-brand">
-            <div className="navbar-item"></div>
-          </div>
-          {navigationMenu}
-        </nav>
+        <Navbar currentUser={currentUser} />
         <section className="section">
           <div className="container">
             {isLoading || (!beginUserLoad && <Loader radius={200} />)}

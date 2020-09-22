@@ -1,5 +1,6 @@
 import React from "react";
 import { useQuery } from "react-query";
+import Loader from "../components/ui/Loader";
 import { FetchWordData, fetchWords } from "../data/fetchWords";
 import { useAuth } from "../store/auth";
 
@@ -10,12 +11,12 @@ const Edit: React.FC = () => {
     ["words", { isFibo: false, page: 1, limit: 10, idToken }],
     fetchWords
   );
-  console.log(data?.words);
+
   return (
     <>
       <h1 className="title is-3">Your Word List</h1>
 
-      {isLoading && <p>Loading</p>}
+      {isLoading && <Loader radius={200} />}
       {isError && <p>{error?.message}</p>}
       {data && <p>{data.words}</p>}
     </>

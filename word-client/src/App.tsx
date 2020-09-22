@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { QueryCache, ReactQueryCacheProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query-devtools";
 import { BrowserRouter, Link, Route, Switch } from "react-router-dom";
 import "./App.scss";
@@ -9,8 +8,6 @@ import { useAuth } from "./store/auth";
 import Edit from "./views/Edit";
 import Overview from "./views/Overview";
 import Welcome from "./views/Welcome";
-
-const queryCache = new QueryCache();
 
 const App: React.FC = () => {
   const getUser = useAuth((state) => state.getUser);
@@ -97,23 +94,21 @@ const App: React.FC = () => {
 
   return (
     <>
-      <ReactQueryCacheProvider queryCache={queryCache}>
-        <BrowserRouter>
-          <nav className="navbar is-info" role="navigation">
-            <div className="navbar-brand">
-              <div className="navbar-item"></div>
-            </div>
-            {navigationMenu}
-          </nav>
-          <section className="section">
-            <div className="container">
-              {isLoading || (!beginUserLoad && <Loader radius={200} />)}
-              {routes}
-            </div>
-          </section>
-        </BrowserRouter>
-      </ReactQueryCacheProvider>
-      <ReactQueryDevtools initialIsOpen={false} />
+      <BrowserRouter>
+        <nav className="navbar is-info" role="navigation">
+          <div className="navbar-brand">
+            <div className="navbar-item"></div>
+          </div>
+          {navigationMenu}
+        </nav>
+        <section className="section">
+          <div className="container">
+            {isLoading || (!beginUserLoad && <Loader radius={200} />)}
+            {routes}
+          </div>
+        </section>
+      </BrowserRouter>
+      <ReactQueryDevtools />
     </>
   );
 };

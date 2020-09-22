@@ -1,5 +1,7 @@
 import React from "react";
 import { useQuery } from "react-query";
+import Loader from "../components/ui/Loader";
+import WordCard from "../components/WordCard";
 import { FetchWordData, fetchWords } from "../data/fetchWords";
 import { useAuth } from "../store/auth";
 
@@ -11,12 +13,13 @@ const Overview: React.FC = () => {
     fetchWords
   );
 
-  const wordList = data && data.words.map((word) => <p>{word.word}</p>);
+  const wordList =
+    data && data.words.map((word) => <WordCard key={word.id} {...word} />);
   return (
     <>
       <h1 className="title is-3">Today's Words</h1>
 
-      {isLoading && <p>Loading</p>}
+      {isLoading && <Loader radius={200} />}
       {isError && <p>{error?.message}</p>}
       {wordList}
     </>

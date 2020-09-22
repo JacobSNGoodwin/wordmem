@@ -1,4 +1,10 @@
-import express, { json, Express } from "express";
+import express, {
+  json,
+  Express,
+  Request,
+  Response,
+  NextFunction,
+} from "express";
 
 import { authUser } from "./middleware/auth-user";
 
@@ -16,7 +22,9 @@ const createApp = (): Express => {
 
   app.use("/api/words", createWordRouter());
 
-  app.all("*", async () => {
+  // if using async function, must pass error to next
+  // we probably can omit asyn and just throw the error
+  app.all("/api/words/*", () => {
     throw new NotFoundError();
   });
   app.use(errorHandler);

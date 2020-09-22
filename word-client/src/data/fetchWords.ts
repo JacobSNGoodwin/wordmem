@@ -29,7 +29,6 @@ export const fetchWords = async (
   key: string,
   args: FetchWordArgs
 ): Promise<FetchWordData> => {
-  console.log(args);
   const { data, error } = await doRequest<FetchWordData>({
     method: "get",
     url: "/api/words",

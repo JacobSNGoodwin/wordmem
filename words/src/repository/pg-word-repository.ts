@@ -75,7 +75,9 @@ export class PGWordRepository implements WordRepository {
       });
 
       const fetchedWords = queryRes.rows;
-      const count = fetchedWords[0].count;
+
+      // returns a string (see - https://github.com/brianc/node-postgres/issues/378)
+      const count = parseInt(fetchedWords[0].count);
 
       if (!fetchedWords[0].id) {
         return {

@@ -2,7 +2,6 @@ import { doRequest } from "./doRequest";
 
 export interface FetchWordArgs {
   isFibo: boolean;
-  page: number;
   limit: number;
   idToken?: string;
 }
@@ -27,13 +26,14 @@ export interface Word {
 
 export const fetchWords = async (
   key: string,
-  args: FetchWordArgs
+  args: FetchWordArgs,
+  page: number = 1
 ): Promise<FetchWordData> => {
   const { data, error } = await doRequest<FetchWordData>({
     method: "get",
     url: "/api/words",
     params: {
-      page: args.page,
+      page: page,
       limit: args.limit,
       fib: args.isFibo ? "true" : "false",
     },

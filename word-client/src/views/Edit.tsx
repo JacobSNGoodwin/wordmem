@@ -14,7 +14,7 @@ const Edit: React.FC = () => {
   const idToken = useAuth((state) => state.idToken);
 
   const { isLoading, isError, data, error } = useQuery<FetchWordData, Error>(
-    ["words", { isFibo: false, page: 1, limit: 10, idToken }],
+    ["words", { isFibo: false, page: 1, limit: 12, idToken }],
     fetchWords
   );
 

@@ -9,11 +9,22 @@ const WordListItem: React.FC<Word> = (props) => {
   const month = creationDate.getMonth();
   const day = creationDate.getDate(); // day returns day of week, 0-6
 
+  // using click to be able to have inner link inside of card
   const refUrl = props.refUrl ? (
-    <a href={props.refUrl} target="_blank" rel="noopener noreferrer">
-      Reference
-    </a>
+    <>
+      <div
+        onClick={(event) => openRefUrl(event)}
+        style={{ textDecoration: "underline" }}
+      >
+        Reference
+      </div>
+    </>
   ) : undefined;
+
+  const openRefUrl = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    event.stopPropagation();
+    window.open(props.refUrl);
+  };
 
   return (
     <div

@@ -5,6 +5,7 @@ import updateWord from "../data/updateWord";
 import { Word } from "../data/fetchWords";
 import { useAuth } from "../store/auth";
 import * as Yup from "yup";
+import deleteWord from "../data/deleteWord";
 
 type EditWordFormProps = {
   isOpen: boolean;
@@ -22,7 +23,17 @@ const EditWordForm: React.FC<EditWordFormProps> = ({
   const [errorMessage, setErrorMessage] = useState<string | undefined>(
     undefined
   );
-  const [mutate, { isLoading }] = useMutation(updateWord, {
+  const [mutateUpdate, { isLoading: isUpdating }] = useMutation(updateWord, {
+    onSuccess: async () => {
+      setErrorMessage(undefined);
+      queryCache.invalidateQueries("words");
+      onClose();
+    },
+    onError: async (error: Error) => {
+      setErrorMessage(error.message);
+    },
+  });
+  const [mutateDelete, { isLoading: isDeleting }] = useMutation(deleteWord, {
     onSuccess: async () => {
       setErrorMessage(undefined);
       queryCache.invalidateQueries("words");
@@ -47,7 +58,7 @@ const EditWordForm: React.FC<EditWordFormProps> = ({
       startDate: Yup.date(),
     }),
     onSubmit: (values) => {
-      mutate({ ...values, id: initialWord?.id, idToken });
+      mutateUpdate({ ...values, id: initialWord?.id, idToken });
     },
     enableReinitialize: true, // doesn't populate fields on initial render
   });
@@ -157,14 +168,26 @@ const EditWordForm: React.FC<EditWordFormProps> = ({
               </p>
             )}
           </section>
-          <footer className="modal-card-foot">
+          <footer
+            className="modal-card-foot"
+            style={{ justifyContent: "space-between" }}
+          >
             <button
               type="submit"
-              className={`button is-info${isLoading ? " is-loading" : ""}`}
+              className={`button is-info${isUpdating ? " is-loading" : ""}`}
               disabled={!formik.isValid || !formik.dirty}
             >
               Save changes
             </button>
+            {initialWord && (
+              <button
+                onClick={() => mutateDelete({ id: initialWord.id, idToken })}
+                type="button"
+                className={`button is-danger${isDeleting ? " is-loading" : ""}`}
+              >
+                Delete?
+              </button>
+            )}
           </footer>
         </form>
       </div>

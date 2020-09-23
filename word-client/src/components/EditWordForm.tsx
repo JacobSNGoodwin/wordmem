@@ -18,14 +18,16 @@ const EditWordForm: React.FC<EditWordFormProps> = ({
   const formik = useFormik({
     initialValues: {
       word: initialWord?.word || "",
-      definition: initialWord?.word || "",
+      definition: initialWord?.definition || "",
       refUrl: initialWord?.refUrl || "",
       startDate: initialWord?.startDate.substr(0, 10) || "", // substring gets YYYY-MM-DD out of date string
     },
     onSubmit: (values) => {
       onFormSubmitted(values);
     },
+    enableReinitialize: true, // doesn't populate fields on initial render
   });
+
   return (
     <div className={`modal${isOpen ? " is-active" : ""}`}>
       <div className="modal-background"></div>

@@ -3,11 +3,13 @@ import { useQuery } from "react-query";
 import EditWordForm from "../components/EditWordForm";
 import Loader from "../components/ui/Loader";
 import WordList from "../components/WordList";
-import { FetchWordData, fetchWords } from "../data/fetchWords";
+import { FetchWordData, fetchWords, Word } from "../data/fetchWords";
 import { useAuth } from "../store/auth";
 
 const Edit: React.FC = () => {
-  const [createIsOpen, setCreateIsOpen] = useState(true);
+  const [createIsOpen, setCreateIsOpen] = useState(false);
+  const [editIsOpen, setEditIsOpen] = useState(false);
+  const [selectedWord, setSelectedWord] = useState<Word | undefined>(undefined);
 
   const idToken = useAuth((state) => state.idToken);
 
@@ -17,7 +19,15 @@ const Edit: React.FC = () => {
     { staleTime: 3000 }
   );
 
-  const wordList = data?.words ? <WordList words={data.words} /> : undefined;
+  const wordList = data?.words ? (
+    <WordList
+      words={data.words}
+      onWordSelected={(word) => {
+        setSelectedWord(word);
+        setEditIsOpen(true);
+      }}
+    />
+  ) : undefined;
 
   return (
     <>
@@ -34,10 +44,25 @@ const Edit: React.FC = () => {
       {isLoading && <Loader radius={200} />}
       {isError && <p>{error?.message}</p>}
       {wordList}
+
+      {/* For creating a word */}
       <EditWordForm
         isOpen={createIsOpen}
         onClose={() => {
           setCreateIsOpen(false);
+        }}
+        onFormSubmitted={(values) => {
+          console.log(values);
+        }}
+      />
+
+      {/* For editing a word */}
+      <EditWordForm
+        isOpen={editIsOpen}
+        initialWord={selectedWord}
+        onClose={() => {
+          setEditIsOpen(false);
+          setSelectedWord(undefined);
         }}
         onFormSubmitted={(values) => {
           console.log(values);

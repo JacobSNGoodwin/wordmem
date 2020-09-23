@@ -1,20 +1,29 @@
 import { useFormik } from "formik";
 import React from "react";
+import { queryCache, useMutation } from "react-query";
+import updateWord from "../data/updateWord";
 import { Word } from "../data/fetchWords";
+import { useAuth } from "../store/auth";
 
 type EditWordFormProps = {
   isOpen: boolean;
   initialWord?: Word;
   onClose(): void;
-  onFormSubmitted(values: any): void;
 };
 
 const EditWordForm: React.FC<EditWordFormProps> = ({
   isOpen,
   initialWord,
   onClose,
-  onFormSubmitted,
 }) => {
+  const { idToken } = useAuth();
+  const [mutate, { isLoading }] = useMutation(updateWord, {
+    onSuccess: async (data) => {
+      console.log(data);
+      queryCache.invalidateQueries("words");
+    },
+  });
+
   const formik = useFormik({
     initialValues: {
       word: initialWord?.word || "",
@@ -23,7 +32,7 @@ const EditWordForm: React.FC<EditWordFormProps> = ({
       startDate: initialWord?.startDate.substr(0, 10) || "", // substring gets YYYY-MM-DD out of date string
     },
     onSubmit: (values) => {
-      onFormSubmitted(values);
+      mutate({ ...values, id: initialWord?.id, idToken });
     },
     enableReinitialize: true, // doesn't populate fields on initial render
   });
@@ -106,7 +115,10 @@ const EditWordForm: React.FC<EditWordFormProps> = ({
             )}
           </section>
           <footer className="modal-card-foot">
-            <button type="submit" className="button is-info">
+            <button
+              type="submit"
+              className={`button is-info${isLoading ? " is-loading" : ""}`}
+            >
               Save changes
             </button>
           </footer>

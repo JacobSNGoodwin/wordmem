@@ -51,9 +51,6 @@ const Edit: React.FC = () => {
         onClose={() => {
           setCreateIsOpen(false);
         }}
-        onFormSubmitted={(values) => {
-          console.log(values);
-        }}
       />
 
       {/* For editing a word */}
@@ -63,9 +60,6 @@ const Edit: React.FC = () => {
         onClose={() => {
           setEditIsOpen(false);
           setSelectedWord(undefined);
-        }}
-        onFormSubmitted={(values) => {
-          console.log(values);
         }}
       />
     </>

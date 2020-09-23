@@ -58,8 +58,15 @@ export const createWordRouter = (): Router => {
     [
       body("word").notEmpty().trim().withMessage("required"),
       body("definition").notEmpty().trim().withMessage("required"),
-      body("refUrl").optional().isURL().trim().withMessage("url"),
-      body("emailReminder").optional().isBoolean().withMessage("boolean"),
+      body("refUrl")
+        .optional({ checkFalsy: true }) // can be empty string
+        .isURL()
+        .trim()
+        .withMessage("url"),
+      body("emailReminder")
+        .optional({ nullable: true })
+        .isBoolean()
+        .withMessage("boolean"),
     ],
     validateRequest,
     async (req: Request, res: Response, next: NextFunction) => {
@@ -124,7 +131,7 @@ export const createWordRouter = (): Router => {
         .trim()
         .withMessage("url"),
       body("emailReminder")
-        .exists({ checkNull: true })
+        .optional({ nullable: true }) // not a good idea for put, but we'll remove email reminders in final app
         .isBoolean()
         .withMessage("boolean"),
       body("startDate")

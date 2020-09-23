@@ -63,10 +63,7 @@ export const createWordRouter = (): Router => {
         .isURL()
         .trim()
         .withMessage("url"),
-      body("emailReminder")
-        .optional({ nullable: true })
-        .isBoolean()
-        .withMessage("boolean"),
+      body("emailReminder").optional().isBoolean().withMessage("boolean"),
     ],
     validateRequest,
     async (req: Request, res: Response, next: NextFunction) => {

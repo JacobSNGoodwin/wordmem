@@ -10,8 +10,7 @@ const Overview: React.FC = () => {
 
   const { isLoading, isError, data, error } = useQuery<FetchWordData, Error>(
     ["words", { isFibo: true, page: 1, limit: 10, idToken }],
-    fetchWords,
-    { staleTime: 3000 }
+    fetchWords
   );
 
   const wordList =

@@ -29,10 +29,10 @@ export default {
     UpdateForm,
     Loader
   },
-  setup() {
+  setup(_, ctx) {
     const {
       idToken,
-      signout,
+      signout: authSignout,
       isLoading: authLoading,
       error: authError
     } = useAuth();
@@ -46,6 +46,12 @@ export default {
     });
 
     exec();
+
+    const signout = () => {
+      authSignout().then(() => {
+        ctx.root.$router.push("/authenticate");
+      });
+    };
 
     return { data, error, loading, signout, authLoading, authError, idToken };
   }

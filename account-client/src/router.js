@@ -9,12 +9,6 @@ Vue.use(VueRouter);
 
 const routes = [
   {
-    path: "/",
-    name: "Details",
-    component: Details,
-    beforeEnter: requireAuth
-  },
-  {
     path: "/authenticate",
     name: "Auth",
     component: Auth
@@ -22,7 +16,13 @@ const routes = [
     //   import(/* webpackChunkName: "auth" */ "../components/Auth.vue")
   },
   {
-    path: "*",
+    path: "/",
+    name: "Details",
+    component: Details,
+    beforeEnter: requireAuth
+  },
+  {
+    path: "/*",
     name: "NotFound",
     component: NotFound
   }

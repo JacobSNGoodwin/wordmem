@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { User } from "../store/auth";
+import { useAuth, User } from "../store/auth";
 
 type NavbarProps = {
   currentUser?: User;
 };
 
 const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
+  const { signOut } = useAuth();
   const [isNavbarOpen, setNavbarOpen] = useState(false);
   const placeHolderImage = (
     <div
@@ -43,6 +44,11 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
         </Link>
       </div>
       <div className="navbar-end">
+        <div className="navbar-item">
+          <button onClick={() => signOut()} type="button" className="button">
+            Sign Out
+          </button>
+        </div>
         <div className="navbar-item">
           <a href="/account" target="_blank">
             <figure className="image">

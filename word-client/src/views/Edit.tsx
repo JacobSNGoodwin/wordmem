@@ -3,6 +3,7 @@ import { useInfiniteQuery } from "react-query";
 import EditWordForm from "../components/EditWordForm";
 import Loader from "../components/ui/Loader";
 import WordList from "../components/WordList";
+import InfiniteScroll from "react-infinite-scroller";
 import { FetchWordData, fetchWords, Word } from "../data/fetchWords";
 import { useAuth } from "../store/auth";
 
@@ -20,7 +21,6 @@ const Edit: React.FC = () => {
     isError,
     canFetchMore,
     fetchMore,
-    isFetchingMore,
   } = useInfiniteQuery<FetchWordData, Error>(
     ["words", { isFibo: false, limit: 4, idToken }],
     fetchWords,
@@ -41,9 +41,9 @@ const Edit: React.FC = () => {
 
   const wordList =
     data &&
-    data.map(
-      (group, i) =>
-        group.words && (
+    data.map((group, i) => (
+      <React.Fragment key={i}>
+        {group.words && (
           <WordList
             key={i}
             words={group.words}
@@ -52,8 +52,9 @@ const Edit: React.FC = () => {
               setEditIsOpen(true);
             }}
           />
-        )
-    );
+        )}
+      </React.Fragment>
+    ));
 
   return (
     <>
@@ -69,17 +70,15 @@ const Edit: React.FC = () => {
 
       {isLoading && <Loader radius={200} />}
       {isError && <p>{error?.message}</p>}
-      {wordList}
-      {isFetchingMore && <Loader color="red" />}
-      {canFetchMore && (
-        <button
-          onClick={() => {
-            fetchMore();
-          }} // do not pass reference, or else event gets sent as argument to fetchMore!
-          className="button is-primary mt-6"
-        >
-          Fetch more!
-        </button>
+      {wordList && (
+        <InfiniteScroll
+          className="columns is-multiline mt-6"
+          pageStart={0}
+          loadMore={() => fetchMore()}
+          hasMore={canFetchMore}
+          loader={<Loader key={0} color="red" />}
+          children={wordList}
+        />
       )}
 
       {/* For creating a word */}

@@ -1,4 +1,5 @@
 import React from "react";
+import InfiniteScroll from "react-infinite-scroller";
 import { useInfiniteQuery } from "react-query";
 import Loader from "../components/ui/Loader";
 import WordCard from "../components/WordCard";
@@ -8,30 +9,22 @@ import { useAuth } from "../store/auth";
 const Overview: React.FC = () => {
   const idToken = useAuth((state) => state.idToken);
 
-  const {
-    data,
-    isLoading,
-    error,
-    canFetchMore,
-    fetchMore,
-    isFetchingMore,
-  } = useInfiniteQuery<FetchWordData, Error>(
-    ["words", { isFibo: true, limit: 2, idToken }],
-    fetchWords,
-    {
-      getFetchMore: (lastGroup, allGroups) => {
-        // this function returns query values for next query
-        const { page, pages } = lastGroup;
+  const { data, isLoading, error, canFetchMore, fetchMore } = useInfiniteQuery<
+    FetchWordData,
+    Error
+  >(["words", { isFibo: true, limit: 4, idToken }], fetchWords, {
+    getFetchMore: (lastGroup, allGroups) => {
+      // this function returns query values for next query
+      const { page, pages } = lastGroup;
 
-        // if there are no more queries, returns undefined
-        if (page >= pages) {
-          return undefined;
-        }
+      // if there are no more queries, returns undefined
+      if (page >= pages) {
+        return undefined;
+      }
 
-        return page + 1;
-      },
-    }
-  );
+      return page + 1;
+    },
+  });
 
   const wordList =
     data &&
@@ -48,17 +41,14 @@ const Overview: React.FC = () => {
 
       {isLoading && <Loader radius={200} />}
       {error && <p>{error.message}</p>}
-      {wordList}
-      {isFetchingMore && <Loader color="red" />}
-      {canFetchMore && (
-        <button
-          onClick={() => {
-            fetchMore();
-          }} // do not pass reference, or else event gets sent as argument to fetchMore!
-          className="button is-primary"
-        >
-          Fetch more!
-        </button>
+      {wordList && (
+        <InfiniteScroll
+          pageStart={0}
+          loadMore={() => fetchMore()}
+          hasMore={canFetchMore}
+          loader={<Loader key={0} color="red" />}
+          children={wordList}
+        />
       )}
     </>
   );

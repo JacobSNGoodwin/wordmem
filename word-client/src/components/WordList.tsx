@@ -18,11 +18,7 @@ const WordList: React.FC<WordListProps> = ({ words, onWordSelected }) => {
       <WordListItem {...word} />
     </div>
   ));
-  return (
-    <div className="mt-6">
-      <div className="columns is-multiline">{wordList}</div>
-    </div>
-  );
+  return <>{wordList}</>;
 };
 
 export default WordList;

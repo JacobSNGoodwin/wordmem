@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { User } from "../store/auth";
 
@@ -7,6 +7,7 @@ type NavbarProps = {
 };
 
 const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
+  const [isNavbarOpen, setNavbarOpen] = useState(false);
   const placeHolderImage = (
     <div
       style={{
@@ -32,7 +33,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
   );
 
   const navigationMenu = currentUser ? (
-    <div className="navbar-menu">
+    <div className={`navbar-menu${isNavbarOpen ? " is-active" : ""}`}>
       <div className="navbar-start">
         <Link to="/" className="navbar-item">
           Your Day
@@ -46,7 +47,11 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
           <a href="/account" target="_blank">
             <figure className="image">
               {currentUser.imageUrl ? (
-                <img src={currentUser.imageUrl} alt="Profile" />
+                <img
+                  src={currentUser.imageUrl}
+                  alt="Profile"
+                  style={{ width: "auto" }}
+                />
               ) : (
                 placeHolderImage
               )}
@@ -60,8 +65,21 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
   return (
     <nav className="navbar is-info" role="navigation">
       <div className="navbar-brand">
+        {/* insert logo below */}
         <div className="navbar-item"></div>
+        <div
+          role="button"
+          className={`navbar-burger burger${isNavbarOpen ? " is-active" : ""}`}
+          aria-label="menu"
+          aria-expanded="false"
+          onClick={() => setNavbarOpen(!isNavbarOpen)}
+        >
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+        </div>
       </div>
+
       {navigationMenu}
     </nav>
   );

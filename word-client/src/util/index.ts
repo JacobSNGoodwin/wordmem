@@ -6,6 +6,11 @@ export const storeTokens = (idToken: string, refreshToken: string) => {
   localStorage.setItem("__evilCorpRf", refreshToken);
 };
 
+export const deleteTokens = () => {
+  localStorage.removeItem("__evilCorpId");
+  localStorage.removeItem("__evilCorpRf");
+};
+
 // gets the token's payload, and returns null
 // if invalid
 

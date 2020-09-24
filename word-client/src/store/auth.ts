@@ -1,6 +1,7 @@
 import create, { SetState } from "zustand";
 import { doRequest } from "../data/doRequest";
 import {
+  deleteTokens,
   getTokenPayload,
   IdTokenClaims,
   RefreshTokenClaims,
@@ -22,6 +23,7 @@ type AuthState = {
   isLoading: boolean;
   error?: Error;
   getUser: (forceRefresh: boolean) => Promise<void>;
+  signOut: () => void;
 };
 
 export const useAuth = create<AuthState>((set) => {
@@ -31,8 +33,18 @@ export const useAuth = create<AuthState>((set) => {
     isLoading: false,
     error: undefined,
     getUser: (forceRefresh: boolean = false) => getUser({ set, forceRefresh }),
+    signOut: () => signOut(set),
   };
 });
+
+const signOut = (set: SetState<AuthState>) => {
+  deleteTokens();
+  set({
+    currentUser: undefined,
+    idToken: undefined,
+    error: undefined,
+  });
+};
 
 const getUser = async (options: {
   set: SetState<AuthState>;

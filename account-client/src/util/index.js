@@ -12,13 +12,15 @@ export const doRequest = async reqOptions => {
     data = response.data;
   } catch (e) {
     if (e.response) {
-      error = e.response.data.errors;
+      error = e.response.data.error;
     } else if (e.request) {
       error = e.request;
     } else {
       error = e;
     }
   }
+
+  console.log(error);
 
   return {
     data,

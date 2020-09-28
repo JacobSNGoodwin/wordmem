@@ -1,0 +1,20 @@
+{
+  "folders": [
+    {
+      "path": "auth"
+    },
+    {
+      "path": "account-client"
+    },
+    {
+      "path": "."
+    },
+    {
+      "path": "word-client"
+    },
+    {
+      "path": "words"
+    }
+  ],
+  "remoteAuthority": "wsl+Ubuntu-20.04"
+}

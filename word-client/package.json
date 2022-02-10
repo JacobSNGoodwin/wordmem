@@ -19,7 +19,7 @@
     "bulma": "^0.9.0",
     "formik": "^2.1.5",
     "jwt-decode": "^3.0.0-beta.2",
-    "node-sass": "^4.14.1",
+    "node-sass": "^7.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-infinite-scroller": "^1.2.4",
